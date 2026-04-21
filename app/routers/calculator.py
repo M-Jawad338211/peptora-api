@@ -113,7 +113,7 @@ async def record_use(
     db.add(AuditLog(
         user_id=user.id if user else None,
         action="calc_use",
-        metadata={"peptide": body.peptide_name, "platform": body.platform},
+        extra_data={"peptide": body.peptide_name, "platform": body.platform},
         ip_hash=hash_ip(request.client.host if request.client else ""),
         platform=body.platform,
     ))

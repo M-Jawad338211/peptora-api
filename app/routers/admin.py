@@ -91,7 +91,7 @@ async def set_user_plan(
     if plan not in ("free", "pro"):
         raise HTTPException(status_code=400, detail="Invalid plan")
     await db.execute(update(User).where(User.id == user_id).values(plan=plan))
-    db.add(AuditLog(user_id=admin.id, action="admin_action", metadata={"action": "set_plan", "target": user_id, "plan": plan}))
+    db.add(AuditLog(user_id=admin.id, action="admin_action", extra_data={"action": "set_plan", "target": user_id, "plan": plan}))
     return {"message": f"User plan updated to {plan}"}
 
 

@@ -184,7 +184,7 @@ async def forgot_password(
         expiry = datetime.now(timezone.utc) + timedelta(hours=1)
         db.add(AuditLog(
             user_id=user.id, action="password_reset_token",
-            metadata={"token": reset_token, "expires": expiry.isoformat()},
+            extra_data={"token": reset_token, "expires": expiry.isoformat()},
         ))
         try:
             await send_password_reset_email(user.email, reset_token)
@@ -209,8 +209,8 @@ async def reset_password(
     )
     logs = result.scalars().all()
     matching = next(
-        (l for l in logs if l.metadata and l.metadata.get("token") == body.token
-         and datetime.fromisoformat(l.metadata["expires"]) > now),
+        (l for l in logs if l.extra_data and l.extra_data.get("token") == body.token
+         and datetime.fromisoformat(l.extra_data["expires"]) > now),
         None,
     )
     if not matching:
@@ -222,5 +222,5 @@ async def reset_password(
         .values(password_hash=hash_password(body.new_password))
     )
     # Invalidate token by updating its metadata
-    matching.metadata = {**matching.metadata, "used": True}
+    matching.extra_data = {**matching.extra_data, "used": True}
     return {"message": "Password updated"}
