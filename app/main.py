@@ -84,9 +84,13 @@ async def health_db():
 
 @app.on_event("startup")
 async def startup():
-    from app.database import create_tables
-    await create_tables()
-    logger.info("Peptora API started")
+    try:
+        from app.database import create_tables
+        await create_tables()
+        logger.info("Peptora API started — DB connected")
+    except Exception as e:
+        logger.error(f"Startup DB error (non-fatal): {e}")
+        logger.info("Peptora API started — running without DB")
 
 
 @app.on_event("shutdown")
