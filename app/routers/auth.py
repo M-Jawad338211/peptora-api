@@ -20,7 +20,12 @@ from app.middleware.rate_limit import limiter
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
-COOKIE_OPTS = dict(httponly=True, samesite="strict", secure=True)
+from app.config import settings as _settings
+COOKIE_OPTS = dict(
+    httponly=True,
+    samesite="lax" if _settings.ENVIRONMENT == "development" else "strict",
+    secure=_settings.ENVIRONMENT != "development",
+)
 
 
 def _set_tokens(response: Response, user_id: str) -> None:

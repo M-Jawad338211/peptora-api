@@ -80,8 +80,8 @@ class CalculatorUsage(Base):
     vial_mg: Mapped[float] = mapped_column(Numeric(10, 3))
     bac_water_ml: Mapped[float] = mapped_column(Numeric(10, 3))
     target_mcg: Mapped[float] = mapped_column(Numeric(10, 2))
-    result_units: Mapped[float] = mapped_column(Numeric(10, 2))
-    result_ml: Mapped[float] = mapped_column(Numeric(10, 4))
+    result_units: Mapped[float | None] = mapped_column(Numeric(10, 2), nullable=True)
+    result_ml: Mapped[float | None] = mapped_column(Numeric(10, 4), nullable=True)
     platform: Mapped[str] = mapped_column(String(50), default="web")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, index=True)
 

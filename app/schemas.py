@@ -86,8 +86,9 @@ class RecordUseRequest(BaseModel):
     vial_mg: float
     bac_water_ml: float
     target_mcg: float
-    result_units: float
-    result_ml: float
+    result_units: Optional[float] = None
+    result_ml: Optional[float] = None
+    draw_ml: Optional[float] = None
 
 
 class RecordUseResponse(BaseModel):
@@ -101,8 +102,9 @@ class CalculatorHistoryItem(BaseModel):
     vial_mg: float
     bac_water_ml: float
     target_mcg: float
-    result_units: float
-    result_ml: float
+    result_units: Optional[float] = None
+    result_ml: Optional[float] = None
+    draw_ml: Optional[float] = None
     platform: str
     created_at: datetime
 
