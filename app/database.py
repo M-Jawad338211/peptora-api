@@ -1,8 +1,19 @@
+import ssl
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase
 from app.config import settings
 
-engine = create_async_engine(settings.DATABASE_URL, echo=False, pool_pre_ping=True)
+_connect_args = {}
+if "supabase.co" in settings.DATABASE_URL or "supabase.com" in settings.DATABASE_URL:
+    _ssl_ctx = ssl.create_default_context()
+    _connect_args = {"ssl": _ssl_ctx}
+
+engine = create_async_engine(
+    settings.DATABASE_URL,
+    echo=False,
+    pool_pre_ping=True,
+    connect_args=_connect_args,
+)
 AsyncSessionLocal = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
 
