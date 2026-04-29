@@ -3,13 +3,15 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sess
 from sqlalchemy.orm import DeclarativeBase
 from app.config import settings
 
+db_url = settings.DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://", 1).replace("postgres://", "postgresql+asyncpg://", 1)
+
 _connect_args = {}
-if "supabase.co" in settings.DATABASE_URL or "supabase.com" in settings.DATABASE_URL:
+if "supabase.co" in db_url or "supabase.com" in db_url:
     _ssl_ctx = ssl.create_default_context()
     _connect_args = {"ssl": _ssl_ctx}
 
 engine = create_async_engine(
-    settings.DATABASE_URL,
+    db_url,
     echo=False,
     pool_pre_ping=True,
     connect_args=_connect_args,
