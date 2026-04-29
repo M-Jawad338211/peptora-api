@@ -12,7 +12,12 @@ async def get_current_user_optional(
     request: Request,
     db: AsyncSession = Depends(get_db),
 ) -> Optional[User]:
-    token = request.cookies.get("access_token")
+    auth_header = request.headers.get("Authorization", "")
+    token = (
+        auth_header.removeprefix("Bearer ").strip()
+        if auth_header.startswith("Bearer ")
+        else request.cookies.get("access_token")
+    )
     if not token:
         return None
     user_id = decode_token(token, "access")

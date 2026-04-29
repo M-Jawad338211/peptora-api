@@ -7,35 +7,23 @@ on:
     branches: [main]
 
 jobs:
-  test:
-    name: Lint & test
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
           cache: "pip"
 
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-
-      - name: Lint with ruff
-        run: |
-          pip install ruff
-          ruff check app/ --ignore E501
-
-      - name: Type check with pyright (optional)
-        continue-on-error: true
-        run: |
-          pip install pyright
-          pyright app/
+      - run: pip install ruff
+      - run: ruff check app/ --ignore E501
 
   deploy:
     name: Deploy to Railway
-    needs: test
+    needs: lint
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     steps:
@@ -49,7 +37,8 @@ jobs:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
         run: railway up --detach
 
+      - name: Wait for deployment
+        run: sleep 30
+
       - name: Health check
-        run: |
-          sleep 20
-          curl --fail ${{ secrets.API_URL }}/health || exit 1
+        run: curl --fail --retry 5 --retry-delay 10 ${{ secrets.API_URL }}/health

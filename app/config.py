@@ -1,5 +1,5 @@
 from pydantic_settings import BaseSettings
-from typing import List
+from typing import List, Optional
 
 
 class Settings(BaseSettings):
@@ -9,13 +9,13 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 15
     REFRESH_TOKEN_EXPIRE_DAYS: int = 30
 
-    STRIPE_SECRET_KEY: str
-    STRIPE_WEBHOOK_SECRET: str
-    STRIPE_MONTHLY_PRICE_ID: str
-    STRIPE_ANNUAL_PRICE_ID: str
+    STRIPE_SECRET_KEY: Optional[str] = None
+    STRIPE_WEBHOOK_SECRET: Optional[str] = None
+    STRIPE_MONTHLY_PRICE_ID: Optional[str] = None
+    STRIPE_ANNUAL_PRICE_ID: Optional[str] = None
 
-    ANTHROPIC_API_KEY: str
-    RESEND_API_KEY: str
+    ANTHROPIC_API_KEY: Optional[str] = None
+    RESEND_API_KEY: Optional[str] = None
     FROM_EMAIL: str = "noreply@peptora.app"
 
     FRONTEND_URL: str = "https://peptora.app"
@@ -30,7 +30,7 @@ class Settings(BaseSettings):
             "https://admin.peptora.app",
         ]
         if self.ENVIRONMENT == "development":
-            origins += ["http://localhost:3000", "http://localhost:3001"]
+            origins += ["http://localhost:3000", "http://localhost:3001", "http://localhost:8081"]
         return origins
 
     class Config:

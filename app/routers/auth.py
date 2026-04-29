@@ -28,9 +28,12 @@ COOKIE_OPTS = dict(
 )
 
 
-def _set_tokens(response: Response, user_id: str) -> None:
-    response.set_cookie("access_token", create_access_token(user_id), max_age=900, **COOKIE_OPTS)
-    response.set_cookie("refresh_token", create_refresh_token(user_id), max_age=60 * 60 * 24 * 30, **COOKIE_OPTS)
+def _set_tokens(response: Response, user_id: str) -> dict:
+    access = create_access_token(user_id)
+    refresh = create_refresh_token(user_id)
+    response.set_cookie("access_token", access, max_age=900, **COOKIE_OPTS)
+    response.set_cookie("refresh_token", refresh, max_age=60 * 60 * 24 * 30, **COOKIE_OPTS)
+    return {"access_token": access, "refresh_token": refresh}
 
 
 @router.post("/register", status_code=status.HTTP_201_CREATED)
@@ -76,14 +79,14 @@ async def register(
         platform=request.headers.get("X-Platform", "web"),
     ))
 
-    _set_tokens(response, str(user.id))
+    tokens = _set_tokens(response, str(user.id))
 
     try:
         await send_welcome_email(user.email, user.full_name)
     except Exception:
         pass
 
-    return {"user": {"id": user.id, "email": user.email, "full_name": user.full_name, "plan": user.plan}, "message": "Account created"}
+    return {"user": {"id": user.id, "email": user.email, "full_name": user.full_name, "plan": user.plan}, "message": "Account created", **tokens}
 
 
 @router.post("/login")
@@ -107,8 +110,8 @@ async def login(
         platform=request.headers.get("X-Platform", "web"),
     ))
 
-    _set_tokens(response, str(user.id))
-    return {"user": {"id": user.id, "email": user.email, "full_name": user.full_name, "plan": user.plan}}
+    tokens = _set_tokens(response, str(user.id))
+    return {"user": {"id": user.id, "email": user.email, "full_name": user.full_name, "plan": user.plan}, **tokens}
 
 
 @router.post("/refresh")
