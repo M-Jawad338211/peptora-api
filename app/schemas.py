@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, field_validator
+from pydantic import BaseModel, EmailStr, field_validator, model_validator
 from typing import Optional
 from datetime import datetime
 import uuid
@@ -9,7 +9,8 @@ import uuid
 class RegisterRequest(BaseModel):
     email: EmailStr
     password: str
-    full_name: Optional[str] = None
+    confirm_password: str
+    full_name: str
     device_fingerprint: str
 
     @field_validator("password")
@@ -19,10 +20,40 @@ class RegisterRequest(BaseModel):
             raise ValueError("Password must be at least 8 characters")
         return v
 
+    @field_validator("full_name")
+    @classmethod
+    def full_name_required(cls, v: str) -> str:
+        if not v.strip():
+            raise ValueError("Full name is required")
+        return v.strip()
+
+    @model_validator(mode="after")
+    def passwords_match(self) -> "RegisterRequest":
+        if self.password != self.confirm_password:
+            raise ValueError("Passwords do not match")
+        return self
+
 
 class LoginRequest(BaseModel):
     email: EmailStr
     password: str
+
+
+class VerifyEmailRequest(BaseModel):
+    email: EmailStr
+    otp: str
+
+    @field_validator("otp")
+    @classmethod
+    def otp_format(cls, v: str) -> str:
+        clean = v.strip()
+        if len(clean) != 6 or not clean.isdigit():
+            raise ValueError("OTP must be a 6-digit code")
+        return clean
+
+
+class ResendVerificationOTPRequest(BaseModel):
+    email: EmailStr
 
 
 class ForgotPasswordRequest(BaseModel):
@@ -59,6 +90,7 @@ class UserResponse(BaseModel):
     full_name: Optional[str]
     plan: str
     is_admin: bool
+    email_verified: bool
     trial_count: Optional[TrialCountInfo] = None
     subscription: Optional[SubscriptionInfo] = None
 

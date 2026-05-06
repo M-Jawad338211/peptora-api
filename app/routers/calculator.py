@@ -9,7 +9,7 @@ from app.schemas import (
     RecordUseRequest, RecordUseResponse,
     CalculatorHistoryItem,
 )
-from app.middleware.auth import get_current_user_optional, get_current_user, get_current_admin
+from app.middleware.auth import get_current_user_optional, get_current_verified_user, get_current_admin
 from app.middleware.rate_limit import limiter
 from app.utils.security import hash_ip
 
@@ -123,7 +123,7 @@ async def record_use(
 
 @router.get("/history", response_model=list[CalculatorHistoryItem])
 async def get_history(
-    user: User = Depends(get_current_user),
+    user: User = Depends(get_current_verified_user),
     db: AsyncSession = Depends(get_db),
 ):
     if user.plan != "pro":

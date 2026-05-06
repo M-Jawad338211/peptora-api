@@ -6,7 +6,7 @@ from sqlalchemy import select, update
 from app.database import get_db
 from app.models import User, Subscription, AuditLog
 from app.schemas import CreateCheckoutRequest, CheckoutResponse, PortalResponse, SubscriptionStatusResponse
-from app.middleware.auth import get_current_user
+from app.middleware.auth import get_current_verified_user
 from app.config import settings
 
 router = APIRouter(prefix="/subscriptions", tags=["subscriptions"])
@@ -23,7 +23,7 @@ PRICE_MAP = {
 async def create_checkout(
     body: CreateCheckoutRequest,
     db: AsyncSession = Depends(get_db),
-    user: User = Depends(get_current_user),
+    user: User = Depends(get_current_verified_user),
 ):
     if body.plan not in PRICE_MAP:
         raise HTTPException(status_code=400, detail="Invalid plan")
@@ -139,7 +139,7 @@ async def stripe_webhook(request: Request, db: AsyncSession = Depends(get_db)):
 
 @router.get("/portal", response_model=PortalResponse)
 async def billing_portal(
-    user: User = Depends(get_current_user),
+    user: User = Depends(get_current_verified_user),
     db: AsyncSession = Depends(get_db),
 ):
     if not user.stripe_customer_id:
@@ -153,7 +153,7 @@ async def billing_portal(
 
 @router.get("/status", response_model=SubscriptionStatusResponse)
 async def subscription_status(
-    user: User = Depends(get_current_user),
+    user: User = Depends(get_current_verified_user),
     db: AsyncSession = Depends(get_db),
 ):
     result = await db.execute(
@@ -172,7 +172,7 @@ async def subscription_status(
 
 @router.post("/cancel")
 async def cancel_subscription(
-    user: User = Depends(get_current_user),
+    user: User = Depends(get_current_verified_user),
     db: AsyncSession = Depends(get_db),
 ):
     if user.plan != "pro" or not user.stripe_subscription_id:

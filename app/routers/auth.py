@@ -1,24 +1,28 @@
 import uuid
+import secrets
+import logging
 from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update
 from app.database import get_db
-from app.models import User, TrialCounter, AuditLog
+from app.models import User, TrialCounter, AuditLog, EmailVerificationOTP
 from app.schemas import (
     RegisterRequest, LoginRequest, ForgotPasswordRequest,
     ResetPasswordRequest, UserResponse, TrialCountInfo, SubscriptionInfo,
+    VerifyEmailRequest, ResendVerificationOTPRequest,
 )
 from app.utils.security import (
     hash_password, verify_password,
     create_access_token, create_refresh_token,
-    decode_token, hash_ip,
+    decode_token, hash_ip, hash_otp, verify_otp,
 )
-from app.utils.email import send_welcome_email, send_password_reset_email
-from app.middleware.auth import get_current_user, get_current_user_optional
+from app.utils.email import send_welcome_email, send_password_reset_email, send_email_verification_otp
+from app.middleware.auth import get_current_verified_user, get_current_user_optional
 from app.middleware.rate_limit import limiter
 
 router = APIRouter(prefix="/auth", tags=["auth"])
+logger = logging.getLogger("peptora.auth")
 
 from app.config import settings as _settings
 COOKIE_OPTS = dict(
@@ -34,6 +38,31 @@ def _set_tokens(response: Response, user_id: str) -> dict:
     response.set_cookie("access_token", access, max_age=900, **COOKIE_OPTS)
     response.set_cookie("refresh_token", refresh, max_age=60 * 60 * 24 * 30, **COOKIE_OPTS)
     return {"access_token": access, "refresh_token": refresh}
+
+
+def _user_payload(user: User) -> dict:
+    return {
+        "id": user.id,
+        "email": user.email,
+        "full_name": user.full_name,
+        "plan": user.plan,
+        "email_verified": user.email_verified,
+    }
+
+
+def _generate_otp() -> str:
+    return f"{secrets.randbelow(1_000_000):06d}"
+
+
+async def _send_verification_otp(db: AsyncSession, user: User) -> None:
+    otp = _generate_otp()
+    db.add(EmailVerificationOTP(
+        user_id=user.id,
+        otp_hash=hash_otp(user.email, otp),
+        expires_at=datetime.now(timezone.utc) + timedelta(minutes=10),
+    ))
+    await db.flush()
+    await send_email_verification_otp(user.email, user.full_name, otp)
 
 
 @router.post("/register", status_code=status.HTTP_201_CREATED)
@@ -53,6 +82,7 @@ async def register(
         password_hash=hash_password(body.password),
         full_name=body.full_name,
         plan="free",
+        email_verified=False,
     )
     db.add(user)
     await db.flush()
@@ -79,14 +109,17 @@ async def register(
         platform=request.headers.get("X-Platform", "web"),
     ))
 
-    tokens = _set_tokens(response, str(user.id))
-
     try:
-        await send_welcome_email(user.email, user.full_name)
-    except Exception:
-        pass
+        await _send_verification_otp(db, user)
+    except Exception as exc:
+        logger.exception("Failed to send verification OTP email to %s", user.email)
+        raise HTTPException(status_code=502, detail="Could not send verification email. Check email configuration.") from exc
 
-    return {"user": {"id": user.id, "email": user.email, "full_name": user.full_name, "plan": user.plan}, "message": "Account created", **tokens}
+    return {
+        "user": _user_payload(user),
+        "message": "Account created. Check your email for the verification code.",
+        "requires_verification": True,
+    }
 
 
 @router.post("/login")
@@ -103,6 +136,18 @@ async def login(
     if not user or not user.password_hash or not verify_password(body.password, user.password_hash):
         raise HTTPException(status_code=401, detail="Invalid email or password")
 
+    if not user.email_verified:
+        try:
+            await _send_verification_otp(db, user)
+        except Exception as exc:
+            logger.exception("Failed to send verification OTP email to %s", user.email)
+            raise HTTPException(status_code=502, detail="Could not send verification email. Check email configuration.") from exc
+        return {
+            "user": _user_payload(user),
+            "message": "Email verification required",
+            "requires_verification": True,
+        }
+
     await db.execute(update(User).where(User.id == user.id).values(last_login=datetime.now(timezone.utc)))
     db.add(AuditLog(
         user_id=user.id, action="login",
@@ -111,7 +156,90 @@ async def login(
     ))
 
     tokens = _set_tokens(response, str(user.id))
-    return {"user": {"id": user.id, "email": user.email, "full_name": user.full_name, "plan": user.plan}, **tokens}
+    return {"user": _user_payload(user), **tokens}
+
+
+@router.post("/verify-email")
+@limiter.limit("10/minute")
+async def verify_email(
+    request: Request,
+    body: VerifyEmailRequest,
+    response: Response,
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(select(User).where(User.email == body.email))
+    user = result.scalar_one_or_none()
+    if not user:
+        raise HTTPException(status_code=400, detail="Invalid or expired verification code")
+
+    if user.email_verified:
+        raise HTTPException(status_code=400, detail="Email already verified. Please log in.")
+
+    now = datetime.now(timezone.utc)
+    otp_result = await db.execute(
+        select(EmailVerificationOTP)
+        .where(
+            EmailVerificationOTP.user_id == user.id,
+            EmailVerificationOTP.used_at.is_(None),
+            EmailVerificationOTP.expires_at > now,
+        )
+        .order_by(EmailVerificationOTP.created_at.desc())
+    )
+    otp_record = otp_result.scalars().first()
+
+    if not otp_record:
+        raise HTTPException(status_code=400, detail="Invalid or expired verification code")
+
+    if otp_record.attempts >= 5:
+        raise HTTPException(status_code=429, detail="Too many verification attempts. Request a new code.")
+
+    otp_record.attempts += 1
+    if not verify_otp(user.email, body.otp, otp_record.otp_hash):
+        await db.commit()
+        raise HTTPException(status_code=400, detail="Invalid or expired verification code")
+
+    otp_record.used_at = now
+    user.email_verified = True
+    user.last_login = now
+    db.add(AuditLog(
+        user_id=user.id,
+        action="email_verified",
+        ip_hash=hash_ip(request.client.host if request.client else ""),
+        platform=request.headers.get("X-Platform", "web"),
+    ))
+
+    try:
+        await send_welcome_email(user.email, user.full_name)
+    except Exception:
+        logger.exception("Failed to send welcome email to %s", user.email)
+
+    tokens = _set_tokens(response, str(user.id))
+    return {"user": _user_payload(user), "message": "Email verified", **tokens}
+
+
+@router.post("/resend-verification-otp")
+@limiter.limit("3/minute")
+async def resend_verification_otp(
+    request: Request,
+    body: ResendVerificationOTPRequest,
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(select(User).where(User.email == body.email))
+    user = result.scalar_one_or_none()
+    if user and not user.email_verified:
+        try:
+            await _send_verification_otp(db, user)
+            db.add(AuditLog(
+                user_id=user.id,
+                action="verification_otp_resent",
+                ip_hash=hash_ip(request.client.host if request.client else ""),
+                platform=request.headers.get("X-Platform", "web"),
+            ))
+        except Exception as exc:
+            logger.exception("Failed to resend verification OTP email to %s", user.email)
+            raise HTTPException(status_code=502, detail="Could not send verification email. Check email configuration.") from exc
+
+    return {"message": "If that email needs verification, a new code has been sent"}
 
 
 @router.post("/refresh")
@@ -142,7 +270,7 @@ async def logout(
 
 @router.get("/me", response_model=UserResponse)
 async def me(
-    user: User = Depends(get_current_user),
+    user: User = Depends(get_current_verified_user),
     db: AsyncSession = Depends(get_db),
 ):
     from sqlalchemy.orm import selectinload
@@ -172,7 +300,7 @@ async def me(
 
     return UserResponse(
         id=u.id, email=u.email, full_name=u.full_name,
-        plan=u.plan, is_admin=u.is_admin,
+        plan=u.plan, is_admin=u.is_admin, email_verified=u.email_verified,
         trial_count=trial_info, subscription=sub_info,
     )
 

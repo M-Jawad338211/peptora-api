@@ -1,4 +1,5 @@
 import hashlib
+import hmac
 import bcrypt
 from datetime import datetime, timedelta, timezone
 from typing import Optional
@@ -44,3 +45,12 @@ def decode_token(token: str, token_type: str = "access") -> Optional[str]:
 
 def hash_ip(ip: str) -> str:
     return hashlib.sha256(ip.encode()).hexdigest()[:32]
+
+
+def hash_otp(email: str, otp: str) -> str:
+    payload = f"{email.lower()}:{otp}".encode("utf-8")
+    return hmac.new(settings.JWT_SECRET.encode("utf-8"), payload, hashlib.sha256).hexdigest()
+
+
+def verify_otp(email: str, otp: str, hashed: str) -> bool:
+    return hmac.compare_digest(hash_otp(email, otp), hashed)

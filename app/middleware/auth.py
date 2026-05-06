@@ -38,13 +38,19 @@ async def get_current_user(
     return user
 
 
-async def get_current_pro_user(user: User = Depends(get_current_user)) -> User:
+async def get_current_verified_user(user: User = Depends(get_current_user)) -> User:
+    if not user.email_verified:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Email verification required")
+    return user
+
+
+async def get_current_pro_user(user: User = Depends(get_current_verified_user)) -> User:
     if user.plan != "pro":
         raise HTTPException(status_code=status.HTTP_402_PAYMENT_REQUIRED, detail="Pro subscription required")
     return user
 
 
-async def get_current_admin(user: User = Depends(get_current_user)) -> User:
+async def get_current_admin(user: User = Depends(get_current_verified_user)) -> User:
     if not user.is_admin:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required")
     return user
