@@ -13,6 +13,10 @@ async def _send_email(payload: dict) -> dict:
     if not settings.FROM_EMAIL:
         raise RuntimeError("FROM_EMAIL is not configured")
 
+    # Resend v2 requires `to` as a list
+    if isinstance(payload.get("to"), str):
+        payload = {**payload, "to": [payload["to"]]}
+
     response = await asyncio.to_thread(resend.Emails.send, payload)
     logger.info(
         "Resend email queued to=%s subject=%s response=%s",
