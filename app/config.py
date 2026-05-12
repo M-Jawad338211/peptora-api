@@ -1,3 +1,4 @@
+from pydantic import field_validator
 from pydantic_settings import BaseSettings
 from typing import List, Optional
 
@@ -17,6 +18,11 @@ class Settings(BaseSettings):
     ANTHROPIC_API_KEY: Optional[str] = None
     RESEND_API_KEY: Optional[str] = None
     FROM_EMAIL: str = "noreply@peptora.app"
+
+    @field_validator("FROM_EMAIL", mode="before")
+    @classmethod
+    def strip_email_quotes(cls, v: str) -> str:
+        return v.strip().strip('"').strip("'")
 
     FRONTEND_URL: str = "https://peptora.app"
     ADMIN_URL: str = "https://admin.peptora.app"

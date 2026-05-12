@@ -27,7 +27,9 @@ logger = logging.getLogger("peptora.auth")
 from app.config import settings as _settings
 COOKIE_OPTS = dict(
     httponly=True,
-    samesite="lax" if _settings.ENVIRONMENT == "development" else "strict",
+    # SameSite=None;Secure is required for cross-origin cookie auth (frontend on peptora.io,
+    # API on railway.app). Lax is sufficient locally where both run on localhost.
+    samesite="lax" if _settings.ENVIRONMENT == "development" else "none",
     secure=_settings.ENVIRONMENT != "development",
 )
 
@@ -263,8 +265,12 @@ async def logout(
 ):
     if user:
         db.add(AuditLog(user_id=user.id, action="logout"))
-    response.delete_cookie("access_token")
-    response.delete_cookie("refresh_token")
+    response.delete_cookie("access_token", httponly=True,
+                           samesite="lax" if _settings.ENVIRONMENT == "development" else "none",
+                           secure=_settings.ENVIRONMENT != "development")
+    response.delete_cookie("refresh_token", httponly=True,
+                           samesite="lax" if _settings.ENVIRONMENT == "development" else "none",
+                           secure=_settings.ENVIRONMENT != "development")
     return {"message": "Logged out"}
 
 
