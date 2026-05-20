@@ -25,6 +25,7 @@ class User(Base):
     stripe_subscription_id: Mapped[str | None] = mapped_column(String(255), nullable=True)
     is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
     email_verified: Mapped[bool] = mapped_column(Boolean, default=False)
+    expo_push_token: Mapped[str | None] = mapped_column(String(255), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
     last_login: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
@@ -35,6 +36,7 @@ class User(Base):
     subscriptions: Mapped[list["Subscription"]] = relationship("Subscription", back_populates="user")
     audit_logs: Mapped[list["AuditLog"]] = relationship("AuditLog", back_populates="user")
     verification_otps: Mapped[list["EmailVerificationOTP"]] = relationship("EmailVerificationOTP", back_populates="user")
+    cycle_logs: Mapped[list["CycleLog"]] = relationship("CycleLog", back_populates="user")
 
 
 class EmailVerificationOTP(Base):
@@ -127,6 +129,24 @@ class Subscription(Base):
 
     __table_args__ = (
         Index("ix_sub_stripe_id", "stripe_subscription_id"),
+    )
+
+
+class CycleLog(Base):
+    __tablename__ = "cycle_logs"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    peptide_name: Mapped[str] = mapped_column(String(255), nullable=False)
+    dose: Mapped[str] = mapped_column(String(100), nullable=False)
+    notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+    taken_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+    user: Mapped["User"] = relationship("User", back_populates="cycle_logs")
+
+    __table_args__ = (
+        Index("ix_cycle_logs_user_taken", "user_id", "taken_at"),
     )
 
 

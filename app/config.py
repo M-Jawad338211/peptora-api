@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     STRIPE_ANNUAL_PRICE_ID: Optional[str] = None
 
     ANTHROPIC_API_KEY: Optional[str] = None
+    CRON_SECRET: Optional[str] = None
     RESEND_API_KEY: Optional[str] = None
     FROM_EMAIL: str = "noreply@peptora.app"
 

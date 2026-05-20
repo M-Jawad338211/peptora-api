@@ -126,9 +126,6 @@ async def get_history(
     user: User = Depends(get_current_verified_user),
     db: AsyncSession = Depends(get_db),
 ):
-    if user.plan != "pro":
-        from fastapi import HTTPException
-        raise HTTPException(status_code=402, detail="Pro subscription required")
     result = await db.execute(
         select(CalculatorUsage)
         .where(CalculatorUsage.user_id == user.id)

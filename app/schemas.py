@@ -191,6 +191,46 @@ class StackCheckResponse(BaseModel):
     known_conflicts: list[str]
 
 
+# ── Tracker ─────────────────────────────────────────────────────────────────
+
+class CycleLogCreate(BaseModel):
+    peptide_name: str
+    dose: str
+    notes: Optional[str] = None
+    taken_at: Optional[datetime] = None
+
+
+class CycleLogItem(BaseModel):
+    id: uuid.UUID
+    peptide_name: str
+    dose: str
+    notes: Optional[str] = None
+    taken_at: datetime
+    created_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
+# ── Push Notifications ───────────────────────────────────────────────────────
+
+class PushTokenUpdate(BaseModel):
+    token: str
+
+    @field_validator("token")
+    @classmethod
+    def token_format(cls, v: str) -> str:
+        v = v.strip()
+        if not v.startswith("ExponentPushToken["):
+            raise ValueError("Must be a valid Expo push token")
+        return v
+
+
+class CronReminderResult(BaseModel):
+    sent: int
+    failed: int
+    skipped: int
+
+
 # ── Admin ───────────────────────────────────────────────────────────────────
 
 class AdminStatsResponse(BaseModel):

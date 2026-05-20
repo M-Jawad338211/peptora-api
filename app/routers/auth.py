@@ -10,7 +10,7 @@ from app.models import User, TrialCounter, AuditLog, EmailVerificationOTP
 from app.schemas import (
     RegisterRequest, LoginRequest, ForgotPasswordRequest,
     ResetPasswordRequest, UserResponse, TrialCountInfo, SubscriptionInfo,
-    VerifyEmailRequest, ResendVerificationOTPRequest,
+    VerifyEmailRequest, ResendVerificationOTPRequest, PushTokenUpdate,
 )
 from app.utils.security import (
     hash_password, verify_password,
@@ -265,6 +265,7 @@ async def logout(
 ):
     if user:
         db.add(AuditLog(user_id=user.id, action="logout"))
+        await db.execute(update(User).where(User.id == user.id).values(expo_push_token=None))
     response.delete_cookie("access_token", httponly=True,
                            samesite="lax" if _settings.ENVIRONMENT == "development" else "none",
                            secure=_settings.ENVIRONMENT != "development")
@@ -309,6 +310,17 @@ async def me(
         plan=u.plan, is_admin=u.is_admin, email_verified=u.email_verified,
         trial_count=trial_info, subscription=sub_info,
     )
+
+
+@router.put("/push-token", status_code=200)
+async def update_push_token(
+    body: PushTokenUpdate,
+    db: AsyncSession = Depends(get_db),
+    user: User = Depends(get_current_verified_user),
+):
+    await db.execute(update(User).where(User.id == user.id).values(expo_push_token=body.token))
+    logger.info("push_token_updated user_id=%s", user.id)
+    return {"message": "Push token saved"}
 
 
 @router.post("/forgot-password")
