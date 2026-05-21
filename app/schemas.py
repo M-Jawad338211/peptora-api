@@ -91,6 +91,7 @@ class UserResponse(BaseModel):
     plan: str
     is_admin: bool
     email_verified: bool
+    consent_accepted: bool = False
     trial_count: Optional[TrialCountInfo] = None
     subscription: Optional[SubscriptionInfo] = None
 

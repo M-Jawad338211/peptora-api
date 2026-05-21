@@ -49,6 +49,7 @@ def _user_payload(user: User) -> dict:
         "full_name": user.full_name,
         "plan": user.plan,
         "email_verified": user.email_verified,
+        "consent_accepted": user.consent_accepted,
     }
 
 
@@ -308,8 +309,24 @@ async def me(
     return UserResponse(
         id=u.id, email=u.email, full_name=u.full_name,
         plan=u.plan, is_admin=u.is_admin, email_verified=u.email_verified,
+        consent_accepted=u.consent_accepted,
         trial_count=trial_info, subscription=sub_info,
     )
+
+
+@router.post("/accept-consent", status_code=200)
+async def accept_consent(
+    db: AsyncSession = Depends(get_db),
+    user: User = Depends(get_current_verified_user),
+):
+    await db.execute(
+        update(User).where(User.id == user.id).values(
+            consent_accepted=True,
+            consent_accepted_at=datetime.now(timezone.utc),
+        )
+    )
+    logger.info("consent_accepted user_id=%s", user.id)
+    return {"message": "Consent accepted"}
 
 
 @router.put("/push-token", status_code=200)
