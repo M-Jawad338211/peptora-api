@@ -28,8 +28,8 @@ async def _get_or_create_trial(db: AsyncSession, user: User | None, fp: str) -> 
             db.add(tc)
             await db.flush()
     else:
-        result = await db.execute(select(TrialCounter).where(TrialCounter.device_fingerprint == fp))
-        tc = result.scalar_one_or_none()
+        result = await db.execute(select(TrialCounter).where(TrialCounter.device_fingerprint == fp).limit(1))
+        tc = result.scalars().first()
         if not tc:
             tc = TrialCounter(device_fingerprint=fp)
             db.add(tc)

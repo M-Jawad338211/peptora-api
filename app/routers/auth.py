@@ -90,11 +90,15 @@ async def register(
     db.add(user)
     await db.flush()
 
-    # Link or create trial counter
-    tc_result = await db.execute(
-        select(TrialCounter).where(TrialCounter.device_fingerprint == body.device_fingerprint).limit(1)
-    )
-    tc = tc_result.scalars().first()
+    # Link or create trial counter.
+    # Fallback fingerprints are shared across many devices — never link them, always create a fresh counter.
+    is_fallback_fp = body.device_fingerprint.startswith("fallback-fp-")
+    tc = None
+    if not is_fallback_fp:
+        tc_result = await db.execute(
+            select(TrialCounter).where(TrialCounter.device_fingerprint == body.device_fingerprint).limit(1)
+        )
+        tc = tc_result.scalars().first()
     if tc:
         tc.user_id = user.id
         tc.signup_bonus_granted = True
