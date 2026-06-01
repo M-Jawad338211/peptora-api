@@ -92,9 +92,9 @@ async def register(
 
     # Link or create trial counter
     tc_result = await db.execute(
-        select(TrialCounter).where(TrialCounter.device_fingerprint == body.device_fingerprint)
+        select(TrialCounter).where(TrialCounter.device_fingerprint == body.device_fingerprint).limit(1)
     )
-    tc = tc_result.scalar_one_or_none()
+    tc = tc_result.scalars().first()
     if tc:
         tc.user_id = user.id
         tc.signup_bonus_granted = True
