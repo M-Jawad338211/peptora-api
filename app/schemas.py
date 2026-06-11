@@ -1,7 +1,153 @@
 from pydantic import BaseModel, EmailStr, field_validator, model_validator
-from typing import Optional
-from datetime import datetime
+from typing import Any, Optional
+from datetime import date, datetime
 import uuid
+
+
+# ── Peptide encyclopedia ────────────────────────────────────────────────────
+
+class PeptideCard(BaseModel):
+    id: str
+    name: str
+    aliases: list[str]
+    tags: list[str]
+    category: str
+    usage_category: Optional[str]
+    approval_category: Optional[str]
+    summary: str
+    evidence_level: str
+    fda_status: str
+    compounding_status: Optional[str]
+    wada_status: Optional[str]
+    research_only: bool
+    data_completeness: str
+
+    model_config = {"from_attributes": True}
+
+
+class PeptideReferenceOut(BaseModel):
+    ref_id: int
+    type: str
+    title: str
+    first_author: Optional[str]
+    year: Optional[str]
+    source: Optional[str]
+    pmid: Optional[str]
+    doi: Optional[str]
+    url: Optional[str]
+
+    model_config = {"from_attributes": True}
+
+
+class PeptideDoseRangeOut(BaseModel):
+    id: int
+    context: str
+    low: Optional[float]
+    high: Optional[float]
+    unit: str
+    route: Optional[str]
+    frequency: Optional[str]
+    note: Optional[str]
+    citation_refs: list[int]
+
+    model_config = {"from_attributes": True}
+
+
+class PeptideProtocolOut(BaseModel):
+    id: str
+    name: str
+    description: Optional[str]
+    phase: Optional[str]
+    duration_weeks: Optional[Any]
+    dosing: Optional[Any]
+    cycling_notes: Optional[str]
+    is_recommendation: bool
+    disclaimer: Optional[str]
+    citation_refs: list[int]
+
+    model_config = {"from_attributes": True}
+
+
+class PeptideRelatedOut(BaseModel):
+    related_peptide_id: str
+    relation_type: str
+    note: Optional[str]
+
+    model_config = {"from_attributes": True}
+
+
+class PeptideStackOut(BaseModel):
+    partner_id: str
+    compatibility: str
+    rationale: Optional[str]
+    evidence_level: Optional[str]
+    citation_refs: list[int]
+
+    model_config = {"from_attributes": True}
+
+
+class PeptideDetail(BaseModel):
+    id: str
+    name: str
+    aliases: list[str]
+    tags: list[str]
+    category: str
+    usage_category: Optional[str]
+    approval_category: Optional[str]
+
+    summary: str
+    description: Optional[str]
+    mechanism_of_action: Optional[str]
+    mechanism_citation_refs: list[int]
+
+    molecular_weight: Optional[float]
+    molecular_formula: Optional[str]
+    cas_number: Optional[str]
+    pubchem_cid: Optional[int]
+    sequence: Optional[str]
+    sequence_type: Optional[str]
+
+    half_life: Optional[Any]
+    bioavailability: Optional[Any]
+    routes: list[str]
+    default_dose_unit: Optional[str]
+
+    evidence_level: str
+    human_trials: bool
+    clinical_trials_count: int
+    evidence_note: Optional[str]
+
+    fda_status: str
+    fda_status_note: Optional[str]
+    compounding_status: Optional[str]
+    compounding_note: Optional[str]
+    wada_status: Optional[str]
+    scheduled_controlled: bool
+    research_only: bool
+    regulatory_citation_refs: list[int]
+
+    benefits: list[Any]
+    risks: list[Any]
+    side_effects: list[Any]
+    contraindications: list[Any]
+    interactions: list[Any]
+
+    reconstitution: Optional[Any]
+    storage: Optional[Any]
+
+    last_reviewed: date
+    reviewed_by: Optional[str]
+    content_version: int
+    data_completeness: str
+    disclaimer: Optional[str]
+
+    references: list[PeptideReferenceOut]
+    dose_ranges: list[PeptideDoseRangeOut]
+    protocols: list[PeptideProtocolOut]
+    related_peptides: list[PeptideRelatedOut]
+    stack_compatibility: list[PeptideStackOut]
+
+    model_config = {"from_attributes": True}
 
 
 # ── Auth ────────────────────────────────────────────────────────────────────

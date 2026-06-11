@@ -1,11 +1,12 @@
 import uuid
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
+from typing import Any
 from sqlalchemy import (
-    String, Boolean, Integer, DateTime, Text, JSON,
-    ForeignKey, Numeric, UniqueConstraint, Index
+    String, Boolean, Integer, BigInteger, DateTime, Date, Text, JSON,
+    ForeignKey, Numeric, UniqueConstraint, Index, CheckConstraint, Enum as SAEnum
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import UUID, ARRAY, JSONB, TSVECTOR
 from app.database import Base
 
 
@@ -164,3 +165,279 @@ class AuditLog(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, index=True)
 
     user: Mapped["User | None"] = relationship("User", back_populates="audit_logs")
+
+
+# ---------------------------------------------------------------------------
+# Peptide knowledge base
+# ---------------------------------------------------------------------------
+
+# Shared enum type objects — reused across multiple tables to avoid duplicate
+# PostgreSQL type creation. create_type=False on repeated usages.
+_evidence_level_enum = SAEnum(
+    "preclinical", "early-human", "established", "anecdotal", "unknown",
+    name="peptide_evidence_level_enum",
+)
+
+
+class Peptide(Base):
+    __tablename__ = "peptides"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    name: Mapped[str] = mapped_column(String, nullable=False)
+    aliases: Mapped[list[str]] = mapped_column(ARRAY(Text), nullable=False, server_default="{}")
+    tags: Mapped[list[str]] = mapped_column(ARRAY(Text), nullable=False, server_default="{}")
+
+    category: Mapped[str] = mapped_column(
+        SAEnum("healing", "growth-hormone", "metabolic", "cognitive", "cosmetic",
+               "longevity", "immune", "sexual-health", "other",
+               name="peptide_category_enum"),
+        nullable=False,
+    )
+    usage_category: Mapped[str | None] = mapped_column(
+        SAEnum("clinical", "research", "investigational", "banned-in-sport",
+               name="peptide_usage_category_enum"),
+        nullable=True,
+    )
+    approval_category: Mapped[str | None] = mapped_column(
+        SAEnum("approved-drug", "research-chemical", "compounded", "supplement", "unapproved",
+               name="peptide_approval_category_enum"),
+        nullable=True,
+    )
+
+    # overview
+    summary: Mapped[str] = mapped_column(Text, nullable=False)
+    description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    mechanism_of_action: Mapped[str | None] = mapped_column(Text, nullable=True)
+    mechanism_citation_refs: Mapped[list[int]] = mapped_column(ARRAY(Integer), nullable=False, server_default="{}")
+
+    # chemistry
+    molecular_weight: Mapped[float | None] = mapped_column(Numeric(12, 4), nullable=True)
+    molecular_formula: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    cas_number: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    pubchem_cid: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
+    sequence: Mapped[str | None] = mapped_column(Text, nullable=True)
+    sequence_type: Mapped[str | None] = mapped_column(String(50), nullable=True)
+
+    # pharmacology
+    half_life: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
+    bioavailability: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
+    routes: Mapped[list[str]] = mapped_column(ARRAY(Text), nullable=False, server_default="{}")
+    default_dose_unit: Mapped[str | None] = mapped_column(String(20), nullable=True)
+
+    # evidence
+    evidence_level: Mapped[str] = mapped_column(
+        SAEnum("preclinical", "early-human", "established", "anecdotal", "unknown",
+               name="peptide_evidence_level_enum", create_type=False),
+        nullable=False, server_default="unknown",
+    )
+    human_trials: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False, server_default="false")
+    clinical_trials_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0, server_default="0")
+    evidence_note: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    # regulatory
+    fda_status: Mapped[str] = mapped_column(
+        SAEnum("approved", "not-approved", "withdrawn", "investigational", "unknown",
+               name="peptide_fda_status_enum"),
+        nullable=False, server_default="unknown",
+    )
+    fda_status_note: Mapped[str | None] = mapped_column(Text, nullable=True)
+    compounding_status: Mapped[str | None] = mapped_column(
+        SAEnum("503a-listed", "503b-listed", "removed-503a", "not-eligible", "unknown", "not-applicable",
+               name="peptide_compounding_enum"),
+        nullable=True,
+    )
+    compounding_note: Mapped[str | None] = mapped_column(Text, nullable=True)
+    wada_status: Mapped[str | None] = mapped_column(
+        SAEnum("prohibited", "prohibited-in-competition", "not-listed", "unknown",
+               name="peptide_wada_status_enum"),
+        nullable=True,
+    )
+    scheduled_controlled: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False, server_default="false")
+    research_only: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True, server_default="true")
+    regulatory_citation_refs: Mapped[list[int]] = mapped_column(ARRAY(Integer), nullable=False, server_default="{}")
+
+    # effect lists — arrays of structured objects
+    benefits: Mapped[list] = mapped_column(JSONB, nullable=False, server_default="[]")
+    risks: Mapped[list] = mapped_column(JSONB, nullable=False, server_default="[]")
+    side_effects: Mapped[list] = mapped_column(JSONB, nullable=False, server_default="[]")
+    contraindications: Mapped[list] = mapped_column(JSONB, nullable=False, server_default="[]")
+    interactions: Mapped[list] = mapped_column(JSONB, nullable=False, server_default="[]")
+
+    # storage / reconstitution
+    reconstitution: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
+    storage: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
+
+    # meta
+    last_reviewed: Mapped[date] = mapped_column(Date, nullable=False, default=date.today)
+    reviewed_by: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    content_version: Mapped[int] = mapped_column(Integer, nullable=False, default=1, server_default="1")
+    data_completeness: Mapped[str] = mapped_column(
+        SAEnum("stub", "partial", "complete", name="peptide_data_completeness_enum"),
+        nullable=False, server_default="stub",
+    )
+    disclaimer: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    # maintained by DB trigger; never set by application code
+    search_tsv: Mapped[Any] = mapped_column(TSVECTOR, nullable=True)
+
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=utcnow, onupdate=utcnow)
+
+    references: Mapped[list["PeptideReference"]] = relationship(
+        "PeptideReference", back_populates="peptide", cascade="all, delete-orphan"
+    )
+    dose_ranges: Mapped[list["PeptideDoseRange"]] = relationship(
+        "PeptideDoseRange", back_populates="peptide", cascade="all, delete-orphan"
+    )
+    protocols: Mapped[list["PeptideProtocol"]] = relationship(
+        "PeptideProtocol", back_populates="peptide", cascade="all, delete-orphan"
+    )
+    related_peptides: Mapped[list["PeptideRelated"]] = relationship(
+        "PeptideRelated", foreign_keys="PeptideRelated.peptide_id",
+        back_populates="peptide", cascade="all, delete-orphan"
+    )
+    stack_compatibility: Mapped[list["PeptideStack"]] = relationship(
+        "PeptideStack", foreign_keys="PeptideStack.peptide_id",
+        back_populates="peptide", cascade="all, delete-orphan"
+    )
+
+    __table_args__ = (
+        Index("ix_peptides_category", "category"),
+        Index("ix_peptides_evidence_level", "evidence_level"),
+        Index("ix_peptides_search_tsv", "search_tsv", postgresql_using="gin"),
+        Index("ix_peptides_tags", "tags", postgresql_using="gin"),
+        Index("ix_peptides_aliases", "aliases", postgresql_using="gin"),
+    )
+
+
+class PeptideReference(Base):
+    __tablename__ = "peptide_references"
+
+    peptide_id: Mapped[str] = mapped_column(
+        String, ForeignKey("peptides.id", ondelete="CASCADE"), primary_key=True
+    )
+    ref_id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    type: Mapped[str] = mapped_column(
+        SAEnum("journal-article", "review", "clinical-trial", "regulatory-document",
+               "book", "database", "other", name="peptide_ref_type_enum"),
+        nullable=False,
+    )
+    title: Mapped[str] = mapped_column(Text, nullable=False)
+    first_author: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    year: Mapped[str | None] = mapped_column(String(10), nullable=True)
+    source: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    pmid: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    doi: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    url: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    peptide: Mapped["Peptide"] = relationship("Peptide", back_populates="references")
+
+    __table_args__ = (
+        Index("ix_peptide_references_peptide_id", "peptide_id"),
+    )
+
+
+class PeptideDoseRange(Base):
+    __tablename__ = "peptide_dose_ranges"
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    peptide_id: Mapped[str] = mapped_column(
+        String, ForeignKey("peptides.id", ondelete="CASCADE"), nullable=False
+    )
+    context: Mapped[str] = mapped_column(Text, nullable=False)
+    low: Mapped[float | None] = mapped_column(Numeric(12, 4), nullable=True)
+    high: Mapped[float | None] = mapped_column(Numeric(12, 4), nullable=True)
+    unit: Mapped[str] = mapped_column(String(50), nullable=False)
+    route: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    frequency: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    note: Mapped[str | None] = mapped_column(Text, nullable=True)
+    citation_refs: Mapped[list[int]] = mapped_column(ARRAY(Integer), nullable=False, server_default="{}")
+
+    peptide: Mapped["Peptide"] = relationship("Peptide", back_populates="dose_ranges")
+
+    __table_args__ = (
+        Index("ix_peptide_dose_ranges_peptide_id", "peptide_id"),
+    )
+
+
+class PeptideProtocol(Base):
+    __tablename__ = "peptide_protocols"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    peptide_id: Mapped[str] = mapped_column(
+        String, ForeignKey("peptides.id", ondelete="CASCADE"), nullable=False
+    )
+    name: Mapped[str] = mapped_column(String, nullable=False)
+    description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    phase: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    duration_weeks: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
+    dosing: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
+    cycling_notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+    is_recommendation: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=False, server_default="false"
+    )
+    disclaimer: Mapped[str | None] = mapped_column(Text, nullable=True)
+    citation_refs: Mapped[list[int]] = mapped_column(ARRAY(Integer), nullable=False, server_default="{}")
+
+    peptide: Mapped["Peptide"] = relationship("Peptide", back_populates="protocols")
+
+    __table_args__ = (
+        Index("ix_peptide_protocols_peptide_id", "peptide_id"),
+    )
+
+
+class PeptideRelated(Base):
+    __tablename__ = "peptide_related"
+
+    peptide_id: Mapped[str] = mapped_column(
+        String, ForeignKey("peptides.id", ondelete="CASCADE"), primary_key=True
+    )
+    related_peptide_id: Mapped[str] = mapped_column(
+        String, ForeignKey("peptides.id", ondelete="CASCADE"), primary_key=True
+    )
+    relation_type: Mapped[str] = mapped_column(
+        "relationship",
+        SAEnum("commonly-studied-alongside", "same-class", "precursor", "analog", "alternative",
+               name="peptide_relationship_enum"),
+        primary_key=True, nullable=False,
+    )
+    note: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    peptide: Mapped["Peptide"] = relationship(
+        "Peptide", foreign_keys="[PeptideRelated.peptide_id]", back_populates="related_peptides"
+    )
+
+    __table_args__ = (
+        CheckConstraint("peptide_id <> related_peptide_id", name="ck_peptide_related_no_self"),
+    )
+
+
+class PeptideStack(Base):
+    __tablename__ = "peptide_stacks"
+
+    peptide_id: Mapped[str] = mapped_column(
+        String, ForeignKey("peptides.id", ondelete="CASCADE"), primary_key=True
+    )
+    partner_id: Mapped[str] = mapped_column(
+        String, ForeignKey("peptides.id", ondelete="CASCADE"), primary_key=True
+    )
+    compatibility: Mapped[str] = mapped_column(
+        SAEnum("commonly-combined", "caution", "not-recommended", "no-data",
+               name="peptide_compatibility_enum"),
+        nullable=False,
+    )
+    rationale: Mapped[str | None] = mapped_column(Text, nullable=True)
+    evidence_level: Mapped[str | None] = mapped_column(
+        SAEnum("preclinical", "early-human", "established", "anecdotal", "unknown",
+               name="peptide_evidence_level_enum", create_type=False),
+        nullable=True,
+    )
+    citation_refs: Mapped[list[int]] = mapped_column(ARRAY(Integer), nullable=False, server_default="{}")
+
+    peptide: Mapped["Peptide"] = relationship(
+        "Peptide", foreign_keys=[peptide_id], back_populates="stack_compatibility"
+    )
+
+    __table_args__ = (
+        CheckConstraint("peptide_id <> partner_id", name="ck_peptide_stacks_no_self"),
+    )

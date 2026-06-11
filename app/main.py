@@ -9,7 +9,7 @@ from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from app.config import settings
 from app.middleware.rate_limit import limiter
-from app.routers import auth, calculator, subscriptions, ai, admin, tracker, cron
+from app.routers import auth, calculator, subscriptions, ai, admin, tracker, cron, peptides
 
 logging.config.dictConfig({
     "version": 1,
@@ -162,6 +162,7 @@ app.include_router(ai.router)
 app.include_router(admin.router)
 app.include_router(tracker.router)
 app.include_router(cron.router)
+app.include_router(peptides.router)
 
 
 @app.get("/health")
