@@ -422,11 +422,13 @@ class RegulatoryUpdate(BaseModel):
     notes: Optional[str] = None
 
 
-# ── User Protocols (§10) ─────────────────────────────────────────────────────
+# ── User Protocols ────────────────────────────────────────────────────────────
 
 class UserProtocolCreate(BaseModel):
     peptide_id: Optional[str] = None
+    peptide_name: Optional[str] = None
     label: Optional[str] = None
+    status: str = "active"
     vial_mg: float
     reconstituted: bool
     bac_water_ml: Optional[float] = None
@@ -434,6 +436,9 @@ class UserProtocolCreate(BaseModel):
     unit: str = "mcg"
     syringe_type: str = "U-100"
     frequency: Optional[str] = None
+    start_date: Optional[date] = None
+    duration_weeks: Optional[int] = None
+    notes: Optional[str] = None
 
     @field_validator("vial_mg")
     @classmethod
@@ -449,11 +454,61 @@ class UserProtocolCreate(BaseModel):
             raise ValueError("target_dose_mcg must be > 0")
         return v
 
+    @field_validator("status")
+    @classmethod
+    def status_valid(cls, v: str) -> str:
+        if v not in ("active", "paused", "completed"):
+            raise ValueError("status must be active, paused, or completed")
+        return v
+
+
+class UserProtocolUpdate(BaseModel):
+    label: Optional[str] = None
+    status: Optional[str] = None
+    frequency: Optional[str] = None
+    start_date: Optional[date] = None
+    duration_weeks: Optional[int] = None
+    notes: Optional[str] = None
+    vial_mg: Optional[float] = None
+    reconstituted: Optional[bool] = None
+    bac_water_ml: Optional[float] = None
+    target_dose_mcg: Optional[float] = None
+    unit: Optional[str] = None
+    syringe_type: Optional[str] = None
+
+    @field_validator("status")
+    @classmethod
+    def status_valid(cls, v: Optional[str]) -> Optional[str]:
+        if v is not None and v not in ("active", "paused", "completed"):
+            raise ValueError("status must be active, paused, or completed")
+        return v
+
+
+class DoseLogCreate(BaseModel):
+    peptide_name: str
+    dose: str
+    notes: Optional[str] = None
+    taken_at: Optional[datetime] = None
+
+
+class DoseLogItem(BaseModel):
+    id: uuid.UUID
+    protocol_id: Optional[uuid.UUID]
+    peptide_name: str
+    dose: str
+    notes: Optional[str]
+    taken_at: datetime
+    created_at: datetime
+
+    model_config = {"from_attributes": True}
+
 
 class UserProtocolItem(BaseModel):
     id: uuid.UUID
     peptide_id: Optional[str]
+    peptide_name: Optional[str]
     label: Optional[str]
+    status: str
     vial_mg: float
     reconstituted: bool
     bac_water_ml: Optional[float]
@@ -461,6 +516,16 @@ class UserProtocolItem(BaseModel):
     unit: str
     syringe_type: str
     frequency: Optional[str]
+    start_date: Optional[date]
+    duration_weeks: Optional[int]
+    notes: Optional[str]
     created_at: datetime
+    updated_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
+class UserProtocolDetail(UserProtocolItem):
+    dose_logs: list[DoseLogItem] = []
 
     model_config = {"from_attributes": True}

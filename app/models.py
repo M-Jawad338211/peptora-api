@@ -140,6 +140,7 @@ class CycleLog(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    protocol_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("user_protocols.id", ondelete="CASCADE"), nullable=True)
     peptide_name: Mapped[str] = mapped_column(String(255), nullable=False)
     dose: Mapped[str] = mapped_column(String(100), nullable=False)
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
@@ -147,9 +148,11 @@ class CycleLog(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
     user: Mapped["User"] = relationship("User", back_populates="cycle_logs")
+    protocol: Mapped["UserProtocol | None"] = relationship("UserProtocol", back_populates="dose_logs")
 
     __table_args__ = (
         Index("ix_cycle_logs_user_taken", "user_id", "taken_at"),
+        Index("ix_cycle_logs_protocol_id", "protocol_id"),
     )
 
 
@@ -454,7 +457,9 @@ class UserProtocol(Base):
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     peptide_id: Mapped[str | None] = mapped_column(String, ForeignKey("peptides.id", ondelete="SET NULL"), nullable=True)
+    peptide_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
     label: Mapped[str | None] = mapped_column(Text, nullable=True)
+    status: Mapped[str] = mapped_column(String(20), nullable=False, server_default="active")
     vial_mg: Mapped[float] = mapped_column(Numeric(10, 3), nullable=False)
     reconstituted: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     bac_water_ml: Mapped[float | None] = mapped_column(Numeric(10, 3), nullable=True)
@@ -462,10 +467,17 @@ class UserProtocol(Base):
     unit: Mapped[str] = mapped_column(String(20), nullable=False, server_default="mcg")
     syringe_type: Mapped[str] = mapped_column(String(20), nullable=False, server_default="U-100")
     frequency: Mapped[str | None] = mapped_column(Text, nullable=True)
+    start_date: Mapped[date | None] = mapped_column(Date, nullable=True)
+    duration_weeks: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    notes: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
+
+    dose_logs: Mapped[list["CycleLog"]] = relationship("CycleLog", back_populates="protocol", cascade="all, delete-orphan")
 
     __table_args__ = (
         Index("ix_user_protocols_user_id", "user_id"),
         CheckConstraint("vial_mg > 0", name="ck_user_protocols_vial_mg_positive"),
         CheckConstraint("target_dose_mcg > 0", name="ck_user_protocols_dose_positive"),
+        CheckConstraint("status IN ('active','paused','completed')", name="ck_user_protocols_status"),
     )
