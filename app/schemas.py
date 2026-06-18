@@ -21,6 +21,8 @@ class PeptideCard(BaseModel):
     wada_status: Optional[str]
     research_only: bool
     data_completeness: str
+    default_dose_unit: Optional[str] = None
+    iu_per_mg: Optional[float] = None
 
     model_config = {"from_attributes": True}
 
@@ -111,6 +113,7 @@ class PeptideDetail(BaseModel):
     bioavailability: Optional[Any]
     routes: list[str]
     default_dose_unit: Optional[str]
+    iu_per_mg: Optional[float] = None
 
     evidence_level: str
     human_trials: bool
@@ -417,3 +420,47 @@ class RegulatoryUpdate(BaseModel):
     compounding_legal: bool
     wada_banned: bool
     notes: Optional[str] = None
+
+
+# ── User Protocols (§10) ─────────────────────────────────────────────────────
+
+class UserProtocolCreate(BaseModel):
+    peptide_id: Optional[str] = None
+    label: Optional[str] = None
+    vial_mg: float
+    reconstituted: bool
+    bac_water_ml: Optional[float] = None
+    target_dose_mcg: float
+    unit: str = "mcg"
+    syringe_type: str = "U-100"
+    frequency: Optional[str] = None
+
+    @field_validator("vial_mg")
+    @classmethod
+    def vial_positive(cls, v: float) -> float:
+        if v <= 0:
+            raise ValueError("vial_mg must be > 0")
+        return v
+
+    @field_validator("target_dose_mcg")
+    @classmethod
+    def dose_positive(cls, v: float) -> float:
+        if v <= 0:
+            raise ValueError("target_dose_mcg must be > 0")
+        return v
+
+
+class UserProtocolItem(BaseModel):
+    id: uuid.UUID
+    peptide_id: Optional[str]
+    label: Optional[str]
+    vial_mg: float
+    reconstituted: bool
+    bac_water_ml: Optional[float]
+    target_dose_mcg: float
+    unit: str
+    syringe_type: str
+    frequency: Optional[str]
+    created_at: datetime
+
+    model_config = {"from_attributes": True}

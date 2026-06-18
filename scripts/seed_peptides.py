@@ -78,6 +78,7 @@ def _build_peptide(data: dict) -> Peptide:
         bioavailability=p.get("bioavailability"),
         routes=p.get("routes", []),
         default_dose_unit=p.get("default_dose_unit"),
+        iu_per_mg=p.get("iu_per_mg"),
         evidence_level=p.get("evidence_level", "unknown"),
         human_trials=p.get("human_trials", False),
         clinical_trials_count=p.get("clinical_trials_count", 0),

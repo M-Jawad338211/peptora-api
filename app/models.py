@@ -223,6 +223,7 @@ class Peptide(Base):
     bioavailability: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
     routes: Mapped[list[str]] = mapped_column(ARRAY(Text), nullable=False, server_default="{}")
     default_dose_unit: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    iu_per_mg: Mapped[float | None] = mapped_column(Numeric(10, 4), nullable=True)
 
     # evidence
     evidence_level: Mapped[str] = mapped_column(
@@ -440,4 +441,31 @@ class PeptideStack(Base):
 
     __table_args__ = (
         CheckConstraint("peptide_id <> partner_id", name="ck_peptide_stacks_no_self"),
+    )
+
+
+# ---------------------------------------------------------------------------
+# User protocols (§10 — save feature)
+# ---------------------------------------------------------------------------
+
+class UserProtocol(Base):
+    __tablename__ = "user_protocols"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    peptide_id: Mapped[str | None] = mapped_column(String, ForeignKey("peptides.id", ondelete="SET NULL"), nullable=True)
+    label: Mapped[str | None] = mapped_column(Text, nullable=True)
+    vial_mg: Mapped[float] = mapped_column(Numeric(10, 3), nullable=False)
+    reconstituted: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    bac_water_ml: Mapped[float | None] = mapped_column(Numeric(10, 3), nullable=True)
+    target_dose_mcg: Mapped[float] = mapped_column(Numeric(12, 4), nullable=False)
+    unit: Mapped[str] = mapped_column(String(20), nullable=False, server_default="mcg")
+    syringe_type: Mapped[str] = mapped_column(String(20), nullable=False, server_default="U-100")
+    frequency: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+    __table_args__ = (
+        Index("ix_user_protocols_user_id", "user_id"),
+        CheckConstraint("vial_mg > 0", name="ck_user_protocols_vial_mg_positive"),
+        CheckConstraint("target_dose_mcg > 0", name="ck_user_protocols_dose_positive"),
     )
