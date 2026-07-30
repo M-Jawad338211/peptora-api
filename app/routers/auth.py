@@ -27,10 +27,11 @@ logger = logging.getLogger("peptora.auth")
 from app.config import settings as _settings
 COOKIE_OPTS = dict(
     httponly=True,
-    # SameSite=None;Secure is required for cross-origin cookie auth (frontend on peptora.io,
-    # API on railway.app). Lax is sufficient locally where both run on localhost.
-    samesite="lax" if _settings.ENVIRONMENT == "development" else "none",
-    secure=_settings.ENVIRONMENT != "development",
+    # SameSite=None;Secure is required for cross-origin cookie auth (web app on peptora.io,
+    # API on railway.app). Lax is sufficient locally where both run on localhost — and
+    # Secure would make the browser drop the cookie over plain http.
+    samesite="lax" if _settings.is_development else "none",
+    secure=not _settings.is_development,
 )
 
 
@@ -271,12 +272,9 @@ async def logout(
     if user:
         db.add(AuditLog(user_id=user.id, action="logout"))
         await db.execute(update(User).where(User.id == user.id).values(expo_push_token=None))
-    response.delete_cookie("access_token", httponly=True,
-                           samesite="lax" if _settings.ENVIRONMENT == "development" else "none",
-                           secure=_settings.ENVIRONMENT != "development")
-    response.delete_cookie("refresh_token", httponly=True,
-                           samesite="lax" if _settings.ENVIRONMENT == "development" else "none",
-                           secure=_settings.ENVIRONMENT != "development")
+    # Must match the attributes used when setting, or the browser keeps the cookie.
+    response.delete_cookie("access_token", **COOKIE_OPTS)
+    response.delete_cookie("refresh_token", **COOKIE_OPTS)
     return {"message": "Logged out"}
 
 

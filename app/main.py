@@ -31,7 +31,7 @@ logging.config.dictConfig({
         "level": "INFO",
     },
     "loggers": {
-        "peptora": {"level": "DEBUG" if settings.ENVIRONMENT == "development" else "INFO"},
+        "peptora": {"level": "DEBUG" if settings.is_development else "INFO"},
         "uvicorn.access": {"level": "WARNING"},  # suppress duplicate access logs
     },
 })
@@ -74,7 +74,7 @@ app = FastAPI(
     ),
     contact={
         "name": "Peptora Support",
-        "url": "https://peptora.app",
+        "url": settings.WEB_URL,
         "email": "support@peptora.app",
     },
     license_info={

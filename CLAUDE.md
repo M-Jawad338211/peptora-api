@@ -11,7 +11,7 @@ Python FastAPI backend for Peptora — peptide research intelligence platform.
 ```bash
 python -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env  # fill in values
+cp .env.example .env  # fill in values; .env.local overrides it and is git-ignored
 alembic upgrade head
 uvicorn app.main:app --reload --port 8000
 curl http://localhost:8000/health

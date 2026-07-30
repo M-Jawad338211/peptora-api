@@ -40,8 +40,8 @@ async def create_checkout(
         payment_method_types=["card"],
         line_items=[{"price": PRICE_MAP[body.plan], "quantity": 1}],
         mode="subscription",
-        success_url=f"{settings.FRONTEND_URL}/dashboard?payment=success",
-        cancel_url=f"{settings.FRONTEND_URL}/pricing",
+        success_url=f"{settings.WEB_URL}/dashboard?payment=success",
+        cancel_url=f"{settings.WEB_URL}/pricing",
         metadata={"user_id": str(user.id)},
     )
     return CheckoutResponse(checkout_url=session.url)
@@ -146,7 +146,7 @@ async def billing_portal(
         raise HTTPException(status_code=400, detail="No billing account found")
     session = stripe.billing_portal.Session.create(
         customer=user.stripe_customer_id,
-        return_url=f"{settings.FRONTEND_URL}/dashboard",
+        return_url=f"{settings.WEB_URL}/dashboard",
     )
     return PortalResponse(portal_url=session.url)
 

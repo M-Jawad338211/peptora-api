@@ -29,6 +29,10 @@ source venv/bin/activate        # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 cp .env.example .env            # fill in all values
 
+# Optional: point the API at a locally-running web app.
+# .env.local is git-ignored and overrides .env.
+printf 'WEB_URL=http://localhost:3000\nADMIN_URL=http://localhost:3001\nENVIRONMENT=development\n' > .env.local
+
 # Create DB tables
 alembic upgrade head
 
