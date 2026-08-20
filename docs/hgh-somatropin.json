@@ -1,0 +1,137 @@
+{
+  "peptide": {
+    "id": "hgh-somatropin",
+    "name": "HGH (Somatropin)",
+    "aliases": ["Somatropin", "rhGH", "191AA HGH", "Recombinant Human Growth Hormone", "Genotropin", "Humatrope", "Norditropin", "Omnitrope", "Saizen", "Nutropin", "Serostim"],
+    "tags": ["growth-hormone", "igf-1", "body-composition", "approved-drug"],
+    "category": "growth-hormone",
+    "usage_category": "clinical",
+    "approval_category": "approved-drug",
+
+    "summary": "Somatropin is recombinant human growth hormone (rhGH) -- a bioidentical, 191-amino-acid copy of the growth hormone naturally secreted by the anterior pituitary. It is FDA-approved under multiple brand names for a specific list of growth-disorder and deficiency indications, and separately (as Serostim) for HIV-associated wasting. Unlike the GH secretagogues elsewhere in this encyclopedia (e.g., ipamorelin, CJC-1295, GHRP-6), somatropin supplies growth hormone directly rather than stimulating the pituitary to release its own.",
+
+    "description": "Somatropin is produced via recombinant DNA technology (typically in E. coli or mammalian expression systems) and is structurally identical to the major isoform of endogenous human growth hormone: a 191-amino-acid, single-chain polypeptide with four cysteine residues forming two intrachain disulfide bonds. Multiple manufacturers market essentially identical or near-identical rhGH products under different brand names (Genotropin, Humatrope, Norditropin, Saizen, Nutropin, Omnitrope, Zomacton), with Serostim licensed specifically for HIV-associated wasting. It binds the growth hormone receptor (GHR), a class I cytokine receptor that dimerizes upon ligand binding and activates JAK2-STAT5 intracellular signaling, driving hepatic IGF-1 production and direct anabolic and metabolic effects across multiple tissues. FDA-approved indications include growth hormone deficiency and specific growth disorders in children (idiopathic and organic GHD, Turner syndrome, Prader-Willi syndrome, small for gestational age, Noonan syndrome, SHOX deficiency, chronic renal insufficiency) and growth hormone deficiency in adults (childhood-onset or adult-onset, from pituitary tumors, surgery, radiation, or trauma), plus HIV-associated wasting/cachexia (Serostim). It is a distinct entry from the shorter, injectable GH secretagogue peptides in this encyclopedia -- somatropin is the hormone itself, not a stimulator of its release, and it is a fully approved prescription drug with an extensive body of clinical evidence, unlike the research-chemical secretagogues.",
+
+    "mechanism_of_action": "Binds the growth hormone receptor (GHR), a class I cytokine receptor, causing receptor dimerization and activation of JAK2-STAT5 intracellular signaling. This drives hepatic and peripheral IGF-1 production and directly promotes protein synthesis, lipolysis, and tissue growth. Effects include increased linear growth in children, and in adults a shift in body composition toward more lean mass and less fat mass, along with effects on bone density and lipid metabolism; supraphysiologic doses can raise blood glucose, cause fluid retention, and cause joint pain.",
+    "mechanism_citation_refs": [1, 2],
+
+    "molecular_weight": 22125,
+    "molecular_formula": "C990H1528N262O300S7",
+    "cas_number": "12629-01-5",
+    "pubchem_cid": null,
+    "sequence": "191-amino-acid single-chain polypeptide, identical to pituitary-derived human growth hormone (4 cysteine residues, 2 intrachain disulfide bonds)",
+    "sequence_type": "recombinant-protein-191mer",
+
+    "half_life": {
+      "value": null,
+      "unit": "hours",
+      "isEstimated": true,
+      "note": "Subcutaneous rhGH has a relatively short circulating half-life (on the order of a few hours), but its downstream effect is mediated through sustained IGF-1 elevation rather than direct GH persistence; dosing is typically once daily.",
+      "citationRefs": [3]
+    },
+    "routes": ["subcutaneous", "intramuscular"],
+    "default_dose_unit": "mg",
+
+    "evidence_level": "established",
+    "human_trials": true,
+    "clinical_trials_count": 1,
+    "evidence_note": "Extensive decades-long clinical evidence base supporting FDA-approved indications (pediatric growth disorders, adult GHD, HIV-associated wasting). Off-label use for anti-aging, general athletic performance, or body-composition enhancement in GH-sufficient adults is far more common than approved use but has a substantially thinner and more mixed evidence base, and is not an FDA-approved indication.",
+
+    "fda_status": "approved",
+    "fda_status_note": "FDA-approved (under multiple brand names: Genotropin, Humatrope, Norditropin, Omnitrope, Saizen, Nutropin, Zomacton) for growth hormone deficiency and specific growth disorders in children and adults, and (as Serostim) for HIV-associated wasting/cachexia. Off-label use for anti-aging or performance purposes in GH-sufficient individuals is not an approved indication and is prohibited in competitive sport. Prescription-only for all approved uses.",
+    "compounding_status": "not-applicable",
+    "compounding_note": "An FDA-approved biologic drug (multiple branded products). 'Research-grade' or gray-market HGH sold outside a pharmacy/prescription channel is not the approved product and carries unknown purity/dosing risk.",
+    "wada_status": "prohibited",
+    "scheduled_controlled": false,
+    "research_only": false,
+    "regulatory_citation_refs": [3, 4],
+
+    "benefits": [
+      { "label": "Linear growth in children with GHD/growth disorders", "evidenceLevel": "established", "detail": "Well-established efficacy restoring normal growth trajectories in FDA-approved pediatric indications.", "citationRefs": [4] },
+      { "label": "Improved body composition in adult GHD", "evidenceLevel": "established", "detail": "Shifts body composition toward increased lean mass and decreased fat mass in adults with confirmed growth hormone deficiency.", "citationRefs": [3] },
+      { "label": "HIV-associated wasting (Serostim)", "evidenceLevel": "established", "detail": "FDA-approved specifically for HIV-associated wasting or cachexia.", "citationRefs": [4] },
+      { "label": "General anti-aging / performance use (off-label, thin evidence)", "evidenceLevel": "anecdotal", "detail": "Widely used off-label in GH-sufficient adults for body composition, recovery, and anti-aging; this use is not FDA-approved and has a much thinner, more mixed evidence base than the approved deficiency indications.", "citationRefs": [] }
+    ],
+
+    "risks": [
+      { "label": "Glucose intolerance / insulin resistance", "severity": "moderate", "detail": "Supraphysiologic dosing raises blood glucose and can worsen insulin sensitivity.", "citationRefs": [3] },
+      { "label": "Fluid retention / joint pain", "severity": "moderate", "detail": "Common at higher, particularly off-label/supraphysiologic doses.", "citationRefs": [3] },
+      { "label": "Theoretical malignancy concern with IGF-1 elevation", "severity": "unknown", "detail": "Sustained IGF-1 elevation is a theoretical concern for growth-sensitive tissue; monitored in clinical use.", "citationRefs": [] },
+      { "label": "Off-label/gray-market product quality", "severity": "unknown", "detail": "HGH obtained outside an approved pharmacy/prescription channel carries unknown purity, dosing accuracy, and counterfeit risk." , "citationRefs": [] }
+    ],
+
+    "side_effects": [
+      { "label": "Injection-site reactions", "frequency": "common", "severity": "mild", "source": "clinical-study", "citationRefs": [3] },
+      { "label": "Joint pain / arthralgia", "frequency": "common", "severity": "mild", "source": "clinical-study", "citationRefs": [3] },
+      { "label": "Peripheral edema", "frequency": "common", "severity": "mild", "source": "clinical-study", "citationRefs": [3] },
+      { "label": "Carpal tunnel-like symptoms (adults, higher dose)", "frequency": "uncommon", "severity": "mild", "source": "clinical-study", "citationRefs": [3] }
+    ],
+
+    "contraindications": [
+      { "label": "Active malignancy", "detail": "Growth hormone/IGF-1 stimulation is generally contraindicated in the presence of active tumors.", "citationRefs": [3] },
+      { "label": "Severe obesity with respiratory impairment (specific pediatric contexts, e.g. Prader-Willi)", "detail": "Boxed-warning-level caution in some pediatric populations per FDA labeling.", "citationRefs": [4] },
+      { "label": "Diabetic retinopathy", "detail": "Use with caution per labeling.", "citationRefs": [3] }
+    ],
+
+    "interactions": [
+      { "withSubstance": "Insulin / oral hypoglycemics", "effect": "GH raises blood glucose; may require adjustment of diabetes medications.", "severity": "moderate", "citationRefs": [3] },
+      { "withSubstance": "Glucocorticoids", "effect": "Can attenuate the growth-promoting effect of somatropin; monitor with concurrent use.", "severity": "moderate", "citationRefs": [3] }
+    ],
+
+    "reconstitution": {
+      "note": "Supplied as a lyophilized powder (reconstituted with the provided diluent per the specific brand's device/cartridge system) or as a pre-mixed liquid formulation, depending on brand. Reconstitution and storage instructions differ by product; follow the specific brand's prescribing information rather than a generic protocol.",
+      "lightSensitive": true,
+      "citationRefs": [3]
+    },
+    "storage": {
+      "lyophilized": { "tempC": "refrigerate (2-8C) per most brands", "stability": "Per each product's specific FDA labeling." },
+      "reconstituted": { "tempC": "2-8", "stability": "Use within the brand-specific window after reconstitution/first use; varies by product." },
+      "lightSensitive": true
+    },
+
+    "last_reviewed": "2026-06-15",
+    "reviewed_by": "editorial",
+    "content_version": 1,
+    "data_completeness": "partial",
+    "disclaimer": "For research and educational purposes only. This is not medical advice. Somatropin is a prescription biologic approved for specific indications; off-label use in GH-sufficient adults is not an approved use and is prohibited in competitive sport. Use only under a licensed healthcare provider."
+  },
+
+  "references": [
+    { "ref_id": 1, "type": "review", "title": "Somatropin (Recombinant Human Growth Hormone): mechanism, indications, and clinical overview", "first_author": null, "year": "2026", "source": "Reference literature", "pmid": null, "doi": null, "url": "https://peptidelist.org/peptides/somatropin" },
+    { "ref_id": 2, "type": "database", "title": "Somatotropin (human) — CAS 12629-01-5 chemical and biological summary", "first_author": null, "year": "2026", "source": "Reference chemical database", "pmid": null, "doi": null, "url": "https://cymitquimica.com/cas/12629-01-5/" },
+    { "ref_id": 3, "type": "review", "title": "Somatropin Health Professional Drug Record", "first_author": null, "year": "2026", "source": "NIH / ClinicalInfo.HIV.gov", "pmid": null, "doi": null, "url": "https://clinicalinfo.hiv.gov/en/drugs/somatropin/health-professional" },
+    { "ref_id": 4, "type": "regulatory-document", "title": "HGH (Somatropin) FDA-approved indications overview (pediatric GHD, adult GHD, Turner/Prader-Willi/Noonan/SHOX, chronic renal insufficiency)", "first_author": null, "year": "2026", "source": "Reference literature summarizing FDA labeling", "pmid": null, "doi": null, "url": "https://pep-pedia.org/peptides/hgh" }
+  ],
+
+  "dose_ranges": [
+    {
+      "context": "Adult growth hormone deficiency (approved labeling, typical range)",
+      "low": 0.2, "high": 1.0, "unit": "mg",
+      "route": "subcutaneous", "frequency": "once daily",
+      "note": "Approved adult-GHD dosing is individualized and typically starts low, titrated based on IGF-1 levels and clinical response/tolerability per the specific brand's prescribing information. Pediatric dosing is weight-based and differs substantially; follow the specific product's approved labeling.",
+      "citation_refs": [3]
+    }
+  ],
+
+  "protocols": [
+    {
+      "id": "hgh-adult-ghd-label",
+      "name": "Adult GHD replacement (per approved labeling, general pattern)",
+      "description": "Approved labeling for adult growth hormone deficiency specifies once-daily subcutaneous dosing, started low and titrated upward based on IGF-1 levels, clinical response, and tolerability, under physician supervision. Exact starting doses and titration schedules differ by brand; follow the specific product's prescribing information.",
+      "phase": "approved-labeling",
+      "duration_weeks": { "min": null, "max": null },
+      "dosing": { "amountLow": 0.2, "amountHigh": 1.0, "unit": "mg", "frequency": "once daily (titrated)", "route": "subcutaneous" },
+      "cycling_notes": "Chronic replacement therapy while indication persists; not cycled. Managed by an endocrinologist or prescribing physician.",
+      "is_recommendation": false,
+      "disclaimer": "Summary of general approved-labeling patterns for educational reference. Not a substitute for a specific product's prescribing information or medical advice.",
+      "citation_refs": [3]
+    }
+  ],
+
+  "related": [
+    { "related_peptide_id": "tesamorelin", "relationship": "same-class", "note": "Tesamorelin stimulates the pituitary's own GH release via the GHRH receptor, while somatropin supplies growth hormone directly; both affect the same GH/IGF-1 axis through different mechanisms." },
+    { "related_peptide_id": "ipamorelin", "relationship": "same-class", "note": "Ipamorelin and other GH secretagogues stimulate endogenous GH release, in contrast to somatropin, which is exogenous growth hormone itself." }
+  ],
+
+  "stacks": []
+}

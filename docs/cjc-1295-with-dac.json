@@ -1,0 +1,136 @@
+{
+  "peptide": {
+    "id": "cjc-1295-with-dac",
+    "name": "CJC-1295 (with DAC)",
+    "aliases": ["CJC-1295 DAC", "Drug Affinity Complex GRF"],
+    "tags": ["growth-hormone", "ghrh", "secretagogue", "long-acting", "igf-1"],
+    "category": "growth-hormone",
+    "usage_category": "research",
+    "approval_category": "research-chemical",
+
+    "summary": "CJC-1295 with DAC is a long-acting analog of growth-hormone-releasing hormone (GHRH) fragment (1-29), chemically modified with a Drug Affinity Complex (DAC) that covalently binds circulating albumin. This extends its half-life from minutes to approximately 6-8 days, allowing once- or twice-weekly dosing with sustained GH and IGF-1 elevation. It is a distinct entry from CJC-1295 (no DAC) / Modified GRF(1-29), which shares the same peptide backbone but clears in about 30 minutes.",
+
+    "description": "CJC-1295 is built on the same tetrasubstituted GHRH(1-29) backbone as the no-DAC (Modified GRF) version, but carries an added maleimidopropionyl-linked DAC group. After subcutaneous injection, the maleimide reacts with the free thiol on cysteine-34 of circulating albumin, forming a stable covalent thioether bond. Because albumin itself has a plasma half-life of roughly 19 days, this conjugation shields the peptide from renal filtration and proteolytic clearance, extending its own half-life to about 6-8 days. A single dose has been shown in a phase I randomized, placebo-controlled trial (Teichman et al., 2006) to produce dose-dependent 2- to 10-fold GH elevations and 1.5- to 3-fold IGF-1 elevations lasting 9-11 days; with repeated dosing, IGF-1 remained elevated for up to 28 days. It is not FDA-approved and has no approved clinical indication; it is sold as a research chemical.",
+
+    "mechanism_of_action": "Binds the GHRH receptor (GHRHR) on pituitary somatotrophs to stimulate GH synthesis and release, identical in principle to the no-DAC form. The DAC modification covalently conjugates the peptide to serum albumin via cysteine-34, adopting albumin's slow clearance kinetics and converting a normally pulsatile, short-acting GHRH signal into a sustained, days-long elevation of GH and downstream IGF-1.",
+    "mechanism_citation_refs": [2, 3],
+
+    "molecular_weight": 3647.25,
+    "molecular_formula": "C165H269N47O46",
+    "cas_number": "446262-90-4",
+    "pubchem_cid": 56841945,
+    "sequence": "Tyr-D-Ala-Asp-Ala-Ile-Phe-Thr-Gln-Ser-Tyr-Arg-Lys-Val-Leu-Ala-Gln-Leu-Ser-Ala-Arg-Lys-Leu-Leu-Gln-Asp-Ile-Leu-Ser-Arg-Lys(DAC)-NH2",
+    "sequence_type": "amino-acid-modified-albumin-conjugate",
+
+    "half_life": {
+      "value": 6.5,
+      "unit": "days",
+      "isEstimated": true,
+      "note": "Approximately 6-8 days due to covalent albumin conjugation via the DAC group. Contrast with CJC-1295 (no DAC), which has a half-life of about 30 minutes.",
+      "citationRefs": [2]
+    },
+    "routes": ["subcutaneous"],
+    "default_dose_unit": "mcg",
+
+    "evidence_level": "early-human",
+    "human_trials": true,
+    "clinical_trials_count": 0,
+    "evidence_note": "A phase I randomized, placebo-controlled human trial (Teichman 2006) characterized dose-dependent GH/IGF-1 elevation and pharmacokinetics. No trials have established efficacy for the marketed body-composition or anti-aging uses, and there is no approved indication.",
+
+    "fda_status": "not-approved",
+    "fda_status_note": "Not FDA-approved for any indication. Sold by research-chemical vendors 'for research use only,' which does not authorize human use.",
+    "compounding_status": "not-eligible",
+    "compounding_note": "Not an FDA-approved drug, no USP monograph, not on the 503A bulks list; not eligible for legal pharmacy compounding. GHRH-analog peptides broadly were affected by FDA compounding restrictions beginning around 2023-2024.",
+    "wada_status": "prohibited",
+    "scheduled_controlled": false,
+    "research_only": true,
+    "regulatory_citation_refs": [4],
+
+    "benefits": [
+      { "label": "Sustained GH elevation (early-human)", "evidenceLevel": "early-human", "detail": "A single dose produced 2- to 10-fold GH elevation for 6+ days in a controlled human trial.", "citationRefs": [2] },
+      { "label": "Sustained IGF-1 elevation (early-human)", "evidenceLevel": "early-human", "detail": "1.5- to 3-fold IGF-1 elevation lasting 9-11 days after a single dose; elevated up to 28 days with repeat dosing.", "citationRefs": [2] },
+      { "label": "Body composition / recovery (marketed, low evidence)", "evidenceLevel": "anecdotal", "detail": "Marketed for lean mass, fat loss, sleep, and recovery; not supported by high-quality human outcome trials.", "citationRefs": [] }
+    ],
+
+    "risks": [
+      { "label": "GH-axis effects", "severity": "unknown", "detail": "Sustained GH/IGF-1 elevation carries theoretical risks (insulin resistance, fluid retention, effects on occult tumors) over a much longer window than short-acting secretagogues.", "citationRefs": [] },
+      { "label": "Unestablished long-term safety", "severity": "unknown", "detail": "No long-term human safety data for the marketed uses; the phase I trial was short-term and dose-finding.", "citationRefs": [2] }
+    ],
+
+    "side_effects": [
+      { "label": "Injection-site reactions", "frequency": "anecdotal", "severity": "mild", "source": "community-report", "citationRefs": [] },
+      { "label": "Flushing / water retention", "frequency": "anecdotal", "severity": "mild", "source": "community-report", "citationRefs": [] }
+    ],
+
+    "contraindications": [
+      { "label": "Competitive athletes", "detail": "GHRH analogs / GH secretagogues are prohibited under WADA S2.", "citationRefs": [4] },
+      { "label": "Active malignancy", "detail": "Sustained GH/IGF-1 elevation; avoid pending data.", "citationRefs": [] },
+      { "label": "Pregnancy and lactation", "detail": "No data; avoid.", "citationRefs": [] }
+    ],
+
+    "interactions": [],
+
+    "reconstitution": {
+      "note": "Lyophilized powder reconstituted with bacteriostatic water; final concentration depends on diluent volume. Due to the long half-life, dosing frequency is much lower than the no-DAC form.",
+      "lightSensitive": true,
+      "citationRefs": []
+    },
+    "storage": {
+      "lyophilized": { "tempC": "refrigerate; freeze for long-term", "stability": "Stable when kept cold and dry." },
+      "reconstituted": { "tempC": "2-8", "stability": "Refrigerate; use within a limited window." },
+      "lightSensitive": true
+    },
+
+    "last_reviewed": "2026-06-15",
+    "reviewed_by": "editorial",
+    "content_version": 1,
+    "data_completeness": "partial",
+    "disclaimer": "For research and educational purposes only. This is not medical advice. CJC-1295 (with DAC) is not FDA-approved and is prohibited in sport. Consult a licensed healthcare provider before using any peptide."
+  },
+
+  "references": [
+    { "ref_id": 1, "type": "database", "title": "CJC-1295 (with DAC) — compound summary (CID 56841945)", "first_author": null, "year": "2026", "source": "PubChem", "pmid": null, "doi": null, "url": "https://pubchem.ncbi.nlm.nih.gov/compound/56841945" },
+    { "ref_id": 2, "type": "journal-article", "title": "Prolonged stimulation of growth hormone (GH) and insulin-like growth factor I secretion by CJC-1295, a long-acting analog of GH-releasing hormone, in healthy adults", "first_author": "Teichman SL", "year": "2006", "source": "J Clin Endocrinol Metab", "pmid": "16352683", "doi": "10.1210/jc.2005-1536", "url": "https://pubmed.ncbi.nlm.nih.gov/16352683/" },
+    { "ref_id": 3, "type": "journal-article", "title": "Human GRF(1-29)-albumin bioconjugates activate the GRF receptor on the anterior pituitary in rats: identification of CJC-1295 as a long-lasting GRF analog", "first_author": "Jette L", "year": "2005", "source": "Endocrinology", "pmid": "15817669", "doi": "10.1210/en.2004-1286", "url": "https://pubmed.ncbi.nlm.nih.gov/15817669/" },
+    { "ref_id": 4, "type": "regulatory-document", "title": "WADA Prohibited List — GHRH analogs / GH secretagogues (S2) prohibited at all times", "first_author": null, "year": "2026", "source": "WADA", "pmid": null, "doi": null, "url": "https://www.wada-ama.org/en/prohibited-list" }
+  ],
+
+  "dose_ranges": [
+    {
+      "context": "Commonly cited non-clinical use range — NOT validated",
+      "low": 1000, "high": 2000, "unit": "mcg",
+      "route": "subcutaneous", "frequency": "once or twice weekly (anecdotal)",
+      "note": "Frequently reported anecdotal range, dosed weekly due to the long half-life. No controlled trial validates this specific range or frequency for non-clinical goals. Documented for reference only; not a recommendation.",
+      "citation_refs": []
+    },
+    {
+      "context": "Phase I trial dose-finding range (reference, not a human-use recommendation)",
+      "low": 1, "high": 30, "unit": "mcg/kg",
+      "route": "subcutaneous", "frequency": "single dose (trial design)",
+      "note": "The Teichman 2006 trial tested single doses of 1-30 mcg/kg to characterize the dose-response relationship, not a repeat-dosing regimen.",
+      "citation_refs": [2]
+    }
+  ],
+
+  "protocols": [
+    {
+      "id": "cjc-1295-with-dac-weekly-anecdotal",
+      "name": "Weekly/twice-weekly dosing (anecdotal pattern)",
+      "description": "Non-clinical sources describe once- or twice-weekly subcutaneous dosing, leveraging the long half-life for sustained GH/IGF-1 elevation between injections. Summarized only to document the reported pattern.",
+      "phase": "anecdotal",
+      "duration_weeks": { "min": 8, "max": 16 },
+      "dosing": { "amountLow": 1000, "amountHigh": 2000, "unit": "mcg", "frequency": "once or twice weekly (anecdotal)", "route": "subcutaneous" },
+      "cycling_notes": "No validated cycling protocol exists in humans.",
+      "is_recommendation": false,
+      "disclaimer": "Informational summary of anecdotal usage. Not medical advice or a dosing recommendation.",
+      "citation_refs": []
+    }
+  ],
+
+  "related": [
+    { "related_peptide_id": "cjc-1295-no-dac", "relationship": "same-class", "note": "Same GHRH(1-29) peptide backbone; CJC-1295 with DAC is albumin-conjugated for a ~6-8 day half-life, while the no-DAC form clears in about 30 minutes and preserves pulsatile release." },
+    { "related_peptide_id": "ipamorelin", "relationship": "commonly-studied-alongside", "note": "GHRH analog sometimes paired with the selective GHS ipamorelin, though the short-acting no-DAC form is more commonly used for this pairing." }
+  ],
+
+  "stacks": []
+}

@@ -1,0 +1,114 @@
+{
+  "peptide": {
+    "id": "dihexa",
+    "name": "Dihexa",
+    "aliases": ["PNB-0408", "N-hexanoic-Tyr-Ile-(6) aminohexanoic amide"],
+    "tags": ["cognitive", "neuroprotective", "synaptogenesis", "hgf-c-met"],
+    "category": "cognitive",
+    "usage_category": "research",
+    "approval_category": "research-chemical",
+
+    "summary": "Dihexa is a small-molecule peptide derivative of angiotensin IV, developed at Washington State University as a potentiator of hepatocyte growth factor (HGF) signaling through the c-Met receptor, reported to drive synaptogenesis at extremely low concentrations in preclinical assays. It has zero completed human clinical trials, and its two foundational research papers have serious, disclosed integrity issues: one carries a formal Expression of Concern and the other was retracted in 2025. It is not FDA-approved.",
+
+    "description": "Dihexa (N-hexanoic-Tyr-Ile-(6) aminohexanoic amide, development code PNB-0408) is a metabolically stabilized peptidomimetic derived from angiotensin IV, designed to act as an allosteric potentiator of HGF binding to its c-Met receptor rather than a direct receptor agonist. The original in vitro synaptogenesis assays (McCoy et al. 2013; Benoist et al. 2014, both from the same Washington State University research group) reported activity at picomolar concentrations, described in secondary sources as many orders of magnitude more potent than BDNF at the same in vitro endpoint -- a claim that reflects a narrow molar comparison at one assay endpoint, not a validated measure of clinical potency. This evidence base has a major integrity caveat: the McCoy 2013 paper carries a published Expression of Concern, and the Benoist 2014 follow-up paper was formally retracted in 2025. An independent 2021 replication by an unrelated group (Sun et al.) provides some supporting evidence from outside the original lab, but Dihexa has no completed human clinical trials. A related compound advancing the same HGF/c-Met mechanism into clinical development, fosgonimeton (ATH-1017), has completed phase 1 human pharmacokinetic and safety studies -- this is a distinct, separately-developed molecule and its human data should not be read as clinical validation of dihexa itself.",
+
+    "mechanism_of_action": "Reported to act as an allosteric potentiator of hepatocyte growth factor (HGF) binding to its receptor tyrosine kinase, c-Met, amplifying endogenous HGF signaling rather than acting as a direct agonist. In preclinical models this HGF/c-Met potentiation is proposed to drive synaptogenesis (new dendritic spine and synapse formation). Reported potency claims versus BDNF derive from a narrow in vitro comparison and should not be read as an indicator of relative clinical effect.",
+    "mechanism_citation_refs": [1, 2],
+
+    "molecular_weight": 504.67,
+    "molecular_formula": "C27H44N4O5",
+    "cas_number": "1401708-83-5",
+    "pubchem_cid": 129010512,
+    "sequence": "hexanoyl-Tyr-Ile-(6-aminohexanoic acid)-amide (angiotensin IV peptidomimetic)",
+    "sequence_type": "peptidomimetic",
+
+    "half_life": {
+      "value": 12.7,
+      "unit": "days",
+      "isEstimated": true,
+      "note": "Reported half-life of approximately 12.7 days in rats. No human pharmacokinetic data exist for dihexa itself.",
+      "citationRefs": [3]
+    },
+    "routes": ["oral", "subcutaneous", "intranasal"],
+    "default_dose_unit": "mg",
+
+    "evidence_level": "preclinical",
+    "human_trials": false,
+    "clinical_trials_count": 0,
+    "evidence_note": "IMPORTANT EVIDENCE CAVEAT: the two foundational papers underlying dihexa's synaptogenesis claims have documented integrity problems -- McCoy 2013 carries a published Expression of Concern, and Benoist 2014 was retracted in 2025. An independent 2021 replication (Sun et al.) offers some outside support, but there are zero completed human clinical trials of dihexa. Marketed cognitive-enhancement claims substantially outrun the reliable evidence base.",
+
+    "fda_status": "not-approved",
+    "fda_status_note": "Not FDA-approved for any indication in the United States or elsewhere. Sold as a research chemical 'for research use only'; also marketed off-label through some compounding/wellness clinics, which does not constitute FDA approval or endorsement.",
+    "compounding_status": "not-eligible",
+    "compounding_note": "Not an FDA-approved drug, no USP monograph, not on the 503A bulks list; not eligible for legal pharmacy compounding.",
+    "wada_status": "unknown",
+    "scheduled_controlled": false,
+    "research_only": true,
+    "regulatory_citation_refs": [],
+
+    "benefits": [
+      { "label": "Synaptogenesis / spatial learning (preclinical, evidence-compromised)", "evidenceLevel": "preclinical", "detail": "Reported improvements in spatial learning and memory in aged/cognitively impaired rodents and increased hippocampal synapse density in cell culture, but the two foundational papers have an Expression of Concern and a 2025 retraction respectively; treat as unresolved pending independent replication.", "citationRefs": [1, 2] },
+      { "label": "Independent partial replication", "evidenceLevel": "preclinical", "detail": "A 2021 study by a group outside the original lab provides some supporting evidence for HGF/c-Met-mediated effects.", "citationRefs": [4] }
+    ],
+
+    "risks": [
+      { "label": "Compromised foundational evidence base", "severity": "unknown", "detail": "Core claims rest on papers with a formal Expression of Concern and a 2025 retraction; the true magnitude (or existence) of clinical effect is unresolved.", "citationRefs": [1, 2] },
+      { "label": "HGF-pathway and cancer risk (theoretical)", "severity": "unknown", "detail": "HGF/c-Met signaling is implicated in tumor growth and metastasis in oncology research; individuals with a strong family history of HGF-pathway cancers should discuss this pathway with a physician before use.", "citationRefs": [] },
+      { "label": "No human safety data", "severity": "unknown", "detail": "All safety information comes from rodent behavioral studies; no human trials of dihexa itself have been completed.", "citationRefs": [] }
+    ],
+
+    "side_effects": [
+      { "label": "Unknown in humans", "frequency": "unknown", "severity": "unknown", "source": "community-report", "citationRefs": [] }
+    ],
+
+    "contraindications": [
+      { "label": "Personal or strong family history of HGF/c-Met-pathway malignancy", "detail": "Theoretical concern given the pathway's role in some cancers; discuss with a physician.", "citationRefs": [] },
+      { "label": "Pregnancy and lactation", "detail": "No data; avoid.", "citationRefs": [] }
+    ],
+
+    "interactions": [],
+
+    "reconstitution": {
+      "note": "Sold as lyophilized powder (reconstituted for subcutaneous/intranasal use) or as an oral/nasal-spray formulation; concentration depends on preparation.",
+      "lightSensitive": true,
+      "citationRefs": []
+    },
+    "storage": {
+      "lyophilized": { "tempC": "refrigerate; freeze for long-term", "stability": "Stable when kept cold and dry." },
+      "reconstituted": { "tempC": "2-8", "stability": "Refrigerate; use within a limited window." },
+      "lightSensitive": true
+    },
+
+    "last_reviewed": "2026-06-15",
+    "reviewed_by": "editorial",
+    "content_version": 1,
+    "data_completeness": "partial",
+    "disclaimer": "For research and educational purposes only. This is not medical advice. Dihexa is not FDA-approved, has completed no human clinical trials, and its foundational preclinical research has documented integrity issues (an Expression of Concern and a 2025 retraction). Consult a licensed healthcare provider before using any peptide."
+  },
+
+  "references": [
+    { "ref_id": 1, "type": "journal-article", "title": "Evaluation of metabolically stabilized angiotensin IV analogs as procognitive/antidementia agents (foundational synaptogenesis paper; subject of a published Expression of Concern)", "first_author": "McCoy AT", "year": "2013", "source": "J Pharmacol Exp Ther", "pmid": "23408117", "doi": "10.1124/jpet.112.202069", "url": "https://pubmed.ncbi.nlm.nih.gov/23408117/" },
+    { "ref_id": 2, "type": "journal-article", "title": "The procognitive and synaptogenic effects of angiotensin IV-derived peptides are dependent on activation of the hepatocyte growth factor/c-Met system (follow-up paper; RETRACTED 2025)", "first_author": "Benoist CC", "year": "2014", "source": "J Pharmacol Exp Ther (retracted)", "pmid": "24942065", "doi": "10.1124/jpet.114.213330", "url": "https://pubmed.ncbi.nlm.nih.gov/24942065/" },
+    { "ref_id": 3, "type": "review", "title": "Dihexa: research evidence and safety profile overview, including comparison to fosgonimeton (ATH-1017) clinical development", "first_author": null, "year": "2026", "source": "Independent research summary", "pmid": null, "doi": null, "url": "https://peptideinsight.com/en/peptides/dihexa" },
+    { "ref_id": 4, "type": "journal-article", "title": "Independent replication of HGF/c-Met-mediated synaptogenic activity of angiotensin IV-derived compounds", "first_author": "Sun J", "year": "2021", "source": "Peer-reviewed literature", "pmid": null, "doi": null, "url": "https://peptpedia.org/peptide/dihexa" }
+  ],
+
+  "dose_ranges": [
+    {
+      "context": "Commonly cited non-clinical use range — NOT validated, evidence base compromised",
+      "low": 2, "high": 5, "unit": "mg",
+      "route": "subcutaneous", "frequency": "daily (anecdotal)",
+      "note": "Frequently reported anecdotal subcutaneous range (community sources also cite 8-45 mg orally). No human trial of any kind supports a specific dose; the underlying preclinical evidence itself carries a retraction and an Expression of Concern. Documented for reference only; not a recommendation.",
+      "citation_refs": []
+    }
+  ],
+
+  "protocols": [],
+
+  "related": [
+    { "related_peptide_id": "semax", "relationship": "commonly-studied-alongside", "note": "Both are marketed as cognitive-enhancement research peptides, though via entirely different mechanisms (dihexa: HGF/c-Met synaptogenesis; semax: BDNF/NGF and monoamine modulation)." },
+    { "related_peptide_id": "selank", "relationship": "commonly-studied-alongside", "note": "Sometimes paired in cognitive-research contexts; different mechanisms and evidence bases." }
+  ],
+
+  "stacks": []
+}

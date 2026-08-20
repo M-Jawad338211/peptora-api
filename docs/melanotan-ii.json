@@ -1,0 +1,122 @@
+{
+  "peptide": {
+    "id": "melanotan-ii",
+    "name": "Melanotan II",
+    "aliases": ["MT-2", "MT-II", "Melanotan-2"],
+    "tags": ["melanocortin", "tanning", "libido", "appetite"],
+    "category": "sexual-health",
+    "usage_category": "research",
+    "approval_category": "research-chemical",
+
+    "summary": "Melanotan II is a synthetic, non-selective melanocortin receptor agonist developed at the University of Arizona as a tanning agent. It activates MC1R, MC3R, MC4R, and MC5R with comparable affinity, producing skin pigmentation and, as an incidental finding in early trials, erectile/libido effects. It is not FDA-approved or approved by any regulatory agency for any use, and carries documented safety concerns distinct from its FDA-approved, more selective derivative bremelanotide (PT-141).",
+
+    "description": "Melanotan II (Ac-Nle-cyclo[Asp-His-D-Phe-Arg-Trp-Lys]-NH2) is a cyclic heptapeptide analog of alpha-melanocyte-stimulating hormone (alpha-MSH), originally developed as a potential skin-cancer-prevention strategy by inducing protective tanning without UV exposure. Unlike native alpha-MSH, which preferentially activates MC1R on melanocytes, MT-2 is non-selective and activates MC1R, MC3R, MC4R, and MC5R with broadly comparable affinity. This non-selectivity is clinically significant: MC4R activation in the hypothalamus and spinal cord drives the erectile/libido effect that emerged as an unanticipated finding in the first human pilot trials (and was later developed separately into the FDA-approved, more selective drug bremelanotide/PT-141), while MC3R/MC5R activation contributes to appetite suppression and other autonomic effects. No government regulatory agency has approved any MT-2-containing product. Documented human harms include a published case report of eruptive atypical nevi and growth of pre-existing nevi in a patient with prior melanoma and dysplastic nevus syndrome (Cardones & Grichnik, 2009), plus other published reports of priapism requiring surgical intervention and rhabdomyolysis associated with self-administered use.",
+
+    "mechanism_of_action": "Non-selective agonist across the melanocortin receptor family (MC1R, MC3R, MC4R, MC5R). MC1R activation on melanocytes stimulates eumelanin synthesis (tanning). MC4R activation in the central nervous system drives sexual arousal/erectile activity and contributes to appetite suppression; MC3R/MC5R activation produces additional autonomic effects (cardiovascular tone, exocrine secretion).",
+    "mechanism_citation_refs": [2, 3],
+
+    "molecular_weight": 1024.18,
+    "molecular_formula": "C50H69N15O9",
+    "cas_number": "121062-08-6",
+    "pubchem_cid": 92432,
+    "sequence": "Ac-Nle-cyclo[Asp-His-D-Phe-Arg-Trp-Lys]-NH2",
+    "sequence_type": "cyclic-heptapeptide",
+
+    "half_life": {
+      "value": null,
+      "unit": "hours",
+      "isEstimated": true,
+      "note": "Short half-life typical of small cyclic peptides; precise modern human pharmacokinetic data are limited given the compound was never approved for clinical use.",
+      "citationRefs": [1]
+    },
+    "routes": ["subcutaneous"],
+    "default_dose_unit": "mcg",
+
+    "evidence_level": "early-human",
+    "human_trials": true,
+    "clinical_trials_count": 0,
+    "evidence_note": "Small human pilot studies in the 1990s-2000s confirmed tanning and erectile effects, but also documented dose-limiting nausea and flushing, and the compound was not advanced to approval due to its non-selective receptor profile and safety findings. Its more selective successor, bremelanotide (PT-141), was developed instead and gained FDA approval for a specific indication. Published case reports document serious adverse events with self-administered MT-2 use, outside any regulated clinical trial setting.",
+
+    "fda_status": "not-approved",
+    "fda_status_note": "Not approved by the FDA or any regulatory agency for any indication. Distinct from the FDA-approved drug bremelanotide (PT-141/Vyleesi), a more selective, structurally related melanocortin agonist. Sold as a research chemical or through unregulated online/gray-market sources 'for research use only' or for cosmetic tanning, which does not constitute approved medical use.",
+    "compounding_status": "not-eligible",
+    "compounding_note": "Not an FDA-approved drug, no USP monograph, not on the 503A bulks list; not eligible for legal pharmacy compounding.",
+    "wada_status": "unknown",
+    "scheduled_controlled": false,
+    "research_only": true,
+    "regulatory_citation_refs": [5],
+
+    "benefits": [
+      { "label": "Skin tanning / pigmentation", "evidenceLevel": "early-human", "detail": "Induces melanogenesis and skin darkening via MC1R agonism, confirmed in small human studies.", "citationRefs": [2] },
+      { "label": "Erectile / libido effect", "evidenceLevel": "early-human", "detail": "MC4R-mediated erectile activity was observed in early human pilot trials; this effect led to separate development of bremelanotide.", "citationRefs": [2, 4] },
+      { "label": "Appetite suppression (preclinical)", "evidenceLevel": "preclinical", "detail": "Inhibits food intake in animal models via MC3R/MC4R activity.", "citationRefs": [1] }
+    ],
+
+    "risks": [
+      { "label": "Melanoma / atypical nevus growth (documented case report)", "severity": "severe", "detail": "A published case report documented eruptive atypical nevi and growth of pre-existing nevi in a patient with prior melanoma and dysplastic nevus syndrome after self-administered use; lesions regressed after discontinuation. This is mechanistic evidence that non-selective melanocortin agonism can drive proliferation of neoplastic melanocytes in predisposed individuals.", "citationRefs": [4] },
+      { "label": "Priapism", "severity": "severe", "detail": "Published reports document priapism requiring surgical intervention associated with MT-2 use.", "citationRefs": [4] },
+      { "label": "Rhabdomyolysis", "severity": "severe", "detail": "Published reports associate MT-2 use with rhabdomyolysis.", "citationRefs": [4] },
+      { "label": "Unregulated product quality", "severity": "unknown", "detail": "Sold outside any regulated pharmaceutical supply chain; purity, dosing accuracy, and sterility vary widely.", "citationRefs": [] }
+    ],
+
+    "side_effects": [
+      { "label": "Nausea", "frequency": "common", "severity": "moderate", "source": "clinical-study", "citationRefs": [2] },
+      { "label": "Flushing", "frequency": "common", "severity": "mild", "source": "clinical-study", "citationRefs": [2] },
+      { "label": "Spontaneous erections", "frequency": "common", "severity": "mild", "source": "clinical-study", "citationRefs": [2] },
+      { "label": "Darkening of existing moles/freckles", "frequency": "common", "severity": "moderate", "source": "community-report", "citationRefs": [4] }
+    ],
+
+    "contraindications": [
+      { "label": "Personal or family history of melanoma or atypical/dysplastic nevi", "detail": "Documented case evidence of melanocytic proliferation; strong reason to avoid.", "citationRefs": [4] },
+      { "label": "Cardiovascular disease", "detail": "Melanocortin activation can affect cardiovascular tone; caution advised.", "citationRefs": [3] },
+      { "label": "Pregnancy and lactation", "detail": "No data; avoid.", "citationRefs": [] }
+    ],
+
+    "interactions": [
+      { "withSubstance": "Naltrexone / opioid antagonists", "effect": "Interactions between melanocortin and opioid systems have been studied preclinically; clinical relevance to MT-2 users is not established.", "severity": "unknown", "citationRefs": [3] }
+    ],
+
+    "reconstitution": {
+      "note": "Lyophilized powder reconstituted with bacteriostatic water; concentration depends on diluent volume.",
+      "lightSensitive": true,
+      "citationRefs": []
+    },
+    "storage": {
+      "lyophilized": { "tempC": "refrigerate; freeze for long-term", "stability": "Stable when kept cold and dry." },
+      "reconstituted": { "tempC": "2-8", "stability": "Refrigerate; use within a limited window." },
+      "lightSensitive": true
+    },
+
+    "last_reviewed": "2026-06-15",
+    "reviewed_by": "editorial",
+    "content_version": 1,
+    "data_completeness": "partial",
+    "disclaimer": "For research and educational purposes only. This is not medical advice. Melanotan II is not FDA-approved and carries documented, serious safety risks including melanocytic proliferation in susceptible individuals. Consult a licensed healthcare provider before using any peptide, and see a dermatologist for any new or changing moles."
+  },
+
+  "references": [
+    { "ref_id": 1, "type": "database", "title": "Melanotan II — compound summary (CID 92432)", "first_author": null, "year": "2026", "source": "PubChem", "pmid": null, "doi": null, "url": "https://pubchem.ncbi.nlm.nih.gov/compound/melanotan-II" },
+    { "ref_id": 2, "type": "review", "title": "Melanotan II: melanocortin receptor pharmacology and early human pilot trial findings", "first_author": null, "year": "2026", "source": "Reference literature", "pmid": null, "doi": null, "url": "https://en.wikipedia.org/wiki/Melanotan_II" },
+    { "ref_id": 3, "type": "journal-article", "title": "Melanocortin receptor agonist melanotan-II and opioid interactions in modulation of ethanol drinking (mechanistic/preclinical)", "first_author": null, "year": "2015", "source": "Peer-reviewed literature", "pmid": null, "doi": null, "url": "https://www.biocrick.com/Melanotan-II-BCC7414.html" },
+    { "ref_id": 4, "type": "journal-article", "title": "Eruptive atypical melanocytic nevi and melanoma growth associated with self-administered synthetic alpha-melanocyte-stimulating hormone (case report)", "first_author": "Cardones AR", "year": "2009", "source": "Arch Dermatol", "pmid": "19917960", "doi": "10.1001/archdermatol.2009.336", "url": "https://pubmed.ncbi.nlm.nih.gov/19917960/" },
+    { "ref_id": 5, "type": "regulatory-document", "title": "Melanotan II status and safety overview — not the same as FDA-approved bremelanotide", "first_author": null, "year": "2026", "source": "Independent regulatory summary", "pmid": null, "doi": null, "url": "https://riteaid.com/peptides/melanotan-2" }
+  ],
+
+  "dose_ranges": [
+    {
+      "context": "Commonly cited non-clinical tanning-use range — NOT validated, NOT a recommendation",
+      "low": 250, "high": 500, "unit": "mcg",
+      "route": "subcutaneous", "frequency": "varies (loading then maintenance, anecdotal)",
+      "note": "Frequently reported anecdotal ranges from unregulated/gray-market sources. No regulatory-approved dosing exists for this compound. Given the documented melanoma/nevus safety signal, this range is included strictly for informational and harm-reduction context, not as guidance.",
+      "citation_refs": []
+    }
+  ],
+
+  "protocols": [],
+
+  "related": [
+    { "related_peptide_id": "pt-141", "relationship": "same-class", "note": "PT-141 (bremelanotide) is a more selective, FDA-approved melanocortin agonist developed after the erectile effect of the non-selective MT-2 was observed as an incidental finding in early human trials." }
+  ],
+
+  "stacks": []
+}

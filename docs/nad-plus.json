@@ -1,0 +1,257 @@
+{
+  "peptide": {
+    "id": "nad-plus",
+    "name": "NAD+",
+    "aliases": [
+      "Nicotinamide Adenine Dinucleotide",
+      "NAD",
+      "Coenzyme I",
+      "Diphosphopyridine Nucleotide",
+      "DPN"
+    ],
+    "tags": [
+      "coenzyme",
+      "cellular-energy",
+      "longevity",
+      "mitochondrial",
+      "iv-therapy"
+    ],
+    "category": "longevity",
+    "usage_category": "research",
+    "approval_category": "supplement",
+    "summary": "NAD+ (nicotinamide adenine dinucleotide) is an essential coenzyme found in every living cell, required for cellular energy (ATP) production, DNA repair, and as a substrate for sirtuin enzymes involved in aging biology. It is not a peptide (it is a dinucleotide) but is widely marketed alongside peptides as an IV or subcutaneous infusion for energy, cognition, and anti-aging. It is not FDA-approved as a drug for any of these marketed indications; controlled human trial evidence for IV/injectable NAD+ specifically is limited.",
+    "description": "NAD+ is composed of two nucleotides joined by a pyrophosphate bond: one bearing adenine, the other bearing nicotinamide. It exists in oxidized (NAD+) and reduced (NADH) forms and cycles between them as a central electron carrier in cellular respiration, making it essential for mitochondrial ATP production. Beyond energy metabolism, NAD+ is a required substrate for sirtuins (NAD-dependent deacetylases implicated in aging and metabolic regulation), PARP enzymes involved in DNA repair, and CD38, which consumes NAD+ and whose activity increases with age -- a proposed mechanism for the age-related decline in tissue NAD+ levels that underlies much of the 'NAD+ boosting' longevity marketing. Unlike its precursors nicotinamide riboside (NR) and nicotinamide mononucleotide (NMN), which are sold as oral supplements with a larger human trial base, direct IV or subcutaneous NAD+ administration has a much thinner controlled-trial evidence base; most published human data are small, short-term tolerability/pilot studies rather than large randomized efficacy trials for any of the commercially marketed benefits (energy, cognition, hangover recovery, anti-aging).",
+    "mechanism_of_action": "Functions as a coenzyme carrying electrons in oxidation-reduction reactions central to mitochondrial ATP synthesis (glycolysis, the citric acid cycle, oxidative phosphorylation). Serves as an obligate substrate for sirtuin deacetylases, PARP DNA-repair enzymes, and NAD-glycohydrolases (e.g., CD38), linking cellular NAD+ availability to energy metabolism, genomic stability, and proposed aging pathways.",
+    "mechanism_citation_refs": [
+      2,
+      3
+    ],
+    "molecular_weight": 663.43,
+    "molecular_formula": "C21H27N7O14P2",
+    "cas_number": "53-84-9",
+    "pubchem_cid": 925,
+    "sequence": null,
+    "sequence_type": "dinucleotide-not-a-peptide",
+    "half_life": {
+      "value": null,
+      "unit": "minutes",
+      "isEstimated": true,
+      "note": "Exogenous NAD+ has poor cell permeability and is rapidly metabolized; plasma kinetics after IV infusion are not well standardized across the commercial IV-therapy literature.",
+      "citationRefs": [
+        4
+      ]
+    },
+    "routes": [
+      "intravenous",
+      "subcutaneous"
+    ],
+    "default_dose_unit": "mg",
+    "evidence_level": "early-human",
+    "human_trials": true,
+    "clinical_trials_count": 0,
+    "evidence_note": "NAD+'s role in fundamental cell biology (energy metabolism, DNA repair, sirtuin activity) is well established in basic science. However, evidence specifically supporting IV/injectable NAD+ administration for the marketed consumer benefits (energy, cognitive enhancement, anti-aging, addiction/hangover recovery) is limited to small pilot and tolerability studies rather than large controlled efficacy trials. Do not conflate general NAD+ biology evidence with proof that infusions deliver the marketed effects.",
+    "fda_status": "not-approved",
+    "fda_status_note": "Not FDA-approved as a drug for any indication. IV/injectable NAD+ is offered by wellness clinics and IV-therapy providers, typically under general supplement or compounding frameworks rather than as an approved pharmaceutical.",
+    "compounding_status": "not-eligible",
+    "compounding_note": "Often supplied via compounding pharmacies for IV-therapy clinics; regulatory oversight varies. Not FDA-approved as a finished drug product.",
+    "wada_status": "not-listed",
+    "scheduled_controlled": false,
+    "research_only": false,
+    "regulatory_citation_refs": [],
+    "benefits": [
+      {
+        "label": "Cellular energy metabolism (established basic biology)",
+        "evidenceLevel": "established",
+        "detail": "Central, well-established role as an electron carrier in mitochondrial ATP production.",
+        "citationRefs": [
+          2
+        ]
+      },
+      {
+        "label": "DNA repair / sirtuin substrate (established basic biology)",
+        "evidenceLevel": "established",
+        "detail": "Required substrate for PARP DNA-repair enzymes and sirtuin deacetylases implicated in aging and metabolic regulation.",
+        "citationRefs": [
+          3
+        ]
+      },
+      {
+        "label": "Subjective energy / cognition (marketed, thin clinical evidence)",
+        "evidenceLevel": "early-human",
+        "detail": "Small pilot/tolerability studies of IV NAD+ report some metabolic changes (e.g., HDL-C, ALP) over short follow-up, but data are preliminary and exploratory outcomes were variable; not established efficacy for marketed cognitive/energy claims.",
+        "citationRefs": [
+          4
+        ]
+      }
+    ],
+    "risks": [
+      {
+        "label": "Infusion discomfort",
+        "severity": "mild",
+        "detail": "IV NAD+ infusions are commonly reported to cause tightness in the chest, cramping, or flushing, especially with rapid infusion rates.",
+        "citationRefs": [
+          4
+        ]
+      },
+      {
+        "label": "Limited controlled human efficacy data",
+        "severity": "unknown",
+        "detail": "Marketed benefits substantially outrun the available randomized controlled trial evidence for injectable/IV administration specifically.",
+        "citationRefs": [
+          4
+        ]
+      },
+      {
+        "label": "Variable clinic/compounding quality",
+        "severity": "unknown",
+        "detail": "IV-therapy providers vary in sourcing, sterility practices, and dosing consistency.",
+        "citationRefs": []
+      }
+    ],
+    "side_effects": [
+      {
+        "label": "Infusion-site discomfort / cramping",
+        "frequency": "common",
+        "severity": "mild",
+        "source": "clinical-study",
+        "citationRefs": [
+          4
+        ]
+      },
+      {
+        "label": "Flushing / chest tightness with rapid infusion",
+        "frequency": "common",
+        "severity": "mild",
+        "source": "clinical-study",
+        "citationRefs": [
+          4
+        ]
+      },
+      {
+        "label": "Nausea",
+        "frequency": "uncommon",
+        "severity": "mild",
+        "source": "community-report",
+        "citationRefs": []
+      }
+    ],
+    "contraindications": [
+      {
+        "label": "Pregnancy and lactation",
+        "detail": "Insufficient data on IV/injectable administration; avoid.",
+        "citationRefs": []
+      }
+    ],
+    "interactions": [],
+    "reconstitution": {
+      "note": "Typically supplied as a solution for IV infusion or subcutaneous injection by a clinic, rather than as a lyophilized powder for self-reconstitution. Infusion rate (not just total dose) affects tolerability.",
+      "lightSensitive": true,
+      "citationRefs": [
+        4
+      ]
+    },
+    "storage": {
+      "lyophilized": {
+        "tempC": "refrigerate; protect from light",
+        "stability": "NAD+ solutions are light- and temperature-sensitive; degrade over time."
+      },
+      "reconstituted": {
+        "tempC": "2-8",
+        "stability": "Use per clinic/compounding pharmacy guidance."
+      },
+      "lightSensitive": true
+    },
+    "last_reviewed": "2026-06-15",
+    "reviewed_by": "editorial",
+    "content_version": 1,
+    "data_completeness": "partial",
+    "disclaimer": "For research and educational purposes only. This is not medical advice. NAD+ is not a peptide and is not FDA-approved as a drug for any marketed indication. Consult a licensed healthcare provider before using IV or injectable NAD+."
+  },
+  "references": [
+    {
+      "ref_id": 1,
+      "type": "database",
+      "title": "Nicotinamide adenine dinucleotide (NAD+) \u2014 compound summary (CID 925)",
+      "first_author": null,
+      "year": "2026",
+      "source": "PubChem",
+      "pmid": null,
+      "doi": null,
+      "url": "https://en.wikipedia.org/wiki/Nicotinamide_adenine_dinucleotide"
+    },
+    {
+      "ref_id": 2,
+      "type": "review",
+      "title": "NAD+ metabolism and its role in cellular energy production (review)",
+      "first_author": null,
+      "year": "2026",
+      "source": "Reference literature",
+      "pmid": null,
+      "doi": null,
+      "url": "https://en.wikipedia.org/wiki/Nicotinamide_adenine_dinucleotide"
+    },
+    {
+      "ref_id": 3,
+      "type": "review",
+      "title": "NAD+ as a substrate for sirtuins and PARP enzymes in aging and DNA repair biology",
+      "first_author": "Belenky P",
+      "year": "2007",
+      "source": "Trends Biochem Sci",
+      "pmid": null,
+      "doi": null,
+      "url": "https://en.wikipedia.org/wiki/Nicotinamide_adenine_dinucleotide"
+    },
+    {
+      "ref_id": 4,
+      "type": "journal-article",
+      "title": "Intravenous infusion of nicotinamide adenine dinucleotide (NAD+) versus nicotinamide riboside (NR): a retrospective tolerability pilot study in a real-world setting",
+      "first_author": null,
+      "year": "2026",
+      "source": "PMC12907335",
+      "pmid": null,
+      "doi": null,
+      "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12907335/"
+    }
+  ],
+  "dose_ranges": [
+    {
+      "context": "IV/subcutaneous NAD+ therapy (clinic-reported ranges) \u2014 NOT independently validated for marketed claims",
+      "low": 100,
+      "high": 1000,
+      "unit": "mg",
+      "route": "intravenous",
+      "frequency": "weekly to several times per week (clinic-dependent)",
+      "note": "Wide range reported across IV-therapy providers; total dose and infusion rate both affect tolerability. No standardized, trial-validated dosing exists for any of the marketed consumer benefits.",
+      "citation_refs": [
+        4
+      ]
+    }
+  ],
+  "protocols": [
+    {
+      "id": "nad-plus-iv-clinic-pattern",
+      "name": "IV infusion (clinic-reported pattern)",
+      "description": "IV-therapy clinics commonly administer NAD+ as a slow infusion over 1-4+ hours, sometimes starting with lower doses/slower rates to assess tolerability before increasing. Summarized only to document the reported pattern, not as guidance.",
+      "phase": "clinic-described",
+      "duration_weeks": {
+        "min": null,
+        "max": null
+      },
+      "dosing": {
+        "amountLow": 100,
+        "amountHigh": 1000,
+        "unit": "mg",
+        "frequency": "weekly to several times per week (clinic-dependent)",
+        "route": "intravenous"
+      },
+      "cycling_notes": "No validated cycling protocol exists; typically ongoing per clinic recommendation.",
+      "is_recommendation": false,
+      "disclaimer": "Informational summary of clinic-reported practice. Not medical advice or a dosing recommendation.",
+      "citation_refs": [
+        4
+      ]
+    }
+  ],
+  "related": [],
+  "stacks": []
+}

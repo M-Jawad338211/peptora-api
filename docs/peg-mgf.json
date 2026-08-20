@@ -1,0 +1,125 @@
+{
+  "peptide": {
+    "id": "peg-mgf",
+    "name": "PEG-MGF",
+    "aliases": ["Pegylated Mechano Growth Factor", "PEGylated MGF", "PEG Mechano Growth Factor"],
+    "tags": ["muscle-repair", "igf-1", "satellite-cells", "recovery", "pegylated"],
+    "category": "healing",
+    "usage_category": "research",
+    "approval_category": "research-chemical",
+
+    "summary": "PEG-MGF is a pegylated (polyethylene-glycol-conjugated) version of Mechano Growth Factor (MGF), the C-terminal E-domain peptide of the IGF-1Ec splice variant that is naturally expressed within hours of mechanical muscle damage to activate satellite cells. Pegylation extends native MGF's half-life from minutes to hours-to-days. It has essentially no human clinical data and is not FDA-approved; the parent hormone IGF-1 (mecasermin) is separately FDA-approved for a specific pediatric deficiency indication, which should not be conflated with PEG-MGF itself.",
+
+    "description": "MGF (Mechano Growth Factor) is the unique 24-amino-acid C-terminal E-domain peptide produced by alternative splicing of the IGF1 gene, first characterized by Geoffrey Goldspink's laboratory at University College London. Unlike the mature IGF-1 domain (which signals through IGF-1R and is associated with cell proliferation broadly, including in oncology contexts), the MGF E-domain has distinct, more localized biological activity: it is the first IGF-1 splice variant expressed after mechanical muscle damage (within 0-2 hours), peaking at 2-6 hours to activate quiescent satellite cells, before IGF-1Ea expression rises at 6-72 hours to drive differentiation and protein synthesis. Native MGF has an extremely short half-life of approximately 5-7 minutes, severely limiting its practical research utility; PEGylation -- attaching a polyethylene glycol polymer chain -- extends this to hours or days by shielding the peptide from proteolytic degradation and reducing renal clearance, at the cost of introducing a class-wide PEGylation risk: repeated dosing can induce anti-PEG antibodies leading to accelerated clearance on subsequent doses (the 'ABC phenomenon'). PEG-MGF remains entirely preclinical, with animal and cell-culture data on satellite cell activation, and separately-published research on neurogenesis and neuroprotection in brain injury/aging models via the same E-domain peptide. It has no human clinical trial data and is not FDA-approved for any indication.",
+
+    "mechanism_of_action": "Activates quiescent muscle satellite cells (the resident stem-cell population responsible for muscle repair and hypertrophy), expanding the progenitor pool as the first-responding IGF-1 splice variant after mechanical damage. This is mechanistically distinct from mature IGF-1 signaling through IGF-1R (implicated more broadly in cell proliferation, including tumor growth pathways) and from myostatin-inhibition approaches (e.g., follistatin), which remove an anti-growth brake rather than actively recruiting progenitor cells. Separately studied for neurogenic and neuroprotective activity via the same E-domain peptide in brain injury/aging models.",
+    "mechanism_citation_refs": [2, 3],
+
+    "molecular_weight": 2867.2,
+    "molecular_formula": "C121H200N42O39",
+    "cas_number": null,
+    "pubchem_cid": null,
+    "sequence": "IGF-1Ec E-domain C-terminal 24-aa peptide, PEGylated (core peptide MW; total MW varies with PEG chain size)",
+    "sequence_type": "amino-acid-fragment-pegylated",
+
+    "half_life": {
+      "value": null,
+      "unit": "hours",
+      "isEstimated": true,
+      "note": "Native (non-pegylated) MGF has a half-life of only about 5-7 minutes. PEGylation is reported to extend this to hours or even days depending on the specific PEG formulation, but no standardized human pharmacokinetic value has been established.",
+      "citationRefs": [3, 4]
+    },
+    "routes": ["subcutaneous", "intramuscular"],
+    "default_dose_unit": "mg",
+
+    "evidence_level": "preclinical",
+    "human_trials": false,
+    "clinical_trials_count": 0,
+    "evidence_note": "PEG-MGF remains entirely preclinical. Supporting data come from rodent and cell-culture studies of satellite cell activation, muscle regeneration, and (separately) neurogenesis/neuroprotection. The related, distinct molecule recombinant IGF-1 (mecasermin) is FDA-approved for severe IGF-1 deficiency, but this approval applies to mature IGF-1, not to PEG-MGF, and should not be read as validation of PEG-MGF itself.",
+
+    "fda_status": "not-approved",
+    "fda_status_note": "Not FDA-approved for any indication and has no human clinical data. Sold as a research chemical 'for research use only.' Do not confuse with FDA-approved recombinant IGF-1 (mecasermin), a distinct molecule.",
+    "compounding_status": "not-eligible",
+    "compounding_note": "Not an FDA-approved drug, no USP monograph, not on the 503A bulks list; not eligible for legal pharmacy compounding.",
+    "wada_status": "prohibited",
+    "scheduled_controlled": false,
+    "research_only": true,
+    "regulatory_citation_refs": [],
+
+    "benefits": [
+      { "label": "Satellite cell activation / muscle regeneration (preclinical)", "evidenceLevel": "preclinical", "detail": "Activates quiescent satellite cells and expands the muscle progenitor pool in animal and cell-culture models following mechanical damage.", "citationRefs": [2] },
+      { "label": "Neurogenesis (preclinical)", "evidenceLevel": "preclinical", "detail": "The same MGF E-domain peptide promoted neurogenesis in the aging mouse brain and showed neuroprotective effects in a brain ischemia model in separate published studies.", "citationRefs": [4, 5] }
+    ],
+
+    "risks": [
+      { "label": "Anti-PEG antibody formation (ABC phenomenon)", "severity": "unknown", "detail": "Repeated dosing of PEGylated compounds can induce anti-PEG antibodies, potentially causing accelerated clearance and reduced effect on subsequent doses -- a documented class effect of PEGylated therapeutics.", "citationRefs": [3] },
+      { "label": "IGF-1 pathway / cancer risk (theoretical)", "severity": "unknown", "detail": "The broader IGF-1R signaling pathway is implicated in cell proliferation and potentially tumor growth in oncology research; the MGF E-domain's relationship to this risk is distinct from mature IGF-1 but not fully characterized.", "citationRefs": [3] },
+      { "label": "No human safety data", "severity": "unknown", "detail": "Entirely preclinical; no human trials of any kind have been conducted.", "citationRefs": [] }
+    ],
+
+    "side_effects": [
+      { "label": "Injection-site reactions", "frequency": "anecdotal", "severity": "mild", "source": "community-report", "citationRefs": [] }
+    ],
+
+    "contraindications": [
+      { "label": "Personal or family history of IGF-1-pathway malignancy", "detail": "Theoretical concern given the broader IGF-1 signaling pathway's role in some cancers; discuss with a physician.", "citationRefs": [] },
+      { "label": "Pregnancy and lactation", "detail": "No data; avoid.", "citationRefs": [] }
+    ],
+
+    "interactions": [],
+
+    "reconstitution": {
+      "note": "Lyophilized powder reconstituted with bacteriostatic water; concentration depends on diluent volume. Often marketed for localized (intramuscular, near the trained muscle) injection given its short intended radius of action.",
+      "lightSensitive": true,
+      "citationRefs": []
+    },
+    "storage": {
+      "lyophilized": { "tempC": "refrigerate; freeze for long-term", "stability": "Stable when kept cold and dry." },
+      "reconstituted": { "tempC": "2-8", "stability": "Refrigerate; use within a limited window." },
+      "lightSensitive": true
+    },
+
+    "last_reviewed": "2026-06-15",
+    "reviewed_by": "editorial",
+    "content_version": 1,
+    "data_completeness": "partial",
+    "disclaimer": "For research and educational purposes only. This is not medical advice. PEG-MGF is not FDA-approved and has no human clinical trial data. Consult a licensed healthcare provider before using any peptide."
+  },
+
+  "references": [
+    { "ref_id": 1, "type": "database", "title": "PEG-MGF — chemical properties and formulation overview", "first_author": null, "year": "2026", "source": "Vendor/reference literature", "pmid": null, "doi": null, "url": "https://exploring-peptides.com/peptide-wikipedia/pegmgf/" },
+    { "ref_id": 2, "type": "journal-article", "title": "Overexpression of Mechano-Growth Factor modulates inflammatory cytokine expression and macrophage resolution in skeletal muscle injury", "first_author": "Sun KT", "year": "2018", "source": "Front Physiol", "pmid": "29615924", "doi": "10.3389/fphys.2018.00318", "url": "https://www.rawamino.com/peptides/peg-mgf/" },
+    { "ref_id": 3, "type": "review", "title": "PEG-MGF: mechanism, PEGylation risks, and comparison to follistatin and recombinant IGF-1 (mecasermin)", "first_author": null, "year": "2026", "source": "Independent research summary", "pmid": null, "doi": null, "url": "https://peptideinsight.com/en/peptides/peg-mgf" },
+    { "ref_id": 4, "type": "journal-article", "title": "Mechano growth factor, a splice variant of IGF-1, promotes neurogenesis in the aging mouse brain", "first_author": "Tang JJ", "year": "2017", "source": "Mol Brain", "pmid": "28683812", "doi": "10.1186/s13041-017-0294-3", "url": "https://www.rawamino.com/peptides/peg-mgf/" },
+    { "ref_id": 5, "type": "journal-article", "title": "A strong neuroprotective effect of the autonomous C-terminal peptide of IGF-1 Ec (MGF) in brain ischemia", "first_author": "Dluzniewska J", "year": "2005", "source": "FASEB J", "pmid": "15746183", "doi": "10.1096/fj.04-2489fje", "url": "https://www.rawamino.com/peptides/peg-mgf/" }
+  ],
+
+  "dose_ranges": [
+    {
+      "context": "Commonly cited non-clinical use range — NOT validated",
+      "low": 200, "high": 400, "unit": "mcg",
+      "route": "intramuscular", "frequency": "post-workout, localized to trained muscle (anecdotal)",
+      "note": "Frequently reported anecdotal range, often injected near the specific trained muscle group given its short intended radius of local action. No human trial supports this. Documented for reference only; not a recommendation.",
+      "citation_refs": []
+    }
+  ],
+
+  "protocols": [
+    {
+      "id": "peg-mgf-post-training-anecdotal",
+      "name": "Post-training localized use (anecdotal pattern)",
+      "description": "Non-clinical sources describe intramuscular injection near a recently trained muscle group shortly after exercise, based on the rationale that native MGF is naturally expressed within hours of mechanical muscle damage. Summarized only to document the reported pattern.",
+      "phase": "anecdotal",
+      "duration_weeks": { "min": 4, "max": 8 },
+      "dosing": { "amountLow": 200, "amountHigh": 400, "unit": "mcg", "frequency": "post-workout (anecdotal)", "route": "intramuscular" },
+      "cycling_notes": "No validated cycling protocol exists in humans.",
+      "is_recommendation": false,
+      "disclaimer": "Informational summary of anecdotal usage. Not medical advice or a dosing recommendation.",
+      "citation_refs": []
+    }
+  ],
+
+  "related": [],
+
+  "stacks": []
+}

@@ -1,0 +1,134 @@
+{
+  "peptide": {
+    "id": "tesamorelin",
+    "name": "Tesamorelin",
+    "aliases": ["Egrifta", "Egrifta SV", "Egrifta WR", "TH9507"],
+    "tags": ["growth-hormone", "ghrh", "visceral-fat", "lipodystrophy"],
+    "category": "growth-hormone",
+    "usage_category": "clinical",
+    "approval_category": "approved-drug",
+
+    "summary": "Tesamorelin is an FDA-approved synthetic analog of the full 44-amino-acid growth-hormone-releasing hormone (GHRH), marketed as Egrifta. It is approved specifically to reduce excess visceral abdominal fat in HIV-infected adults with lipodystrophy. Unlike exogenous growth hormone, it stimulates the pituitary's own pulsatile GH release via the GHRH receptor.",
+
+    "description": "Tesamorelin is GHRH(1-44) modified with a trans-3-hexenoic acid group at the N-terminal tyrosine, which confers resistance to DPP-IV enzymatic degradation and extends its short native half-life. It was FDA-approved in November 2010 (Egrifta) for reduction of excess abdominal fat in HIV-positive adults with lipodystrophy, based on a pivotal phase III trial (Falutz et al., NEJM 2007, n=412) showing a 15.2% reduction in visceral adipose tissue, an 81% increase in IGF-1, and improvements in triglycerides and cholesterol ratio at 26 weeks. Newer formulations (Egrifta SV, approved 2019; Egrifta WR) reduce injection volume and reconstitution frequency but are not interchangeable milligram-for-milligram with the original formulation. It selectively reduces visceral fat with little effect on subcutaneous fat or body weight, and its effect reverses if treatment is stopped.",
+
+    "mechanism_of_action": "Binds the GHRH receptor (GHRHR) on pituitary somatotrophs, activating the Gs-alpha/adenylate cyclase/cAMP pathway to stimulate pulsatile GH synthesis and release. This raises hepatic IGF-1 production, which drives preferential lipolysis of visceral adipose tissue.",
+    "mechanism_citation_refs": [2, 3],
+
+    "molecular_weight": 5135.86,
+    "molecular_formula": "C221H366N72O67S",
+    "cas_number": "218949-48-5",
+    "pubchem_cid": 16137828,
+    "sequence": "trans-3-hexenoyl-Tyr-Ala-Asp-Ala-Ile-Phe-Thr-Asn-Ser-Tyr-Arg-Lys-Val-Leu-Gly-Gln-Leu-Ser-Ala-Arg-Lys-Leu-Leu-Gln-Asp-Ile-Met-Ser-Arg-Gln-Gln-Gly-Glu-Ser-Asn-Gln-Glu-Arg-Gly-Ala-Arg-Ala-Arg-Leu-NH2",
+    "sequence_type": "amino-acid-modified-44mer",
+
+    "half_life": {
+      "value": 26,
+      "unit": "minutes",
+      "isEstimated": false,
+      "note": "Elimination half-life approximately 26-38 minutes; the N-terminal modification extends this relative to native GHRH but daily dosing is still required.",
+      "citationRefs": [1, 4]
+    },
+    "routes": ["subcutaneous"],
+    "default_dose_unit": "mg",
+
+    "evidence_level": "established",
+    "human_trials": true,
+    "clinical_trials_count": 1,
+    "evidence_note": "Approved based on a pivotal randomized controlled trial (n=412) and confirmed by later randomized trials showing reduced visceral adipose tissue and liver fat versus placebo. Extensive safety data over 12+ months of continuous treatment.",
+
+    "fda_status": "approved",
+    "fda_status_note": "FDA-approved (Egrifta, November 2010; Egrifta SV, 2019; Egrifta WR) specifically for reduction of excess abdominal fat in HIV-infected adults with lipodystrophy. Not approved or recommended for general weight loss. Prescription-only.",
+    "compounding_status": "not-applicable",
+    "compounding_note": "An FDA-approved drug. The different approved formulations (Egrifta, Egrifta SV, Egrifta WR) are not interchangeable milligram-for-milligram per the FDA label.",
+    "wada_status": "prohibited",
+    "scheduled_controlled": false,
+    "research_only": false,
+    "regulatory_citation_refs": [4, 5],
+
+    "benefits": [
+      { "label": "Reduces visceral adipose tissue", "evidenceLevel": "established", "detail": "Pivotal trial showed -15.2% visceral fat versus placebo at 26 weeks; later RCT found a net VAT treatment effect of about -42 cm2.", "citationRefs": [2] },
+      { "label": "Raises IGF-1", "evidenceLevel": "established", "detail": "81% increase in IGF-1 in pivotal trial, reflecting sustained physiologic GH stimulation.", "citationRefs": [2] },
+      { "label": "Improves lipid parameters", "evidenceLevel": "established", "detail": "Reduced triglycerides (~-50 mg/dL) and improved cholesterol/HDL ratio in the pivotal trial.", "citationRefs": [2] },
+      { "label": "Reduced liver fat (secondary)", "evidenceLevel": "established", "detail": "A later RCT found a net -2.9% reduction in liver fat versus placebo.", "citationRefs": [3] }
+    ],
+
+    "risks": [
+      { "label": "Fluid retention / edema", "severity": "moderate", "detail": "GH-axis stimulation can cause peripheral edema and arthralgia.", "citationRefs": [5] },
+      { "label": "Elevated IGF-1 (long-term unknown)", "severity": "unknown", "detail": "Effects of prolonged IGF-1 elevation are not fully characterized; monitor levels during treatment.", "citationRefs": [5] },
+      { "label": "Effect reverses on discontinuation", "severity": "mild", "detail": "Visceral fat reduction is not durable after stopping treatment.", "citationRefs": [3] }
+    ],
+
+    "side_effects": [
+      { "label": "Injection-site reactions", "frequency": "common", "severity": "mild", "source": "clinical-study", "citationRefs": [5] },
+      { "label": "Arthralgia / myalgia", "frequency": "common", "severity": "mild", "source": "clinical-study", "citationRefs": [5] },
+      { "label": "Peripheral edema", "frequency": "common", "severity": "mild", "source": "clinical-study", "citationRefs": [5] }
+    ],
+
+    "contraindications": [
+      { "label": "Active or suspected malignancy", "detail": "Discontinue if there is evidence of recurrent malignancy; GH stimulation is a theoretical concern.", "citationRefs": [5] },
+      { "label": "Pregnancy", "detail": "Not studied in pregnancy; avoid.", "citationRefs": [5] },
+      { "label": "Pituitary disease / prior pituitary surgery or radiation", "detail": "Use with caution per label.", "citationRefs": [5] }
+    ],
+
+    "interactions": [
+      { "withSubstance": "Insulin / oral hypoglycemics", "effect": "GH-axis stimulation may affect glucose regulation; monitor.", "severity": "mild", "citationRefs": [5] }
+    ],
+
+    "reconstitution": {
+      "note": "Supplied as a lyophilized powder reconstituted with the provided Sterile Water for Injection. Egrifta SV: 1.4 mg (0.35 mL) daily. Egrifta WR: 1.28 mg daily, vial sufficient for 7 doses, reconstituted weekly. Original Egrifta: 2 mg SC once daily. Formulations are NOT interchangeable mg-for-mg; follow the specific product's reconstitution instructions.",
+      "lightSensitive": true,
+      "citationRefs": [5]
+    },
+    "storage": {
+      "lyophilized": { "tempC": "room temperature or refrigerate per product", "stability": "Per FDA label for each formulation." },
+      "reconstituted": { "tempC": "2-8", "stability": "Use within the product-specific window; Egrifta WR extends usable window to about a week." },
+      "lightSensitive": true
+    },
+
+    "last_reviewed": "2026-06-15",
+    "reviewed_by": "editorial",
+    "content_version": 1,
+    "data_completeness": "partial",
+    "disclaimer": "For research and educational purposes only. This is not medical advice. Tesamorelin (Egrifta) is a prescription drug approved for a specific indication; use only under a licensed healthcare provider."
+  },
+
+  "references": [
+    { "ref_id": 1, "type": "database", "title": "Tesamorelin — compound summary (CID 16137828)", "first_author": null, "year": "2026", "source": "PubChem", "pmid": null, "doi": null, "url": "https://pubchem.ncbi.nlm.nih.gov/compound/16137828" },
+    { "ref_id": 2, "type": "journal-article", "title": "Effects of tesamorelin (TH9507), a growth hormone-releasing factor analog, in HIV-infected patients with excess abdominal fat: a pivotal phase 3 trial", "first_author": "Falutz J", "year": "2007", "source": "NEJM / J Clin Endocrinol Metab", "pmid": null, "doi": null, "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2019/022505s012s013lbl.pdf" },
+    { "ref_id": 3, "type": "journal-article", "title": "Effects of tesamorelin on visceral fat and liver fat in HIV-infected patients with abdominal fat accumulation: a randomized clinical trial", "first_author": "Stanley TL", "year": "2014", "source": "JAMA", "pmid": "25038357", "doi": "10.1001/jama.2014.5570", "url": "https://pubmed.ncbi.nlm.nih.gov/25038357/" },
+    { "ref_id": 4, "type": "review", "title": "Tesamorelin pharmacokinetics and clinical pharmacology (review)", "first_author": "Dhillon S", "year": "2011", "source": "BioDrugs", "pmid": "22050344", "doi": "10.2165/11207310-000000000-00000", "url": "https://pubmed.ncbi.nlm.nih.gov/22050344/" },
+    { "ref_id": 5, "type": "regulatory-document", "title": "EGRIFTA SV (tesamorelin for injection) Prescribing Information (FDA label)", "first_author": null, "year": "2019", "source": "FDA", "pmid": null, "doi": null, "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2019/022505s012s013lbl.pdf" }
+  ],
+
+  "dose_ranges": [
+    {
+      "context": "HIV-associated lipodystrophy, visceral fat reduction (approved labeling, Egrifta SV)",
+      "low": 1.4, "high": 1.4, "unit": "mg",
+      "route": "subcutaneous", "frequency": "once daily",
+      "note": "Egrifta SV approved dose is 1.4 mg (0.35 mL reconstituted) SC once daily into the abdomen, rotating sites. Original Egrifta is 2 mg SC once daily; Egrifta WR is 1.28 mg once daily (weekly reconstitution). Formulations are not interchangeable. Follow the specific product's prescribing information.",
+      "citation_refs": [5]
+    }
+  ],
+
+  "protocols": [
+    {
+      "id": "tesamorelin-lipodystrophy-label",
+      "name": "Visceral fat reduction (per FDA label)",
+      "description": "Approved labeling specifies once-daily subcutaneous dosing into the abdomen with site rotation. Trials demonstrating visceral-fat reduction ran 26-52 weeks; effect reverses upon discontinuation. Summarized from approved labeling and trial designs.",
+      "phase": "approved-labeling",
+      "duration_weeks": { "min": 26, "max": null },
+      "dosing": { "amountLow": 1.4, "amountHigh": 1.4, "unit": "mg", "frequency": "once daily", "route": "subcutaneous" },
+      "cycling_notes": "Chronic therapy while indication persists; managed by a prescriber. Not cycled.",
+      "is_recommendation": false,
+      "disclaimer": "Summary of approved labeling for educational reference. Not a substitute for the prescribing information or medical advice.",
+      "citation_refs": [5]
+    }
+  ],
+
+  "related": [
+    { "related_peptide_id": "cjc-1295-no-dac", "relationship": "same-class", "note": "Both are GHRH-receptor analogs, though tesamorelin is the full GHRH(1-44) sequence with an approved clinical indication, while CJC-1295 (no DAC) is a shorter GHRH(1-29) fragment sold as a research chemical." }
+  ],
+
+  "stacks": []
+}

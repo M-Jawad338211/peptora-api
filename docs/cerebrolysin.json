@@ -1,0 +1,132 @@
+{
+  "peptide": {
+    "id": "cerebrolysin",
+    "name": "Cerebrolysin",
+    "aliases": ["Cerebroresin", "FPF-1070"],
+    "tags": ["neuroprotective", "cognitive", "stroke", "brain-injury", "peptide-mixture"],
+    "category": "cognitive",
+    "usage_category": "clinical",
+    "approval_category": "unapproved",
+
+    "summary": "Cerebrolysin is not a single peptide but a standardized mixture of low-molecular-weight peptide fragments (~15-25%) and free amino acids (~75-85%) produced by controlled enzymatic hydrolysis of porcine brain protein. It is registered as a medicine in over 40 countries (including Austria, Germany, Russia, and China) for stroke, traumatic brain injury, and dementia, but is not FDA-approved and remains a research-use-only compound in the United States. Its evidence base is unusually large for a peptide product but genuinely mixed: some meta-analyses show benefit, while the largest stroke trial was neutral and a Cochrane review rated dementia evidence as very low quality.",
+
+    "description": "Cerebrolysin (manufactured by EVER Neuro Pharma, Austria, under development code FPF-1070) is produced by standardized enzymatic breakdown of purified porcine brain cortex protein, yielding a defined mixture of peptide fragments below 10,000 daltons plus free amino acids. Its proposed mechanism is neurotrophic-factor mimicry: peptide fragments crossing the blood-brain barrier are reported to interact with Trk receptor signaling (TrkA/TrkB) and resemble the activity of BDNF, NGF, and GDNF, engaging downstream MAPK/ERK and PI3K/Akt pathways involved in neuronal survival, synaptic plasticity, and reduction of glutamate-mediated excitotoxicity. It has an unusually large human trial base for a peptide product -- more than 50 randomized controlled trials across stroke, traumatic brain injury, vascular dementia, and Alzheimer's disease -- but the honest picture is mixed rather than uniformly positive: the largest acute-stroke trial (CASTA, n=1,070) was neutral on its primary endpoint, with only a severe-stroke subgroup showing a trend toward benefit; a 2023 Cochrane review (PMID 37818733) concluded moderate-certainty evidence that Cerebrolysin probably has no effect on all-cause mortality or functional independence after acute ischemic stroke; and a separate Cochrane review of the vascular-dementia evidence rated it 'very low quality' with high risk of bias, noting that nearly all positive trials were funded by the manufacturer. Side-effect rates across trials have consistently been comparable to placebo. It is registered as an approved medicine in more than 40 countries but has never received FDA approval and is not available as a legal prescription product in the United States.",
+
+    "mechanism_of_action": "Proposed to act through neurotrophic-factor mimicry: its low-molecular-weight peptide fraction crosses the blood-brain barrier and is reported to interact with Trk receptor signaling (TrkA, TrkB), activating MAPK/ERK and PI3K/Akt pathways involved in neuronal survival, synaptic plasticity, and neurogenesis, resembling the activity of endogenous BDNF, NGF, and GDNF. Also proposed to modulate glutamate-mediated excitotoxicity and support protein-clearance pathways. As an undefined, multi-component mixture rather than a single molecular entity, its pharmacology is inherently harder to characterize than a synthetic peptide.",
+    "mechanism_citation_refs": [2, 3],
+
+    "molecular_weight": null,
+    "molecular_formula": null,
+    "cas_number": null,
+    "pubchem_cid": null,
+    "sequence": null,
+    "sequence_type": "peptide-mixture-not-single-entity",
+
+    "half_life": {
+      "value": null,
+      "unit": null,
+      "isEstimated": true,
+      "note": "As a heterogeneous mixture of many peptide fragments and free amino acids, Cerebrolysin does not have a single defined pharmacokinetic half-life; individual components clear at different rates.",
+      "citationRefs": [3]
+    },
+    "routes": ["intramuscular", "intravenous"],
+    "default_dose_unit": "mL",
+
+    "evidence_level": "early-human",
+    "human_trials": true,
+    "clinical_trials_count": 1,
+    "evidence_note": "Unusually large human trial base (50+ RCTs) for a peptide-class product, but results are genuinely mixed rather than uniformly positive. The largest acute-stroke trial (CASTA, n=1,070) was neutral on its primary endpoint. A 2023 Cochrane review found moderate-certainty evidence of no effect on mortality or functional independence after acute ischemic stroke. A separate Cochrane review rated vascular-dementia evidence as very low quality with high risk of bias, and noted nearly all positive trials were industry-funded. Treat as a product with a mixed, methodologically contested evidence base rather than an established therapy.",
+
+    "fda_status": "not-approved",
+    "fda_status_note": "Not FDA-approved and no US-approved formulation exists; registered as a medicine in over 40 countries (including Austria, Germany, Russia, China, South Korea) for stroke, traumatic brain injury, and dementia, which is not equivalent to FDA approval. In the US it is available only as a research-use compound.",
+    "compounding_status": "not-eligible",
+    "compounding_note": "Not an FDA-approved drug in the US; not on the 503A bulks list; not eligible for legal US pharmacy compounding.",
+    "wada_status": "not-listed",
+    "scheduled_controlled": false,
+    "research_only": true,
+    "regulatory_citation_refs": [4],
+
+    "benefits": [
+      { "label": "Stroke rehabilitation (mixed evidence)", "evidenceLevel": "early-human", "detail": "Some trials, particularly from Asian and Eastern European centers, report improved neurological function scores and activities of daily living; however, the largest trial (CASTA) was neutral on its primary endpoint, with benefit seen only in a severe-stroke subgroup.", "citationRefs": [4, 5] },
+      { "label": "Alzheimer's / dementia cognitive scores (mixed, contested quality)", "evidenceLevel": "early-human", "detail": "A meta-analysis of six randomized, double-blind, placebo-controlled trials found Cerebrolysin more effective than placebo for cognitive function at four weeks; a separate Cochrane review rated the underlying vascular-dementia evidence as very low quality with high risk of bias and noted industry funding of positive trials.", "citationRefs": [5] },
+      { "label": "Traumatic brain injury (early-human, limited)", "evidenceLevel": "early-human", "detail": "Studied as adjunct therapy in TBI in countries where approved; evidence quality varies by trial.", "citationRefs": [3] }
+    ],
+
+    "risks": [
+      { "label": "Porcine-product allergy", "severity": "moderate", "detail": "Contraindicated in anyone with a known allergy to pork or porcine-derived products, since it is derived from pig brain tissue.", "citationRefs": [3] },
+      { "label": "Contested/heterogeneous evidence quality", "severity": "unknown", "detail": "Much of the positive trial literature is industry-funded and has been flagged for risk of bias by independent Cochrane reviewers; do not treat marketed claims as settled.", "citationRefs": [4, 5] },
+      { "label": "Undefined single-batch composition", "severity": "unknown", "detail": "As a biological mixture rather than a single synthetic molecule, batch-to-batch consistency depends on manufacturer quality control rather than a fixed chemical structure.", "citationRefs": [] }
+    ],
+
+    "side_effects": [
+      { "label": "Injection-site reactions", "frequency": "uncommon", "severity": "mild", "source": "clinical-study", "citationRefs": [4] },
+      { "label": "Dizziness / headache", "frequency": "uncommon", "severity": "mild", "source": "clinical-study", "citationRefs": [4] }
+    ],
+
+    "contraindications": [
+      { "label": "Allergy to porcine (pig) products", "detail": "Derived from porcine brain tissue; contraindicated in known allergy.", "citationRefs": [3] },
+      { "label": "Epilepsy / seizure disorder", "detail": "Use with caution per some international labeling; discuss with a physician.", "citationRefs": [] },
+      { "label": "Pregnancy and lactation", "detail": "Insufficient data; avoid outside of medically supervised, approved-jurisdiction use.", "citationRefs": [] }
+    ],
+
+    "interactions": [
+      { "withSubstance": "MAO inhibitors", "effect": "Some international labeling advises caution combining with MAO inhibitors.", "severity": "unknown", "citationRefs": [] }
+    ],
+
+    "reconstitution": {
+      "note": "Supplied as a ready-to-use solution for IM or IV administration by the treating clinic in jurisdictions where it is registered; not a lyophilized powder requiring patient reconstitution.",
+      "lightSensitive": true,
+      "citationRefs": []
+    },
+    "storage": {
+      "lyophilized": { "tempC": "n/a (supplied as solution)", "stability": "Per manufacturer labeling in registered jurisdictions." },
+      "reconstituted": { "tempC": "room temperature or refrigerate per product", "stability": "Per manufacturer labeling." },
+      "lightSensitive": true
+    },
+
+    "last_reviewed": "2026-06-15",
+    "reviewed_by": "editorial",
+    "content_version": 1,
+    "data_completeness": "partial",
+    "disclaimer": "For research and educational purposes only. This is not medical advice. Cerebrolysin is not FDA-approved in the United States; its human evidence base, while large, is genuinely mixed and includes neutral major trials and independently-rated low-quality evidence in some indications. Consult a licensed healthcare provider."
+  },
+
+  "references": [
+    { "ref_id": 1, "type": "database", "title": "Cerebrolysin (FPF-1070) product composition overview", "first_author": null, "year": "2026", "source": "Manufacturer / reference literature", "pmid": null, "doi": null, "url": "https://www.peptidesinstitute.org/peptides/cerebrolysin" },
+    { "ref_id": 2, "type": "review", "title": "Cerebrolysin: peptide mechanisms and neurotrophic-factor mimicry (Trk receptor signaling review)", "first_author": null, "year": "2026", "source": "Reference literature", "pmid": null, "doi": null, "url": "https://newtropin.com/peptides/cerebrolysin" },
+    { "ref_id": 3, "type": "review", "title": "Cerebrolysin composition, mechanism, and international regulatory status overview", "first_author": null, "year": "2026", "source": "Reference literature", "pmid": null, "doi": null, "url": "https://www.modernpeptidescience.com/peptides/cerebrolysin/" },
+    { "ref_id": 4, "type": "journal-article", "title": "Cerebrolysin for acute ischaemic stroke (Cochrane systematic review)", "first_author": null, "year": "2023", "source": "Cochrane Database Syst Rev", "pmid": "37818733", "doi": null, "url": "https://www.kalios.health/compounds/cerebrolysin.html" },
+    { "ref_id": 5, "type": "journal-article", "title": "Cerebrolysin for vascular dementia (Cochrane systematic review, very-low-quality evidence rating)", "first_author": null, "year": "2019", "source": "Cochrane Database Syst Rev", "pmid": null, "doi": null, "url": "https://peptidesinsider.com/peptides/cerebrolysin" }
+  ],
+
+  "dose_ranges": [
+    {
+      "context": "Registered clinical use (approved jurisdictions), stroke/TBI/dementia — reference only, not US-approved",
+      "low": 10, "high": 30, "unit": "mL",
+      "route": "intravenous", "frequency": "once daily, in courses (per approved-jurisdiction labeling)",
+      "note": "Typical range cited across international approved labeling for IV administration in courses (e.g., daily for several weeks). Not FDA-approved dosing; provided for informational/comparative reference only, not as US guidance.",
+      "citation_refs": [3]
+    }
+  ],
+
+  "protocols": [
+    {
+      "id": "cerebrolysin-course-clinical",
+      "name": "Treatment course (per international clinical use)",
+      "description": "In jurisdictions where approved, Cerebrolysin is typically administered as a daily IV or IM course over several weeks (e.g., 10-30 mL/day IV for 10-20 days), sometimes repeated periodically. Summarized from international clinical/trial patterns; not an FDA-approved regimen.",
+      "phase": "clinical-described",
+      "duration_weeks": { "min": 2, "max": 4 },
+      "dosing": { "amountLow": 10, "amountHigh": 30, "unit": "mL", "frequency": "once daily (course)", "route": "intravenous" },
+      "cycling_notes": "Courses may be repeated after an interval per treating physician in approved jurisdictions.",
+      "is_recommendation": false,
+      "disclaimer": "Summary of international clinical/trial patterns for educational reference. Not medical advice; not an FDA-approved regimen.",
+      "citation_refs": [3]
+    }
+  ],
+
+  "related": [
+    { "related_peptide_id": "dihexa", "relationship": "same-class", "note": "Both are marketed as neurotrophic/cognitive-support peptide products, though Cerebrolysin is a decades-old porcine-derived mixture with substantial (if contested) human trial data, while dihexa is a single synthetic compound with essentially no human data and compromised foundational preclinical evidence." }
+  ],
+
+  "stacks": []
+}

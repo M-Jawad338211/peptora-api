@@ -1,0 +1,251 @@
+{
+  "peptide": {
+    "id": "glutathione",
+    "name": "Glutathione",
+    "aliases": [
+      "GSH",
+      "L-Glutathione",
+      "gamma-glutamylcysteinylglycine",
+      "reduced glutathione"
+    ],
+    "tags": [
+      "antioxidant",
+      "detox",
+      "skin",
+      "immune"
+    ],
+    "category": "immune",
+    "usage_category": "clinical",
+    "approval_category": "supplement",
+    "summary": "Glutathione is an endogenous tripeptide (gamma-L-glutamyl-L-cysteinylglycine) and the body's most abundant intracellular antioxidant, protecting cells from oxidative damage and supporting detoxification pathways. It is a genuine tripeptide (unlike some other compounds marketed alongside it), sold both as an approved injectable in some countries for specific medical uses and, more commonly in wellness/aesthetic markets, as an unapproved 'skin-brightening' or general antioxidant IV/injectable.",
+    "description": "Glutathione (GSH) is synthesized from three amino acids -- glutamate, cysteine, and glycine -- with the reactive thiol (-SH) group on cysteine giving it its central redox function: it directly scavenges reactive oxygen species and serves as a cofactor for glutathione peroxidase and glutathione S-transferase enzymes that neutralize peroxides and conjugate xenobiotics for excretion. Endogenous synthesis and recycling (between reduced GSH and oxidized GSSG) is tightly regulated, and depleted glutathione status is associated with oxidative stress in numerous disease states. Injectable/IV glutathione has legitimate, though narrow, clinical uses in some countries (for example as adjunctive therapy in certain respiratory and hepatic contexts), and it is a documented use in HIV-related care. It is separately, and far more visibly, marketed off-label in aesthetic medicine as a 'whitening injection' for skin-lightening, and in wellness IV clinics for general antioxidant/detox support -- uses that are not FDA-approved and for which large randomized efficacy trials are limited, despite glutathione's antioxidant role in basic biology being well established.",
+    "mechanism_of_action": "Directly scavenges reactive oxygen and nitrogen species via its reactive cysteine thiol group. Serves as an essential cofactor for glutathione peroxidase (neutralizing hydrogen peroxide and lipid peroxides) and glutathione S-transferase (conjugating and detoxifying electrophilic xenobiotics for excretion). Maintains protein sulfhydryl groups in a reduced state and participates in amino acid transport (gamma-glutamyl cycle). The skin-lightening effect claimed in aesthetic use is proposed to work by shifting melanin synthesis from darker eumelanin toward lighter pheomelanin and inhibiting tyrosinase, though this mechanism is better characterized in vitro than confirmed as a robust clinical effect.",
+    "mechanism_citation_refs": [
+      2,
+      3
+    ],
+    "molecular_weight": 307.32,
+    "molecular_formula": "C10H17N3O6S",
+    "cas_number": "70-18-8",
+    "pubchem_cid": 124886,
+    "sequence": "gamma-Glu-Cys-Gly",
+    "sequence_type": "tripeptide-non-standard-linkage",
+    "half_life": {
+      "value": null,
+      "unit": "minutes",
+      "isEstimated": true,
+      "note": "Exogenous glutathione has limited oral bioavailability due to gut hydrolysis; IV administration bypasses this but plasma kinetics vary by study and dose.",
+      "citationRefs": [
+        1
+      ]
+    },
+    "routes": [
+      "intravenous",
+      "subcutaneous",
+      "oral"
+    ],
+    "default_dose_unit": "mg",
+    "evidence_level": "early-human",
+    "human_trials": true,
+    "clinical_trials_count": 0,
+    "evidence_note": "Glutathione's core antioxidant biochemistry is well established. Some narrow clinical uses (e.g., certain adjunctive respiratory/hepatic contexts, HIV-related care) have supporting human data. The widely marketed skin-lightening and general wellness/detox IV uses have a much thinner controlled-trial base, with most human skin-lightening evidence coming from small or lower-quality studies rather than large randomized trials.",
+    "fda_status": "not-approved",
+    "fda_status_note": "Not FDA-approved as a drug for skin-lightening or general wellness/detox indications, which are the most common marketed uses in the US. Some glutathione-containing products have approved uses in other regulatory contexts internationally. Oral glutathione is sold in the US as a dietary supplement (not a drug).",
+    "compounding_status": "not-eligible",
+    "compounding_note": "Injectable glutathione for aesthetic/wellness use is typically supplied via compounding pharmacies or medical spas rather than as an FDA-approved finished drug product.",
+    "wada_status": "not-listed",
+    "scheduled_controlled": false,
+    "research_only": false,
+    "regulatory_citation_refs": [],
+    "benefits": [
+      {
+        "label": "Cellular antioxidant defense (established basic biology)",
+        "evidenceLevel": "established",
+        "detail": "Central, well-established role neutralizing reactive oxygen species and supporting detoxification via glutathione peroxidase and S-transferase.",
+        "citationRefs": [
+          2
+        ]
+      },
+      {
+        "label": "Adjunctive respiratory / hepatic uses (narrow clinical evidence)",
+        "evidenceLevel": "early-human",
+        "detail": "Some clinical literature supports adjunctive IV use in specific respiratory and hepatic contexts, including HIV-related care, though this is a narrower and more specific evidence base than the general wellness marketing implies.",
+        "citationRefs": [
+          5
+        ]
+      },
+      {
+        "label": "Skin lightening (marketed, limited trial quality)",
+        "evidenceLevel": "early-human",
+        "detail": "Proposed to shift melanin synthesis toward lighter pheomelanin and inhibit tyrosinase; human evidence exists but is often from small or methodologically limited studies.",
+        "citationRefs": [
+          3
+        ]
+      }
+    ],
+    "risks": [
+      {
+        "label": "Limited large-trial evidence for marketed cosmetic/wellness uses",
+        "severity": "unknown",
+        "detail": "Skin-lightening and general IV wellness claims outrun the available large randomized controlled trial evidence.",
+        "citationRefs": []
+      },
+      {
+        "label": "Variable clinic/compounding quality",
+        "severity": "unknown",
+        "detail": "Aesthetic-medicine and wellness-clinic sourcing and dosing practices vary.",
+        "citationRefs": []
+      },
+      {
+        "label": "Rare hypersensitivity reactions (IV)",
+        "severity": "moderate",
+        "detail": "IV administration of glutathione, like other IV therapies, carries a small risk of infusion reactions.",
+        "citationRefs": []
+      }
+    ],
+    "side_effects": [
+      {
+        "label": "Injection-site discomfort",
+        "frequency": "common",
+        "severity": "mild",
+        "source": "community-report",
+        "citationRefs": []
+      },
+      {
+        "label": "Nausea / abdominal cramping",
+        "frequency": "uncommon",
+        "severity": "mild",
+        "source": "community-report",
+        "citationRefs": []
+      }
+    ],
+    "contraindications": [
+      {
+        "label": "Pregnancy and lactation",
+        "detail": "Insufficient data on IV/injectable use for cosmetic indications; avoid outside of medically supervised, indicated use.",
+        "citationRefs": []
+      },
+      {
+        "label": "Asthma (nebulized use specifically)",
+        "detail": "Nebulized glutathione has been associated with bronchospasm in asthmatic patients in some reports; this does not directly apply to IV/injectable use but is a noted class caution.",
+        "citationRefs": []
+      }
+    ],
+    "interactions": [],
+    "reconstitution": {
+      "note": "Injectable glutathione is often supplied as a lyophilized powder reconstituted with sterile water or saline by the administering clinic; concentration depends on the specific product and diluent volume.",
+      "lightSensitive": true,
+      "citationRefs": []
+    },
+    "storage": {
+      "lyophilized": {
+        "tempC": "refrigerate; protect from light",
+        "stability": "Glutathione is prone to oxidation; store per manufacturer guidance."
+      },
+      "reconstituted": {
+        "tempC": "2-8",
+        "stability": "Use promptly after reconstitution; oxidizes over time."
+      },
+      "lightSensitive": true
+    },
+    "last_reviewed": "2026-06-15",
+    "reviewed_by": "editorial",
+    "content_version": 1,
+    "data_completeness": "partial",
+    "disclaimer": "For research and educational purposes only. This is not medical advice. Glutathione for skin-lightening or general wellness IV use is not FDA-approved. Consult a licensed healthcare provider before using injectable glutathione."
+  },
+  "references": [
+    {
+      "ref_id": 1,
+      "type": "database",
+      "title": "Glutathione \u2014 compound summary (CID 124886)",
+      "first_author": null,
+      "year": "2026",
+      "source": "PubChem",
+      "pmid": null,
+      "doi": null,
+      "url": "https://pubchem.ncbi.nlm.nih.gov/compound/Glutathione"
+    },
+    {
+      "ref_id": 2,
+      "type": "review",
+      "title": "Glutathione: biosynthesis, antioxidant function, and role in cellular redox homeostasis",
+      "first_author": null,
+      "year": "2026",
+      "source": "Reference literature",
+      "pmid": null,
+      "doi": null,
+      "url": "https://en.wikipedia.org/wiki/Glutathione"
+    },
+    {
+      "ref_id": 3,
+      "type": "review",
+      "title": "Glutathione as a skin-lightening agent: mechanism and evidence overview",
+      "first_author": null,
+      "year": "2026",
+      "source": "Dermatology literature review",
+      "pmid": null,
+      "doi": null,
+      "url": "https://aapep.bocsci.com/product/glutathione-cas-70-18-8-464855.html"
+    },
+    {
+      "ref_id": 4,
+      "type": "database",
+      "title": "Glutathione, reduced \u2014 biochemical properties and research applications",
+      "first_author": null,
+      "year": "2026",
+      "source": "Santa Cruz Biotechnology",
+      "pmid": null,
+      "doi": null,
+      "url": "https://www.scbt.com/p/glutathione-reduced-70-18-8"
+    },
+    {
+      "ref_id": 5,
+      "type": "review",
+      "title": "L-Glutathione use in HIV-related and adjunctive respiratory/hepatic clinical contexts",
+      "first_author": null,
+      "year": "2026",
+      "source": "Clinical reference literature",
+      "pmid": null,
+      "doi": null,
+      "url": "https://cymitquimica.com/cas/70-18-8/"
+    }
+  ],
+  "dose_ranges": [
+    {
+      "context": "IV/injectable wellness or skin-lightening use (clinic-reported ranges) \u2014 NOT independently validated for marketed claims",
+      "low": 200,
+      "high": 2000,
+      "unit": "mg",
+      "route": "intravenous",
+      "frequency": "weekly to several times per week (clinic-dependent)",
+      "note": "Wide range reported across aesthetic/wellness providers for skin-lightening or general antioxidant use. No standardized, large-trial-validated dosing exists for these marketed indications.",
+      "citation_refs": []
+    }
+  ],
+  "protocols": [
+    {
+      "id": "glutathione-iv-wellness-pattern",
+      "name": "IV/injectable antioxidant support (clinic-reported pattern)",
+      "description": "Wellness and aesthetic-medicine clinics commonly administer glutathione via slow IV push or infusion, sometimes alongside vitamin C or other IV additives, for general antioxidant support or skin-lightening goals. Summarized only to document the reported pattern, not as guidance.",
+      "phase": "clinic-described",
+      "duration_weeks": {
+        "min": null,
+        "max": null
+      },
+      "dosing": {
+        "amountLow": 200,
+        "amountHigh": 2000,
+        "unit": "mg",
+        "frequency": "weekly to several times per week (clinic-dependent)",
+        "route": "intravenous"
+      },
+      "cycling_notes": "No validated cycling protocol exists; typically ongoing per clinic recommendation.",
+      "is_recommendation": false,
+      "disclaimer": "Informational summary of clinic-reported practice. Not medical advice or a dosing recommendation.",
+      "citation_refs": []
+    }
+  ],
+  "related": [],
+  "stacks": []
+}

@@ -1,0 +1,134 @@
+{
+  "peptide": {
+    "id": "retatrutide",
+    "name": "Retatrutide",
+    "aliases": ["LY3437943", "GGG triple agonist"],
+    "tags": ["gip", "glp-1", "glucagon", "metabolic", "weight-loss", "triple-agonist"],
+    "category": "metabolic",
+    "usage_category": "investigational",
+    "approval_category": "unapproved",
+
+    "summary": "Retatrutide is an investigational triple hormone receptor agonist, developed by Eli Lilly, that simultaneously activates the GIP, GLP-1, and glucagon receptors. It produced the largest pharmacological weight loss recorded to date in a phase 2 trial (24.2% at 48 weeks). It is NOT yet FDA-approved -- it remains in phase 3 (the TRIUMPH program) as of this review, and claims of approval circulating in some vendor/marketing material are inaccurate.",
+
+    "description": "Retatrutide (LY3437943) is a synthetic ~39-amino-acid peptide built on a GIP receptor agonist backbone, engineered to also activate the GLP-1 and glucagon receptors, making it the first-in-class 'triple G' (GIP/GLP-1/glucagon) agonist. It binds human GCGR, GIPR, and GLP-1R with reported EC50 values of 5.79, 0.0643, and 0.775 nM respectively. Unlike dual GIP/GLP-1 agonists such as tirzepatide, the added glucagon receptor activity contributes a thermogenic and energy-expenditure component: despite glucagon receptor activation normally raising blood glucose, retatrutide produces net glucose lowering because the GLP-1 and GIP effects predominate. A phase 2 trial (NEJM 2023) reported up to 24.2% mean body weight loss at 48 weeks (12 mg dose) -- the most substantial pharmacological weight loss recorded to date, with weight curves still declining at study end; newer 68-week data have reported up to 28.7% loss at the highest dose. As of this review, retatrutide is still completing phase 3 trials (the TRIUMPH program) and has NOT received FDA approval; some vendor/marketing sources inaccurately state it is FDA-approved, which should be disregarded.",
+
+    "mechanism_of_action": "Simultaneous agonist at three G-protein-coupled receptors: the glucose-dependent insulinotropic polypeptide receptor (GIPR), the glucagon-like peptide-1 receptor (GLP-1R), and the glucagon receptor (GCGR). GLP-1R activity slows gastric emptying, enhances satiety, and reduces appetite; GIPR activity enhances glucose-dependent insulin secretion and supports beta-cell function; GCGR activity adds a thermogenic, energy-expenditure-raising component not present in dual GIP/GLP-1 agonists. The combined GLP-1/GIP insulinotropic effect outweighs glucagon's glucose-raising tendency, producing net glucose lowering.",
+    "mechanism_citation_refs": [2, 3],
+
+    "molecular_weight": 4731.33,
+    "molecular_formula": "C221H342N46O68",
+    "cas_number": "2381089-83-2",
+    "pubchem_cid": 171390338,
+    "sequence": "Tyr-Aib-Gln-Gly-Thr-Phe-Thr-Ser-Asp-Tyr-Ser-Ile-(alpha-Me-Leu)-Leu-Asp-Lys{diacid-C20-gamma-Glu-(AEEA)-Lys}-Ala-Gln-Aib-Ala-Phe-Ile-Glu-Tyr-Leu-Leu-Glu-Gly-Gly-Pro-Ser-Ser-Gly-Ala-Pro-Pro-Pro-Ser-NH2",
+    "sequence_type": "modified-tri-agonist-peptide",
+
+    "half_life": {
+      "value": 6,
+      "unit": "days",
+      "isEstimated": true,
+      "note": "Approximately 6 days, consistent with once-weekly dosing used in trials; based on the same fatty-diacid albumin-binding strategy as tirzepatide.",
+      "citationRefs": [4]
+    },
+    "routes": ["subcutaneous"],
+    "default_dose_unit": "mg",
+
+    "evidence_level": "early-human",
+    "human_trials": true,
+    "clinical_trials_count": 1,
+    "evidence_note": "Phase 1b (Lancet 2022) and phase 2 (NEJM 2023) trials have been published showing dose-dependent weight loss and glycemic effects, with phase 2 producing the largest recorded pharmacological weight loss (24.2% at 48 weeks). Phase 3 (TRIUMPH program) is ongoing as of this review. No long-term post-marketing safety data exist because the drug is not yet approved.",
+
+    "fda_status": "not-approved",
+    "fda_status_note": "NOT FDA-approved. As of this review, retatrutide remains in phase 3 clinical trials (the TRIUMPH program); some marketing/vendor sources have inaccurately claimed FDA approval, which should be disregarded pending an actual regulatory decision. Verify current status against FDA/Lilly announcements before relying on this for decisions.",
+    "compounding_status": "not-eligible",
+    "compounding_note": "Not an FDA-approved drug; not on the 503A bulks list; not eligible for legal pharmacy compounding while investigational. (Compounding of GLP-1-class drugs more broadly has been a distinct, evolving regulatory area -- verify current status separately.)",
+    "wada_status": "unknown",
+    "scheduled_controlled": false,
+    "research_only": true,
+    "regulatory_citation_refs": [5],
+
+    "benefits": [
+      { "label": "Substantial weight loss (phase 2)", "evidenceLevel": "early-human", "detail": "Up to 24.2% mean body weight loss at 48 weeks (12 mg dose) in the phase 2 trial, the largest pharmacological weight loss recorded to date; newer 68-week data report up to 28.7% at the highest dose.", "citationRefs": [3] },
+      { "label": "Net glucose lowering despite glucagon agonism", "evidenceLevel": "early-human", "detail": "GLP-1/GIP insulinotropic effects outweigh glucagon's glucose-raising tendency, producing net glycemic improvement in trials.", "citationRefs": [2] },
+      { "label": "Added energy-expenditure component (mechanistic)", "evidenceLevel": "preclinical", "detail": "Glucagon receptor activation is proposed to add a thermogenic/energy-expenditure effect beyond dual GIP/GLP-1 agonists in preclinical obese-mouse models.", "citationRefs": [2] }
+    ],
+
+    "risks": [
+      { "label": "No long-term post-marketing safety data", "severity": "unknown", "detail": "As an investigational, not-yet-approved drug, long-term real-world safety data do not yet exist.", "citationRefs": [] },
+      { "label": "GI tolerability", "severity": "mild", "detail": "GI side effects common to incretin-class drugs (nausea, diarrhea, vomiting) have been reported in trials, generally dose-dependent.", "citationRefs": [3] },
+      { "label": "Unregulated 'research chemical' sourcing", "severity": "unknown", "detail": "Because it is not yet approved, any retatrutide obtained outside a clinical trial is unregulated research-grade material, not a pharmaceutical product.", "citationRefs": [] }
+    ],
+
+    "side_effects": [
+      { "label": "Nausea", "frequency": "common", "severity": "mild", "source": "clinical-study", "citationRefs": [3] },
+      { "label": "Diarrhea / vomiting", "frequency": "common", "severity": "mild", "source": "clinical-study", "citationRefs": [3] },
+      { "label": "Decreased appetite", "frequency": "common", "severity": "mild", "source": "clinical-study", "citationRefs": [3] }
+    ],
+
+    "contraindications": [
+      { "label": "Personal/family history of medullary thyroid carcinoma or MEN 2", "detail": "Class-wide theoretical concern shared with other incretin-mimetic drugs pending retatrutide-specific labeling.", "citationRefs": [] },
+      { "label": "Pregnancy and lactation", "detail": "No human safety data; avoid.", "citationRefs": [] }
+    ],
+
+    "interactions": [
+      { "withSubstance": "Insulin / insulin secretagogues", "effect": "Class-wide concern for increased hypoglycemia risk when combined with other glucose-lowering agents.", "severity": "moderate", "citationRefs": [] }
+    ],
+
+    "reconstitution": {
+      "note": "In trials, supplied as a ready-to-use solution for subcutaneous injection. Research-grade lyophilized powder (outside trial settings) would be reconstituted with bacteriostatic water; concentration depends on diluent volume.",
+      "lightSensitive": true,
+      "citationRefs": []
+    },
+    "storage": {
+      "lyophilized": { "tempC": "refrigerate; freeze for long-term", "stability": "Stable when kept cold and dry (research-grade material)." },
+      "reconstituted": { "tempC": "2-8", "stability": "Refrigerate; use within a limited window." },
+      "lightSensitive": true
+    },
+
+    "last_reviewed": "2026-06-15",
+    "reviewed_by": "editorial",
+    "content_version": 1,
+    "data_completeness": "partial",
+    "disclaimer": "For research and educational purposes only. This is not medical advice. Retatrutide is NOT FDA-approved as of this review and remains investigational (phase 3). Disregard any marketing claims of approval and verify current status independently. Consult a licensed healthcare provider before using any peptide."
+  },
+
+  "references": [
+    { "ref_id": 1, "type": "database", "title": "Retatrutide — compound summary (CID 171390338)", "first_author": null, "year": "2026", "source": "PubChem", "pmid": null, "doi": null, "url": "https://pubchem.ncbi.nlm.nih.gov/compound/retatrutide" },
+    { "ref_id": 2, "type": "journal-article", "title": "LY3437943, a novel triple GIP, GLP-1, and glucagon receptor agonist in people with type 2 diabetes: a phase 1b, multicentre, double-blind, placebo-controlled, randomised, multiple-ascending dose trial", "first_author": "Urva S", "year": "2022", "source": "Lancet", "pmid": "36354040", "doi": "10.1016/S0140-6736(22)02033-5", "url": "https://pubmed.ncbi.nlm.nih.gov/36354040/" },
+    { "ref_id": 3, "type": "journal-article", "title": "Triple-Hormone-Receptor Agonist Retatrutide for Obesity — A Phase 2 Trial", "first_author": "Jastreboff AM", "year": "2023", "source": "N Engl J Med", "pmid": "37366315", "doi": "10.1056/NEJMoa2301972", "url": "https://pubmed.ncbi.nlm.nih.gov/37366315/" },
+    { "ref_id": 4, "type": "review", "title": "Retatrutide molecular structure, pharmacokinetics, and mechanism overview", "first_author": null, "year": "2026", "source": "Reference literature", "pmid": null, "doi": null, "url": "https://www.peptideprotocolwiki.com/peptides/retatrutide/molecule" },
+    { "ref_id": 5, "type": "review", "title": "Is retatrutide (LY3437943), a GLP-1, GIP, and glucagon receptor agonist, a step forward in the treatment of diabetes and obesity?", "first_author": "Doggrell SA", "year": "2023", "source": "Expert Opin Investig Drugs", "pmid": "37115691", "doi": "10.1080/13543784.2023.2206560", "url": "https://pubmed.ncbi.nlm.nih.gov/37115691/" }
+  ],
+
+  "dose_ranges": [
+    {
+      "context": "Phase 2 obesity trial (NEJM 2023) — investigational, not an approved dose",
+      "low": 1, "high": 12, "unit": "mg",
+      "route": "subcutaneous", "frequency": "once weekly",
+      "note": "Phase 2 trial tested doses from 1 mg up to 12 mg weekly with dose-dependent weight loss (up to 24.2% at 48 weeks with 12 mg). This reflects a clinical trial design, not an approved or recommended dose for individual use.",
+      "citation_refs": [3]
+    }
+  ],
+
+  "protocols": [
+    {
+      "id": "retatrutide-titration-trial",
+      "name": "Dose-escalation schedule (phase 2/3 trial pattern)",
+      "description": "Published trials titrate retatrutide upward over several weeks to the target dose to manage GI tolerability, similar to other incretin-class drugs. Summarized from trial design; not an approved regimen since the drug remains investigational.",
+      "phase": "investigational",
+      "duration_weeks": { "min": 48, "max": 68 },
+      "dosing": { "amountLow": 1, "amountHigh": 12, "unit": "mg", "frequency": "once weekly (titrated)", "route": "subcutaneous" },
+      "cycling_notes": "Chronic therapy pattern in trials, not cycled. No approved regimen exists outside clinical trials.",
+      "is_recommendation": false,
+      "disclaimer": "Summary of clinical trial design for educational reference. Not medical advice; not an approved dosing regimen.",
+      "citation_refs": [3]
+    }
+  ],
+
+  "related": [
+    { "related_peptide_id": "tirzepatide", "relationship": "same-class", "note": "Both are Lilly-developed multi-receptor incretin agonists; tirzepatide is a dual GIP/GLP-1 agonist, while retatrutide adds glucagon receptor agonism as a triple agonist." },
+    { "related_peptide_id": "semaglutide", "relationship": "same-class", "note": "Both are incretin-based metabolic therapies, though semaglutide is a single GLP-1 receptor agonist versus retatrutide's triple-receptor mechanism." },
+    { "related_peptide_id": "mazdutide", "relationship": "same-class", "note": "Both are multi-receptor incretin/glucagon agonists in active development; mazdutide is a dual GLP-1/glucagon agonist while retatrutide adds GIP receptor agonism. No head-to-head trial exists between them." }
+  ],
+
+  "stacks": []
+}

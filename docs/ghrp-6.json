@@ -1,0 +1,133 @@
+{
+  "peptide": {
+    "id": "ghrp-6",
+    "name": "GHRP-6",
+    "aliases": ["Growth Hormone Releasing Peptide-6", "Growth Hormone-Releasing Hexapeptide", "SKF-110679"],
+    "tags": ["growth-hormone", "ghrelin", "ghrp", "secretagogue", "appetite"],
+    "category": "growth-hormone",
+    "usage_category": "research",
+    "approval_category": "research-chemical",
+
+    "summary": "GHRP-6 is the original growth hormone-releasing hexapeptide, developed in 1984 as the first compound shown to stimulate GH release through a mechanism independent of GHRH. It acts as an agonist at the ghrelin receptor (GHS-R1a) and is distinguished from later GHRPs like ipamorelin by pronounced appetite stimulation and modest cortisol/prolactin elevation. It is not FDA-approved.",
+
+    "description": "GHRP-6 (His-D-Trp-Ala-Trp-D-Phe-Lys-NH2) is a synthetic met-enkephalin analog discovered by Cyril Bowers at Tulane University through structure-activity screening of unnatural D-amino-acid-substituted enkephalin derivatives. Its 1984 characterization was a landmark finding, demonstrating a second, GHRH-independent pathway for pituitary GH secretion; this research program directly led to identification of the growth hormone secretagogue receptor (GHS-R1a) in 1996 and discovery of its endogenous ligand, ghrelin, in 1999. GHRP-6 has no opioid receptor activity despite its enkephalin origin. Compared to later-generation GHRPs (GHRP-2, hexarelin, ipamorelin), it produces the strongest appetite-stimulating effect of the class and a broader hormonal footprint, including modest cortisol and prolactin elevation at higher doses. It also binds the CD36 scavenger receptor, which has been explored for cardioprotective and cytoprotective properties distinct from its GH-releasing activity.",
+
+    "mechanism_of_action": "Agonist at the growth hormone secretagogue receptor (GHS-R1a, the ghrelin receptor) on pituitary somatotrophs, stimulating GH release through a pathway distinct from and synergistic with GHRH signaling. Also binds the CD36 scavenger receptor. Unlike more selective later-generation GHRPs, it produces meaningful ghrelin-receptor-mediated appetite stimulation and modest ACTH/cortisol and prolactin release at higher doses.",
+    "mechanism_citation_refs": [2, 3],
+
+    "molecular_weight": 873.03,
+    "molecular_formula": "C46H56N12O6",
+    "cas_number": "87616-84-0",
+    "pubchem_cid": 5486806,
+    "sequence": "His-D-Trp-Ala-Trp-D-Phe-Lys-NH2",
+    "sequence_type": "amino-acid-modified-hexapeptide",
+
+    "half_life": {
+      "value": 2.5,
+      "unit": "hours",
+      "isEstimated": false,
+      "note": "Elimination half-life approximately 2.5 hours; oral bioavailability is under 1%, so it is administered by injection.",
+      "citationRefs": [1]
+    },
+    "routes": ["subcutaneous"],
+    "default_dose_unit": "mcg",
+
+    "evidence_level": "early-human",
+    "human_trials": true,
+    "clinical_trials_count": 0,
+    "evidence_note": "Extensive foundational pharmacology in animals and early human studies established its GH-releasing and appetite-stimulating activity, and it played a key historical role in the discovery of the ghrelin receptor. No modern controlled trials support the body-composition or anti-aging uses it is marketed for, and it has no approved indication.",
+
+    "fda_status": "not-approved",
+    "fda_status_note": "Not FDA-approved for any indication. Sold by research-chemical vendors 'for research use only,' which does not authorize human use.",
+    "compounding_status": "not-eligible",
+    "compounding_note": "Not an FDA-approved drug, has no USP monograph, and is not on the 503A bulks list, so it is not eligible for legal pharmacy compounding.",
+    "wada_status": "prohibited",
+    "scheduled_controlled": false,
+    "research_only": true,
+    "regulatory_citation_refs": [4],
+
+    "benefits": [
+      { "label": "GH release (established mechanism)", "evidenceLevel": "early-human", "detail": "Potent, dose-dependent GH release via the ghrelin receptor, characterized in both animal and early human pharmacology.", "citationRefs": [2] },
+      { "label": "Appetite stimulation", "evidenceLevel": "early-human", "detail": "Strongest appetite-stimulating effect of the GHRP class, mediated by ghrelin-receptor agonism.", "citationRefs": [2] },
+      { "label": "Body composition / recovery (marketed, low evidence)", "evidenceLevel": "anecdotal", "detail": "Marketed for lean mass and recovery; not supported by high-quality modern human outcome trials.", "citationRefs": [] }
+    ],
+
+    "risks": [
+      { "label": "Cortisol / prolactin elevation", "severity": "unknown", "detail": "Unlike more selective later GHRPs (e.g., ipamorelin), GHRP-6 modestly raises ACTH/cortisol and prolactin at higher doses.", "citationRefs": [2] },
+      { "label": "Significant appetite stimulation", "severity": "mild", "detail": "The pronounced hunger effect can be undesirable depending on the user's goals.", "citationRefs": [2] },
+      { "label": "Unestablished long-term safety", "severity": "unknown", "detail": "No modern controlled long-term human safety data for the marketed uses.", "citationRefs": [] }
+    ],
+
+    "side_effects": [
+      { "label": "Increased hunger", "frequency": "common", "severity": "mild", "source": "clinical-study", "citationRefs": [2] },
+      { "label": "Injection-site reactions", "frequency": "anecdotal", "severity": "mild", "source": "community-report", "citationRefs": [] },
+      { "label": "Flushing / lethargy", "frequency": "anecdotal", "severity": "mild", "source": "community-report", "citationRefs": [] }
+    ],
+
+    "contraindications": [
+      { "label": "Competitive athletes", "detail": "GH secretagogues are prohibited under WADA S2.", "citationRefs": [4] },
+      { "label": "Active malignancy", "detail": "GH/IGF-1 elevation; avoid pending data.", "citationRefs": [] },
+      { "label": "Pregnancy and lactation", "detail": "No data; avoid.", "citationRefs": [] }
+    ],
+
+    "interactions": [],
+
+    "reconstitution": {
+      "note": "Lyophilized powder reconstituted with bacteriostatic water; final concentration depends on diluent volume.",
+      "lightSensitive": true,
+      "citationRefs": []
+    },
+    "storage": {
+      "lyophilized": { "tempC": "refrigerate; freeze for long-term", "stability": "Stable when kept cold and dry." },
+      "reconstituted": { "tempC": "2-8", "stability": "Refrigerate; use within a limited window." },
+      "lightSensitive": true
+    },
+
+    "last_reviewed": "2026-06-15",
+    "reviewed_by": "editorial",
+    "content_version": 1,
+    "data_completeness": "partial",
+    "disclaimer": "For research and educational purposes only. This is not medical advice. GHRP-6 is not FDA-approved and is prohibited in sport. Consult a licensed healthcare provider before using any peptide."
+  },
+
+  "references": [
+    { "ref_id": 1, "type": "database", "title": "GHRP-6 — compound summary (CID 5486806)", "first_author": null, "year": "2026", "source": "PubChem / Wikipedia", "pmid": null, "doi": null, "url": "https://en.wikipedia.org/wiki/GHRP-6" },
+    { "ref_id": 2, "type": "review", "title": "GHRP-6 (growth hormone-releasing hexapeptide): discovery, ghrelin-receptor pharmacology, and hormonal effects", "first_author": "Bowers CY", "year": "1984", "source": "Foundational pharmacology / review literature", "pmid": null, "doi": null, "url": "https://en.wikipedia.org/wiki/GHRP-6" },
+    { "ref_id": 3, "type": "journal-article", "title": "Ghrelin is a growth-hormone-releasing acylated peptide from stomach (discovery of the endogenous GHS-R1a ligand, foundational to GHRP mechanism)", "first_author": "Kojima M", "year": "1999", "source": "Nature", "pmid": "10604470", "doi": "10.1038/45230", "url": "https://pubmed.ncbi.nlm.nih.gov/10604470/" },
+    { "ref_id": 4, "type": "regulatory-document", "title": "WADA Prohibited List — GH secretagogues (S2) prohibited at all times", "first_author": null, "year": "2026", "source": "WADA", "pmid": null, "doi": null, "url": "https://www.wada-ama.org/en/prohibited-list" }
+  ],
+
+  "dose_ranges": [
+    {
+      "context": "Commonly cited non-clinical use range — NOT validated",
+      "low": 100, "high": 300, "unit": "mcg",
+      "route": "subcutaneous", "frequency": "1-3x daily (anecdotal)",
+      "note": "Frequently reported anecdotal range, often paired with a GHRH analog. No controlled human trial supports this. Documented for reference only; not a recommendation.",
+      "citation_refs": []
+    }
+  ],
+
+  "protocols": [
+    {
+      "id": "ghrp-6-ghrh-pairing-anecdotal",
+      "name": "GHRH + GHRP pairing (anecdotal pattern)",
+      "description": "Non-clinical sources describe pairing GHRP-6 with a GHRH analog (e.g., CJC-1295) to combine complementary GH-stimulating pathways, noting the stronger appetite effect versus newer GHRPs. Summarized only to document the reported pattern.",
+      "phase": "anecdotal",
+      "duration_weeks": { "min": 8, "max": 12 },
+      "dosing": { "amountLow": 100, "amountHigh": 300, "unit": "mcg", "frequency": "1-3x daily (anecdotal)", "route": "subcutaneous" },
+      "cycling_notes": "No validated cycling protocol exists in humans.",
+      "is_recommendation": false,
+      "disclaimer": "Informational summary of anecdotal usage. Not medical advice or a dosing recommendation.",
+      "citation_refs": []
+    }
+  ],
+
+  "related": [
+    { "related_peptide_id": "ipamorelin", "relationship": "same-class", "note": "Both are GHS-R1a (ghrelin receptor) agonists; ipamorelin was developed later as a more selective successor with less appetite/cortisol/prolactin effect." },
+    { "related_peptide_id": "cjc-1295-no-dac", "relationship": "commonly-studied-alongside", "note": "GHRP-6 is frequently paired with the GHRH analog CJC-1295 (no DAC) for combined GH-stimulating pathways." }
+  ],
+
+  "stacks": [
+    { "partner_id": "cjc-1295-no-dac", "compatibility": "commonly-combined", "rationale": "Complementary GH-stimulating mechanisms (GHS-R agonist + GHRH analog). Popular pairing anecdotally; not supported by controlled human outcome trials.", "evidence_level": "anecdotal", "citation_refs": [] }
+  ]
+}

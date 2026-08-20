@@ -1,0 +1,125 @@
+{
+  "peptide": {
+    "id": "dsip",
+    "name": "DSIP",
+    "aliases": ["Delta Sleep-Inducing Peptide", "Delta Sleep Inducing Peptide", "Emideltide"],
+    "tags": ["sleep", "neuropeptide", "circadian", "anticonvulsant"],
+    "category": "cognitive",
+    "usage_category": "research",
+    "approval_category": "research-chemical",
+
+    "summary": "DSIP (delta sleep-inducing peptide) is a naturally occurring nonapeptide first isolated from the cerebral venous blood of sleeping rabbits, associated with slow-wave (delta) EEG activity. It is found endogenously in human plasma and tissues, with levels correlated to circadian rhythm. Its gene, precursor, and receptor have never been identified, and modern reproducibility of its original sleep-inducing effects is limited. It is not FDA-approved.</br>",
+
+    "description": "DSIP has the sequence Trp-Ala-Gly-Gly-Asp-Ala-Ser-Gly-Glu (WAGGDASGE), isolated and characterized by Schoenenberger and Monnier in 1977 after intraventricular infusion into rabbits produced spindle and delta EEG activity with reduced motor activity. Despite the name, its role as a genuine physiological sleep regulator remains scientifically unresolved -- no gene, precursor protein, or dedicated receptor has been identified in the four decades since its discovery, and a substantial review literature (Graf & Kastin 1984; Kovalzon & Strekalova 2006) treats it as 'a still unresolved riddle.' Beyond sleep, DSIP has been studied preclinically for anticonvulsant activity (potentiating valproate in an epilepsy model), analgesic effects via modulation of enkephalin-opioid receptor interactions, and neuroprotection in models of toxic cerebral edema. It crosses the blood-brain barrier and is also absorbed from the gut. It is sold as a research chemical with no approved human indication.",
+
+    "mechanism_of_action": "Mechanism is not well characterized; DSIP has no confirmed dedicated receptor. Proposed activities include modulation of GABAergic and opioid (enkephalin) signaling, effects on the hypothalamic-pituitary axis, and correlation with circadian rhythm and stress-hormone regulation. Structural similarity to dermorphin (a mu-opioid agonist) has been noted but DSIP's own receptor pharmacology remains unresolved.",
+    "mechanism_citation_refs": [3, 4],
+
+    "molecular_weight": 848.81,
+    "molecular_formula": "C35H48N10O15",
+    "cas_number": "62568-57-4",
+    "pubchem_cid": 68816,
+    "sequence": "Trp-Ala-Gly-Gly-Asp-Ala-Ser-Gly-Glu",
+    "sequence_type": "amino-acid-single-letter",
+
+    "half_life": {
+      "value": null,
+      "unit": "minutes",
+      "isEstimated": true,
+      "note": "Short plasma half-life expected for a small unmodified nonapeptide; not precisely characterized in modern human pharmacokinetic studies.",
+      "citationRefs": [1]
+    },
+    "routes": ["subcutaneous", "intranasal"],
+    "default_dose_unit": "mcg",
+
+    "evidence_level": "preclinical",
+    "human_trials": false,
+    "clinical_trials_count": 0,
+    "evidence_note": "Original findings are from 1970s-80s animal studies (rabbit intraventricular infusion) and small, dated human investigations without modern controlled-trial standards. No gene, precursor, or receptor has been identified, and the review literature explicitly describes DSIP's physiological role as unresolved. Treat sleep-improvement claims as unproven.",
+
+    "fda_status": "not-approved",
+    "fda_status_note": "Not FDA-approved. Sold in the US as a research chemical 'for research use only.'",
+    "compounding_status": "not-eligible",
+    "compounding_note": "Not an FDA-approved drug, no USP monograph, not on the 503A bulks list; not eligible for legal pharmacy compounding.",
+    "wada_status": "unknown",
+    "scheduled_controlled": false,
+    "research_only": true,
+    "regulatory_citation_refs": [],
+
+    "benefits": [
+      { "label": "Delta (slow-wave) EEG activity (animal, historical)", "evidenceLevel": "preclinical", "detail": "Intraventricular infusion induced spindle and delta EEG activity with reduced motor activity in rabbits in the original 1977 characterization.", "citationRefs": [2] },
+      { "label": "Anticonvulsant activity (preclinical)", "evidenceLevel": "preclinical", "detail": "Suppressed seizures and potentiated valproate's anticonvulsant activity in a metaphit-induced epilepsy model.", "citationRefs": [3] },
+      { "label": "Analgesic effect (preclinical)", "evidenceLevel": "preclinical", "detail": "Modulates enkephalin-opioid receptor interactions, associated with analgesic effects in animal models.", "citationRefs": [3] },
+      { "label": "Sleep quality (marketed, unproven in modern trials)", "evidenceLevel": "anecdotal", "detail": "Marketed for sleep support; the mechanism and reproducibility of this effect in modern controlled human trials is not established.", "citationRefs": [4] }
+    ],
+
+    "risks": [
+      { "label": "Mechanism and receptor unidentified", "severity": "unknown", "detail": "Because no dedicated receptor or precursor has been found, off-target and long-term effects are poorly characterized.", "citationRefs": [4] },
+      { "label": "Unregulated product quality", "severity": "unknown", "detail": "Research-chemical sourcing varies in purity and identity.", "citationRefs": [] }
+    ],
+
+    "side_effects": [
+      { "label": "Injection-site reactions", "frequency": "anecdotal", "severity": "mild", "source": "community-report", "citationRefs": [] },
+      { "label": "Vivid dreams / grogginess (anecdotal)", "frequency": "anecdotal", "severity": "mild", "source": "community-report", "citationRefs": [] }
+    ],
+
+    "contraindications": [
+      { "label": "Pregnancy and lactation", "detail": "Insufficient data; avoid.", "citationRefs": [] }
+    ],
+
+    "interactions": [],
+
+    "reconstitution": {
+      "note": "Lyophilized powder reconstituted with bacteriostatic water; concentration depends on diluent volume. Also studied intranasally in early literature.",
+      "lightSensitive": true,
+      "citationRefs": []
+    },
+    "storage": {
+      "lyophilized": { "tempC": "refrigerate; freeze for long-term", "stability": "Stable when kept cold and dry." },
+      "reconstituted": { "tempC": "2-8", "stability": "Refrigerate; use within a limited window." },
+      "lightSensitive": true
+    },
+
+    "last_reviewed": "2026-06-15",
+    "reviewed_by": "editorial",
+    "content_version": 1,
+    "data_completeness": "partial",
+    "disclaimer": "For research and educational purposes only. This is not medical advice. DSIP is not FDA-approved and its physiological role and mechanism remain scientifically unresolved. Consult a licensed healthcare provider before using any peptide."
+  },
+
+  "references": [
+    { "ref_id": 1, "type": "database", "title": "Delta sleep-inducing peptide (DSIP) — compound summary (CID 68816)", "first_author": null, "year": "2026", "source": "PubChem", "pmid": null, "doi": null, "url": "https://pubchem.ncbi.nlm.nih.gov/compound/68816" },
+    { "ref_id": 2, "type": "journal-article", "title": "Isolation and characterization of a delta EEG-inducing peptide", "first_author": "Schoenenberger GA", "year": "1977", "source": "Proc Natl Acad Sci USA", "pmid": "195860", "doi": "10.1073/pnas.74.3.1282", "url": "https://pubmed.ncbi.nlm.nih.gov/195860/" },
+    { "ref_id": 3, "type": "review", "title": "Delta-sleep-inducing peptide (DSIP): a still unresolved riddle", "first_author": "Kovalzon VM", "year": "2006", "source": "J Neurochem", "pmid": null, "doi": "10.1111/j.1471-4159.2006.03693.x", "url": "https://onlinelibrary.wiley.com/doi/10.1111/j.1471-4159.2006.03693.x" },
+    { "ref_id": 4, "type": "review", "title": "Delta-sleep-inducing peptide (DSIP): a review", "first_author": "Graf MV", "year": "1984", "source": "Neurosci Biobehav Rev", "pmid": "6431462", "doi": "10.1016/0149-7634(84)90022-8", "url": "https://pubmed.ncbi.nlm.nih.gov/6431462/" }
+  ],
+
+  "dose_ranges": [
+    {
+      "context": "Commonly cited non-clinical use range — NOT validated",
+      "low": 100, "high": 300, "unit": "mcg",
+      "route": "subcutaneous", "frequency": "before bedtime (anecdotal)",
+      "note": "Frequently reported anecdotal range. No modern controlled human trial validates a specific dose or reproducibility of sleep effects. Documented for reference only; not a recommendation.",
+      "citation_refs": []
+    }
+  ],
+
+  "protocols": [
+    {
+      "id": "dsip-sleep-anecdotal",
+      "name": "Sleep support (anecdotal pattern)",
+      "description": "Non-clinical sources describe subcutaneous use shortly before bedtime for sleep support. Summarized only to document the reported pattern; the underlying mechanism and modern reproducibility are unresolved in the scientific literature.",
+      "phase": "anecdotal",
+      "duration_weeks": { "min": 1, "max": 4 },
+      "dosing": { "amountLow": 100, "amountHigh": 300, "unit": "mcg", "frequency": "before bedtime (anecdotal)", "route": "subcutaneous" },
+      "cycling_notes": "No validated cycling protocol exists.",
+      "is_recommendation": false,
+      "disclaimer": "Informational summary of anecdotal usage. Not medical advice or a dosing recommendation.",
+      "citation_refs": []
+    }
+  ],
+
+  "related": [],
+
+  "stacks": []
+}

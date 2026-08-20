@@ -2,14 +2,14 @@
 """
 Seed peptide knowledge-base JSON files into the database.
 
-Each JSON file must follow the same structure as docs/tb-500.json:
+Each JSON file must follow the same structure as docs/dsip.json:
   { "peptide": {...}, "references": [...], "dose_ranges": [...],
     "protocols": [...], "related": [...], "stacks": [...] }
 
 Usage (from peptora-api/ directory):
-    python scripts/seed_peptides.py                        # all *.json in ../docs/
-    python scripts/seed_peptides.py ../docs/tb-500.json   # one file
-    python scripts/seed_peptides.py ../docs/*.json        # glob (shell expands)
+    python scripts/seed_peptides.py                       # all *.json in docs/
+    python scripts/seed_peptides.py docs/dsip.json         # one file
+    python scripts/seed_peptides.py docs/*.json            # glob (shell expands)
 
 Two-pass design:
   Pass 1 — peptides, references, dose_ranges, protocols  (no cross-FK deps)
@@ -291,8 +291,8 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         file_paths = [Path(p).resolve() for p in sys.argv[1:]]
     else:
-        # Default: all JSON files in the sibling docs/ directory
-        docs_dir = Path(__file__).resolve().parents[2] / "docs"
+        # Default: all JSON files in peptora-api/docs/ (inside the repo, so it deploys)
+        docs_dir = Path(__file__).resolve().parents[1] / "docs"
         file_paths = sorted(docs_dir.glob("*.json"))
         if not file_paths:
             print(f"No *.json files found in {docs_dir}")

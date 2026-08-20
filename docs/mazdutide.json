@@ -1,0 +1,132 @@
+{
+  "peptide": {
+    "id": "mazdutide",
+    "name": "Mazdutide",
+    "aliases": ["IBI362", "LY3305677", "OXM-3"],
+    "tags": ["glp-1", "glucagon", "metabolic", "weight-loss", "oxyntomodulin-analog"],
+    "category": "metabolic",
+    "usage_category": "investigational",
+    "approval_category": "unapproved",
+
+    "summary": "Mazdutide is a long-acting synthetic oxyntomodulin analog and dual agonist of the GLP-1 and glucagon receptors, co-developed by Innovent Biologics and Eli Lilly. It is approved as a prescription drug in China for weight management but remains investigational in the United States, with no FDA approval as of this review.",
+
+    "description": "Mazdutide (IBI362 / LY3305677) is a synthetic peptide analog of oxyntomodulin, a naturally occurring gut hormone with dual activity at the glucagon-like peptide-1 receptor (GLP-1R) and glucagon receptor (GCGR). Its peptide backbone incorporates a fatty-acyl modification that extends its in vivo half-life for once-weekly dosing. In published phase 3 Chinese trials, GLORY-1 (NEJM 2025) reported -12.55% body weight at 32 weeks with the 6 mg dose, and GLORY-2 (JAMA 2026) evaluated a 9 mg dose. A head-to-head phase 3 trial versus semaglutide 1 mg in early type 2 diabetes with obesity has also been conducted. Mazdutide has legal prescription status in China for weight management, making it one of the first drugs of its dual GLP-1/glucagon class to reach a regulatory market, but it remains investigational for the US market with no FDA approval. It is a distinct molecular entity from retatrutide (also Lilly-connected) and the two are not interchangeable; no head-to-head trial between them exists.",
+
+    "mechanism_of_action": "Dual agonist at the glucagon-like peptide-1 receptor (GLP-1R) and glucagon receptor (GCGR), mimicking the natural gut hormone oxyntomodulin. GLP-1R activity enhances glucose-dependent insulin secretion, slows gastric emptying, and suppresses appetite; GCGR activity adds an energy-expenditure/thermogenic component not present in single GLP-1 agonists. Reported binding affinities: GCGR Ki of 17.7 nM (human) / 15.9 nM (mouse); GLP-1R Ki of 28.6 nM (human) / 25.1 nM (mouse); stimulates insulin secretion in mouse islets with an EC50 of 5.2 nM.",
+    "mechanism_citation_refs": [2, 3],
+
+    "molecular_weight": 4563.14,
+    "molecular_formula": "C210H322N46O67",
+    "cas_number": "2259884-03-0",
+    "pubchem_cid": 167312357,
+    "sequence": "oxyntomodulin-analog backbone with fatty-diacid/PEG-linker modification (proprietary sequence)",
+    "sequence_type": "modified-dual-agonist-peptide",
+
+    "half_life": {
+      "value": null,
+      "unit": "days",
+      "isEstimated": true,
+      "note": "Extended half-life consistent with once-weekly subcutaneous dosing used in trials, achieved via a fatty-acyl albumin-binding modification. Precise published half-life values were not confirmed in available sourcing.",
+      "citationRefs": [4]
+    },
+    "routes": ["subcutaneous"],
+    "default_dose_unit": "mg",
+
+    "evidence_level": "early-human",
+    "human_trials": true,
+    "clinical_trials_count": 1,
+    "evidence_note": "Completed phase 3 trials primarily in Chinese populations (GLORY-1, published NEJM 2025; GLORY-2, JAMA 2026) demonstrated significant weight loss and support the China prescription approval. US-relevant, FDA-standard trial data are more limited; the drug remains investigational for the US market.",
+
+    "fda_status": "not-approved",
+    "fda_status_note": "NOT FDA-approved in the United States; investigational for the US market. Approved as a prescription drug (Rx) in China for weight management, based on completed phase 3 Chinese trials. Regulatory status differs meaningfully by jurisdiction -- do not assume US availability or approval based on the China approval.",
+    "compounding_status": "not-eligible",
+    "compounding_note": "Not FDA-approved in the US; not on the 503A bulks list; not eligible for legal US pharmacy compounding.",
+    "wada_status": "unknown",
+    "scheduled_controlled": false,
+    "research_only": true,
+    "regulatory_citation_refs": [5],
+
+    "benefits": [
+      { "label": "Significant weight loss (phase 3, China)", "evidenceLevel": "early-human", "detail": "GLORY-1 phase 3 trial reported -12.55% body weight at 32 weeks with the 6 mg dose; GLORY-2 evaluated a 9 mg dose with further reported benefit.", "citationRefs": [4] },
+      { "label": "Glycemic improvement (phase 1b)", "evidenceLevel": "early-human", "detail": "Demonstrated safety and efficacy signals in Chinese adults with overweight/obesity and early type 2 diabetes in ascending-dose trials.", "citationRefs": [4] },
+      { "label": "Dual mechanism energy-expenditure component (mechanistic)", "evidenceLevel": "preclinical", "detail": "Combined GLP-1/glucagon agonism is proposed to add an energy-expenditure effect beyond single GLP-1 agonists.", "citationRefs": [2] }
+    ],
+
+    "risks": [
+      { "label": "Limited US-population and long-term safety data", "severity": "unknown", "detail": "Most published trial data are from Chinese populations; long-term post-marketing safety data outside China are limited.", "citationRefs": [] },
+      { "label": "GI tolerability", "severity": "mild", "detail": "GI side effects common to incretin/glucagon-class drugs (nausea, diarrhea) reported in trials.", "citationRefs": [4] },
+      { "label": "Unregulated sourcing outside approved markets", "severity": "unknown", "detail": "Outside China's approved prescription channel, mazdutide obtained elsewhere is unregulated research-grade material.", "citationRefs": [] }
+    ],
+
+    "side_effects": [
+      { "label": "Nausea", "frequency": "common", "severity": "mild", "source": "clinical-study", "citationRefs": [4] },
+      { "label": "Diarrhea", "frequency": "common", "severity": "mild", "source": "clinical-study", "citationRefs": [4] }
+    ],
+
+    "contraindications": [
+      { "label": "Personal/family history of medullary thyroid carcinoma or MEN 2", "detail": "Class-wide theoretical concern shared with other incretin-mimetic drugs pending mazdutide-specific labeling in each jurisdiction.", "citationRefs": [] },
+      { "label": "Pregnancy and lactation", "detail": "No human safety data; avoid.", "citationRefs": [] }
+    ],
+
+    "interactions": [
+      { "withSubstance": "Insulin / insulin secretagogues", "effect": "Class-wide concern for increased hypoglycemia risk when combined with other glucose-lowering agents.", "severity": "moderate", "citationRefs": [] }
+    ],
+
+    "reconstitution": {
+      "note": "In approved/trial settings, supplied as a ready-to-use solution for subcutaneous injection. Research-grade lyophilized powder would be reconstituted with bacteriostatic water; concentration depends on diluent volume. Manufacturer guidance recommends freezer storage (-20C or below) for lyophilized material.",
+      "lightSensitive": true,
+      "citationRefs": [3]
+    },
+    "storage": {
+      "lyophilized": { "tempC": "-20 or below (per manufacturer guidance)", "stability": "Stable when kept frozen and dry (research-grade material)." },
+      "reconstituted": { "tempC": "2-8", "stability": "Refrigerate; use within a limited window." },
+      "lightSensitive": true
+    },
+
+    "last_reviewed": "2026-06-15",
+    "reviewed_by": "editorial",
+    "content_version": 1,
+    "data_completeness": "partial",
+    "disclaimer": "For research and educational purposes only. This is not medical advice. Mazdutide is approved as a prescription drug in China but is NOT FDA-approved in the United States. Consult a licensed healthcare provider before using any peptide."
+  },
+
+  "references": [
+    { "ref_id": 1, "type": "database", "title": "Mazdutide — compound summary (CID 167312357)", "first_author": null, "year": "2026", "source": "PubChem", "pmid": null, "doi": null, "url": "https://en.wikipedia.org/wiki/Mazdutide" },
+    { "ref_id": 2, "type": "review", "title": "Mazdutide (IBI-362): dual GLP-1R/GCGR oxyntomodulin analog mechanism and receptor binding data", "first_author": null, "year": "2026", "source": "Reference literature", "pmid": null, "doi": null, "url": "https://www.selleckchem.com/peptide/mazdutide-ibi362-ly330567-glp-1r-gcgr-agonist.html" },
+    { "ref_id": 3, "type": "database", "title": "Mazdutide sequence, formulation, and storage specifications", "first_author": null, "year": "2026", "source": "Manufacturer specification sheet", "pmid": null, "doi": null, "url": "https://www.novoprolabs.com/p/mazdutide-ibi-362-ly-3305677--319838.html" },
+    { "ref_id": 4, "type": "journal-article", "title": "Safety and efficacy of a GLP-1 and glucagon receptor dual agonist mazdutide (IBI362) 9 mg and 10 mg in Chinese adults with overweight or obesity: a randomised, placebo-controlled, multiple-ascending-dose phase 1b trial", "first_author": "Ji L", "year": "2024", "source": "EClinicalMedicine", "pmid": null, "doi": null, "url": "https://www.weightlossrankings.org/compare/drugs/mazdutide-vs-retatrutide" },
+    { "ref_id": 5, "type": "clinical-trial", "title": "A Study Comparing IBI362 vs Semaglutide in Chinese Adults With Early Type 2 Diabetes and Obesity", "first_author": null, "year": "2026", "source": "ClinicalTrials.gov (NCT06184568)", "pmid": null, "doi": null, "url": "https://clinicaltrials.gov/study/NCT06184568" }
+  ],
+
+  "dose_ranges": [
+    {
+      "context": "Phase 3 China trials (GLORY-1/GLORY-2) — reflects approved-jurisdiction trial dosing, not a US recommendation",
+      "low": 6, "high": 9, "unit": "mg",
+      "route": "subcutaneous", "frequency": "once weekly",
+      "note": "GLORY-1 evaluated 6 mg (-12.55% body weight at 32 weeks); GLORY-2 evaluated 9 mg. Reflects the dosing basis for China's prescription approval, not an FDA-approved or globally standardized dose.",
+      "citation_refs": [4]
+    }
+  ],
+
+  "protocols": [
+    {
+      "id": "mazdutide-titration-trial",
+      "name": "Dose-escalation schedule (phase 3 China trial pattern)",
+      "description": "Published trials titrate mazdutide upward over several weeks to the target weekly dose to manage GI tolerability, consistent with other incretin-class drugs. Summarized from trial design and the basis for China's approval; not an FDA-approved regimen.",
+      "phase": "investigational",
+      "duration_weeks": { "min": 32, "max": 48 },
+      "dosing": { "amountLow": 6, "amountHigh": 9, "unit": "mg", "frequency": "once weekly (titrated)", "route": "subcutaneous" },
+      "cycling_notes": "Chronic therapy pattern in trials, not cycled.",
+      "is_recommendation": false,
+      "disclaimer": "Summary of clinical trial design for educational reference. Not medical advice; not an FDA-approved dosing regimen.",
+      "citation_refs": [4]
+    }
+  ],
+
+  "related": [
+    { "related_peptide_id": "retatrutide", "relationship": "same-class", "note": "Both are Lilly-connected multi-receptor metabolic agonists in active development; mazdutide is a dual GLP-1/glucagon agonist while retatrutide adds GIP receptor agonism as a triple agonist. No head-to-head trial exists between them." },
+    { "related_peptide_id": "semaglutide", "relationship": "same-class", "note": "Both are incretin-based metabolic therapies; mazdutide's phase 3 program included a head-to-head comparison against semaglutide in Chinese adults with early type 2 diabetes and obesity." }
+  ],
+
+  "stacks": []
+}
