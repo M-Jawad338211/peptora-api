@@ -513,6 +513,8 @@ class RegulatoryUpdate(BaseModel):
 class UserProtocolCreate(BaseModel):
     peptide_id: Optional[str] = None
     peptide_name: Optional[str] = None
+    stack_id: Optional[str] = None
+    stack_name: Optional[str] = None
     label: Optional[str] = None
     status: str = "active"
     vial_mg: float
@@ -547,9 +549,17 @@ class UserProtocolCreate(BaseModel):
             raise ValueError("status must be active, paused, or completed")
         return v
 
+    @model_validator(mode="after")
+    def single_target(self) -> "UserProtocolCreate":
+        if self.peptide_id and self.stack_id:
+            raise ValueError("A protocol can target a peptide or a stack, not both")
+        return self
+
 
 class UserProtocolUpdate(BaseModel):
     label: Optional[str] = None
+    stack_id: Optional[str] = None
+    stack_name: Optional[str] = None
     status: Optional[str] = None
     frequency: Optional[str] = None
     start_date: Optional[date] = None
@@ -593,6 +603,8 @@ class UserProtocolItem(BaseModel):
     id: uuid.UUID
     peptide_id: Optional[str]
     peptide_name: Optional[str]
+    stack_id: Optional[str]
+    stack_name: Optional[str]
     label: Optional[str]
     status: str
     vial_mg: float

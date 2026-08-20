@@ -68,6 +68,8 @@ async def create_protocol(
         user_id=user.id,
         peptide_id=body.peptide_id,
         peptide_name=body.peptide_name,
+        stack_id=body.stack_id,
+        stack_name=body.stack_name,
         label=body.label,
         status=body.status,
         vial_mg=body.vial_mg,

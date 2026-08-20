@@ -592,6 +592,8 @@ class UserProtocol(Base):
     user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     peptide_id: Mapped[str | None] = mapped_column(String, ForeignKey("peptides.id", ondelete="SET NULL"), nullable=True)
     peptide_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    stack_id: Mapped[str | None] = mapped_column(String, ForeignKey("peptide_stacks.id", ondelete="SET NULL"), nullable=True)
+    stack_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
     label: Mapped[str | None] = mapped_column(Text, nullable=True)
     status: Mapped[str] = mapped_column(String(20), nullable=False, server_default="active")
     vial_mg: Mapped[float] = mapped_column(Numeric(10, 3), nullable=False)
@@ -614,4 +616,5 @@ class UserProtocol(Base):
         CheckConstraint("vial_mg > 0", name="ck_user_protocols_vial_mg_positive"),
         CheckConstraint("target_dose_mcg > 0", name="ck_user_protocols_dose_positive"),
         CheckConstraint("status IN ('active','paused','completed')", name="ck_user_protocols_status"),
+        CheckConstraint("peptide_id IS NULL OR stack_id IS NULL", name="ck_user_protocols_single_target"),
     )
