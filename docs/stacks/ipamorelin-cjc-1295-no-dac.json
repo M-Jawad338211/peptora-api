@@ -1,0 +1,35 @@
+{
+  "stack": {
+    "id": "ipamorelin-cjc-1295-no-dac",
+    "name": "Ipamorelin + CJC-1295 (no DAC)",
+    "aliases": [],
+    "stack_type": "research_pairing",
+    "category": "growth-hormone",
+    "positioning": "One of the most commonly discussed two-peptide research pairings, combining a selective ghrelin-receptor agonist with a GHRH analog to stimulate growth hormone release through two complementary receptor pathways.",
+    "rationale": "Complementary GH-stimulating mechanisms (GHRH analog + GHS-R agonist). Popular pairing anecdotally; not supported by controlled human outcome trials.",
+    "evidence_level": "anecdotal",
+    "caution_notes": [
+      "Both peptides in this pairing are Growth Hormone Secretagogues/GHRH analogs (WADA S2), prohibited at all times whether used alone or combined.",
+      "Combined-use safety and interaction data have not been formally studied beyond each peptide's individual, largely early-human research."
+    ],
+    "disclaimer": "For research and educational purposes only. This is not medical advice. Neither peptide is FDA-approved. Consult a licensed healthcare provider before using any peptide.",
+    "last_reviewed": "2026-08-20",
+    "reviewed_by": "editorial",
+    "content_version": 1,
+    "data_completeness": "partial"
+  },
+  "components": [
+    {
+      "peptide_id": "ipamorelin",
+      "sort_order": 1,
+      "role": "Selective ghrelin-receptor (GHS-R1a) agonist that stimulates pulsatile GH release with minimal effect on cortisol/prolactin.",
+      "dose_note": "Typically dosed together with CJC-1295 (no DAC) at the same injection time in research protocols, though each peptide is dosed according to its own studied range."
+    },
+    {
+      "peptide_id": "cjc-1295-no-dac",
+      "sort_order": 2,
+      "role": "GHRH analog that extends the amplitude/duration of GH pulses; commonly paired with a GHRP/ghrelin-receptor agonist like ipamorelin for a synergistic release pattern."
+    }
+  ],
+  "references": []
+}

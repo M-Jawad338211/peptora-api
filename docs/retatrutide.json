@@ -128,7 +128,5 @@
     { "related_peptide_id": "tirzepatide", "relationship": "same-class", "note": "Both are Lilly-developed multi-receptor incretin agonists; tirzepatide is a dual GIP/GLP-1 agonist, while retatrutide adds glucagon receptor agonism as a triple agonist." },
     { "related_peptide_id": "semaglutide", "relationship": "same-class", "note": "Both are incretin-based metabolic therapies, though semaglutide is a single GLP-1 receptor agonist versus retatrutide's triple-receptor mechanism." },
     { "related_peptide_id": "mazdutide", "relationship": "same-class", "note": "Both are multi-receptor incretin/glucagon agonists in active development; mazdutide is a dual GLP-1/glucagon agonist while retatrutide adds GIP receptor agonism. No head-to-head trial exists between them." }
-  ],
-
-  "stacks": []
+  ]
 }

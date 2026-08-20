@@ -128,7 +128,5 @@
 
   "related": [
     { "related_peptide_id": "cjc-1295-no-dac", "relationship": "same-class", "note": "Both are GHRH-receptor analogs, though tesamorelin is the full GHRH(1-44) sequence with an approved clinical indication, while CJC-1295 (no DAC) is a shorter GHRH(1-29) fragment sold as a research chemical." }
-  ],
-
-  "stacks": []
+  ]
 }

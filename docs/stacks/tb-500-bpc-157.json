@@ -1,0 +1,47 @@
+{
+  "stack": {
+    "id": "tb-500-bpc-157",
+    "name": "TB-500 + BPC-157",
+    "aliases": [],
+    "stack_type": "research_pairing",
+    "category": "healing",
+    "positioning": "One of the most commonly discussed two-peptide research pairings in the healing/recovery category, combining two peptides studied for tissue-repair activity through different proposed mechanisms.",
+    "rationale": "Proposed complementary mechanisms (TB-500 via actin sequestration; BPC-157 via NO/angiogenesis pathways). Combination is popular anecdotally but unsupported by controlled human data.",
+    "evidence_level": "anecdotal",
+    "caution_notes": [
+      "Both TB-500 and BPC-157 are on the WADA Prohibited List at all times (S2).",
+      "Combined-use safety data does not exist beyond each peptide's individual, largely preclinical profile."
+    ],
+    "disclaimer": "For research and educational purposes only. This is not medical advice. Neither peptide is FDA-approved. Consult a licensed healthcare provider before using any peptide.",
+    "last_reviewed": "2026-08-20",
+    "reviewed_by": "editorial",
+    "content_version": 1,
+    "data_completeness": "partial"
+  },
+  "components": [
+    {
+      "peptide_id": "tb-500",
+      "sort_order": 1,
+      "role": "Proposed to promote cell migration and angiogenesis via actin sequestration (thymosin beta-4 fragment).",
+      "dose_note": "In this pairing, TB-500 and BPC-157 are typically dosed independently at each peptide's own studied range and injection frequency; there is no established dose relationship between them beyond co-administration."
+    },
+    {
+      "peptide_id": "bpc-157",
+      "sort_order": 2,
+      "role": "Proposed gastroprotective and angiogenic peptide via nitric-oxide pathway signaling; one of the most frequently stacked research peptides."
+    }
+  ],
+  "references": [
+    {
+      "ref_id": 1,
+      "type": "review",
+      "title": "TB-500 (Thymosin Beta-4): evidence review and regulatory status",
+      "first_author": null,
+      "year": "2026",
+      "source": "Independent review",
+      "pmid": null,
+      "doi": null,
+      "url": "https://www.bscg.org/blogs/single/tb-500-status-risks-and-bans-in-sport-and-military"
+    }
+  ]
+}

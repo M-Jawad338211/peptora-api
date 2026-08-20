@@ -1,0 +1,34 @@
+{
+  "stack": {
+    "id": "ghrp-6-cjc-1295-no-dac",
+    "name": "GHRP-6 + CJC-1295 (no DAC)",
+    "aliases": [],
+    "stack_type": "research_pairing",
+    "category": "growth-hormone",
+    "positioning": "A research pairing combining the original ghrelin-receptor-agonist GH secretagogue with a GHRH analog to stimulate growth hormone release through two complementary receptor pathways.",
+    "rationale": "Complementary GH-stimulating mechanisms (GHS-R agonist + GHRH analog). Popular pairing anecdotally; not supported by controlled human outcome trials.",
+    "evidence_level": "anecdotal",
+    "caution_notes": [
+      "Both peptides in this pairing are Growth Hormone Secretagogues/GHRH analogs (WADA S2), prohibited at all times whether used alone or combined.",
+      "GHRP-6 causes pronounced appetite stimulation and modest cortisol/prolactin elevation; combined-use safety data with CJC-1295 (no DAC) has not been formally studied."
+    ],
+    "disclaimer": "For research and educational purposes only. This is not medical advice. Neither peptide is FDA-approved. Consult a licensed healthcare provider before using any peptide.",
+    "last_reviewed": "2026-08-20",
+    "reviewed_by": "editorial",
+    "content_version": 1,
+    "data_completeness": "partial"
+  },
+  "components": [
+    {
+      "peptide_id": "ghrp-6",
+      "sort_order": 1,
+      "role": "Ghrelin-receptor (GHS-R1a) agonist that also stimulates appetite; the original growth hormone-releasing hexapeptide."
+    },
+    {
+      "peptide_id": "cjc-1295-no-dac",
+      "sort_order": 2,
+      "role": "GHRH analog that extends the amplitude/duration of GH pulses; commonly paired with a GHRP for a synergistic release pattern."
+    }
+  ],
+  "references": []
+}

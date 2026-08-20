@@ -126,7 +126,5 @@
   "related": [
     { "related_peptide_id": "retatrutide", "relationship": "same-class", "note": "Both are Lilly-connected multi-receptor metabolic agonists in active development; mazdutide is a dual GLP-1/glucagon agonist while retatrutide adds GIP receptor agonism as a triple agonist. No head-to-head trial exists between them." },
     { "related_peptide_id": "semaglutide", "relationship": "same-class", "note": "Both are incretin-based metabolic therapies; mazdutide's phase 3 program included a head-to-head comparison against semaglutide in Chinese adults with early type 2 diabetes and obesity." }
-  ],
-
-  "stacks": []
+  ]
 }

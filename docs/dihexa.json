@@ -108,7 +108,5 @@
   "related": [
     { "related_peptide_id": "semax", "relationship": "commonly-studied-alongside", "note": "Both are marketed as cognitive-enhancement research peptides, though via entirely different mechanisms (dihexa: HGF/c-Met synaptogenesis; semax: BDNF/NGF and monoamine modulation)." },
     { "related_peptide_id": "selank", "relationship": "commonly-studied-alongside", "note": "Sometimes paired in cognitive-research contexts; different mechanisms and evidence bases." }
-  ],
-
-  "stacks": []
+  ]
 }

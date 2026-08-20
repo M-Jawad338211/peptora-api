@@ -116,7 +116,5 @@
 
   "related": [
     { "related_peptide_id": "pt-141", "relationship": "same-class", "note": "PT-141 (bremelanotide) is a more selective, FDA-approved melanocortin agonist developed after the erectile effect of the non-selective MT-2 was observed as an incidental finding in early human trials." }
-  ],
-
-  "stacks": []
+  ]
 }

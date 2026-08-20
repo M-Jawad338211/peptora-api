@@ -1,0 +1,33 @@
+{
+  "stack": {
+    "id": "selank-semax",
+    "name": "Selank + Semax",
+    "aliases": [],
+    "stack_type": "research_pairing",
+    "category": "cognitive",
+    "positioning": "A commonly discussed research pairing of two Russian-developed nootropic peptides, combining an anxiolytic peptide with a neurotrophic/cognitive-effects peptide.",
+    "rationale": "Complementary CNS profiles (Selank anxiolytic; Semax neurotrophic/cognitive). Combined-use evidence is limited and preclinical.",
+    "evidence_level": "anecdotal",
+    "caution_notes": [
+      "Combined-use safety and interaction data for Selank and Semax together have not been formally studied; each peptide's own safety profile is drawn largely from limited human/preclinical research."
+    ],
+    "disclaimer": "For research and educational purposes only. This is not medical advice. Neither peptide is FDA-approved. Consult a licensed healthcare provider before using any peptide.",
+    "last_reviewed": "2026-08-20",
+    "reviewed_by": "editorial",
+    "content_version": 1,
+    "data_completeness": "partial"
+  },
+  "components": [
+    {
+      "peptide_id": "selank",
+      "sort_order": 1,
+      "role": "Anxiolytic heptapeptide analog of tuftsin, proposed to modulate GABA and monoamine activity alongside immunomodulatory effects."
+    },
+    {
+      "peptide_id": "semax",
+      "sort_order": 2,
+      "role": "ACTH(4-10) analog studied for neurotrophic (BDNF-linked) and cognitive effects; often paired with Selank to balance its more stimulating profile with Selank's anxiolytic effect."
+    }
+  ],
+  "references": []
+}

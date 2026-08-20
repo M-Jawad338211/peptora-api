@@ -1,0 +1,61 @@
+{
+  "stack": {
+    "id": "klow",
+    "name": "Klow Blend",
+    "aliases": ["KLOW"],
+    "stack_type": "commercial_blend",
+    "category": "healing",
+    "positioning": "Sold by research-peptide vendors as a single multi-peptide vial combining a copper peptide with two tissue-repair peptides and an anti-inflammatory tripeptide, marketed for recovery, wound healing, and skin/collagen support.",
+    "rationale": "GHK-Cu is included primarily for its collagen-synthesis and wound-healing signaling. BPC-157 and TB-500 are frequently combined with each other on their own (see the tb-500-bpc-157 research pairing) for proposed complementary tissue-repair mechanisms. KPV contributes anti-inflammatory tripeptide activity distinct from the other three. There are no controlled trials evaluating this four-peptide combination as a whole — the rationale here is inferred from each peptide's individual, largely preclinical mechanism, not from data on the blend itself.",
+    "evidence_level": "anecdotal",
+    "ratio_source_type": "vendor-listing",
+    "ratio_source_note": "Multiple independent research-peptide vendors list an 80mg vial containing 50mg GHK-Cu, 10mg BPC-157, 10mg TB-500, and 10mg KPV (a 5:1:1:1 ratio by mass). This figure was consistent across every vendor listing checked; no manufacturer-published label or independent third-party lab panel breakdown of actual vial content was available to verify it independently.",
+    "ratio_source_urls": [
+      "https://cenexalabs.com/product/peptides/peptide-blends/klow-blend-peptide/",
+      "https://biolongevitylabs.com/product/klow-blend-ghk-cu-bpc-157-tb-500-kpv/",
+      "https://profoundaminos.com/shop/compounds/klow-peptide-blend-ruo/"
+    ],
+    "common_total_mg_options": [80],
+    "caution_notes": [
+      "Combined effects of these four peptides used together have not been studied — safety data exists only for each peptide individually, and mostly from preclinical/animal models.",
+      "BPC-157 and TB-500 are on the WADA Prohibited List at all times (S2); GHK-Cu and KPV are not FDA-approved for injectable use.",
+      "None of these four peptides has an FDA-approved human indication."
+    ],
+    "disclaimer": "For research and educational purposes only. This is not medical advice. This blend is not FDA-approved. Consult a licensed healthcare provider before using any peptide.",
+    "last_reviewed": "2026-08-20",
+    "reviewed_by": "editorial",
+    "content_version": 1,
+    "data_completeness": "partial"
+  },
+  "components": [
+    {
+      "peptide_id": "ghk-cu",
+      "sort_order": 1,
+      "ratio_parts": 5,
+      "typical_mg_share": 50,
+      "role": "Copper peptide included for collagen-synthesis, wound-healing signaling, and skin/dermal support; the majority component by mass in this blend."
+    },
+    {
+      "peptide_id": "bpc-157",
+      "sort_order": 2,
+      "ratio_parts": 1,
+      "typical_mg_share": 10,
+      "role": "Proposed gastroprotective and angiogenic peptide via nitric-oxide pathway signaling; one of the most frequently stacked research peptides."
+    },
+    {
+      "peptide_id": "tb-500",
+      "sort_order": 3,
+      "ratio_parts": 1,
+      "typical_mg_share": 10,
+      "role": "Proposed to promote cell migration and angiogenesis via actin sequestration (thymosin beta-4 fragment)."
+    },
+    {
+      "peptide_id": "kpv",
+      "sort_order": 4,
+      "ratio_parts": 1,
+      "typical_mg_share": 10,
+      "role": "Anti-inflammatory tripeptide contributing local anti-inflammatory signaling distinct from the other three components' repair-focused mechanisms."
+    }
+  ],
+  "references": []
+}

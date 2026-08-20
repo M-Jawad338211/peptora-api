@@ -125,9 +125,5 @@
   "related": [
     { "related_peptide_id": "ipamorelin", "relationship": "same-class", "note": "Both are GHS-R1a (ghrelin receptor) agonists; ipamorelin was developed later as a more selective successor with less appetite/cortisol/prolactin effect." },
     { "related_peptide_id": "cjc-1295-no-dac", "relationship": "commonly-studied-alongside", "note": "GHRP-6 is frequently paired with the GHRH analog CJC-1295 (no DAC) for combined GH-stimulating pathways." }
-  ],
-
-  "stacks": [
-    { "partner_id": "cjc-1295-no-dac", "compatibility": "commonly-combined", "rationale": "Complementary GH-stimulating mechanisms (GHS-R agonist + GHRH analog). Popular pairing anecdotally; not supported by controlled human outcome trials.", "evidence_level": "anecdotal", "citation_refs": [] }
   ]
 }

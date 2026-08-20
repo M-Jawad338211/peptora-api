@@ -130,7 +130,5 @@
   "related": [
     { "related_peptide_id": "cjc-1295-no-dac", "relationship": "same-class", "note": "Same GHRH(1-29) peptide backbone; CJC-1295 with DAC is albumin-conjugated for a ~6-8 day half-life, while the no-DAC form clears in about 30 minutes and preserves pulsatile release." },
     { "related_peptide_id": "ipamorelin", "relationship": "commonly-studied-alongside", "note": "GHRH analog sometimes paired with the selective GHS ipamorelin, though the short-acting no-DAC form is more commonly used for this pairing." }
-  ],
-
-  "stacks": []
+  ]
 }

@@ -4,7 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
 from app.database import get_db
-from app.models import Peptide
+from app.models import Peptide, StackComponent
 from app.middleware.rate_limit import limiter
 from app.schemas import PeptideCard, PeptideDetail
 
@@ -31,7 +31,7 @@ async def get_peptide(peptide_id: str, request: Request, db: AsyncSession = Depe
             selectinload(Peptide.dose_ranges),
             selectinload(Peptide.protocols),
             selectinload(Peptide.related_peptides),
-            selectinload(Peptide.stack_compatibility),
+            selectinload(Peptide.stack_memberships).selectinload(StackComponent.stack),
         )
     )
     peptide = result.scalar_one_or_none()

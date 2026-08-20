@@ -131,7 +131,5 @@
   "related": [
     { "related_peptide_id": "tesamorelin", "relationship": "same-class", "note": "Tesamorelin stimulates the pituitary's own GH release via the GHRH receptor, while somatropin supplies growth hormone directly; both affect the same GH/IGF-1 axis through different mechanisms." },
     { "related_peptide_id": "ipamorelin", "relationship": "same-class", "note": "Ipamorelin and other GH secretagogues stimulate endogenous GH release, in contrast to somatropin, which is exogenous growth hormone itself." }
-  ],
-
-  "stacks": []
+  ]
 }

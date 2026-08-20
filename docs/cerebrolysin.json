@@ -126,7 +126,5 @@
 
   "related": [
     { "related_peptide_id": "dihexa", "relationship": "same-class", "note": "Both are marketed as neurotrophic/cognitive-support peptide products, though Cerebrolysin is a decades-old porcine-derived mixture with substantial (if contested) human trial data, while dihexa is a single synthetic compound with essentially no human data and compromised foundational preclinical evidence." }
-  ],
-
-  "stacks": []
+  ]
 }

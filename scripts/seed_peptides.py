@@ -4,7 +4,10 @@ Seed peptide knowledge-base JSON files into the database.
 
 Each JSON file must follow the same structure as docs/dsip.json:
   { "peptide": {...}, "references": [...], "dose_ranges": [...],
-    "protocols": [...], "related": [...], "stacks": [...] }
+    "protocols": [...], "related": [...] }
+
+Peptide combinations (research pairings / commercial blends) are no longer
+embedded here — see scripts/seed_stacks.py and docs/stacks/*.json.
 
 Usage (from peptora-api/ directory):
     python scripts/seed_peptides.py                       # all *.json in docs/
@@ -13,7 +16,7 @@ Usage (from peptora-api/ directory):
 
 Two-pass design:
   Pass 1 — peptides, references, dose_ranges, protocols  (no cross-FK deps)
-  Pass 2 — related, stacks  (reference other peptide ids; require pass 1 done)
+  Pass 2 — related  (references other peptide ids; requires pass 1 done)
 """
 import asyncio
 import json
@@ -34,7 +37,6 @@ from app.models import (
     PeptideProtocol,
     PeptideReference,
     PeptideRelated,
-    PeptideStack,
 )
 
 
@@ -173,20 +175,6 @@ def _build_related(peptide_id: str, data: dict) -> list[PeptideRelated]:
     ]
 
 
-def _build_stacks(peptide_id: str, data: dict) -> list[PeptideStack]:
-    return [
-        PeptideStack(
-            peptide_id=peptide_id,
-            partner_id=s["partner_id"],
-            compatibility=s["compatibility"],
-            rationale=s.get("rationale"),
-            evidence_level=s.get("evidence_level"),
-            citation_refs=s.get("citation_refs", []),
-        )
-        for s in data.get("stacks", [])
-    ]
-
-
 # ---------------------------------------------------------------------------
 # Seed passes
 # ---------------------------------------------------------------------------
@@ -224,14 +212,12 @@ async def _seed_core(session: AsyncSession, path: Path) -> str:
 
 
 async def _seed_relations(session: AsyncSession, path: Path) -> None:
-    """Pass 2: related + stacks (may reference other peptide ids)."""
+    """Pass 2: related (may reference other peptide ids)."""
     data = json.loads(path.read_text())
     peptide_id = data["peptide"]["id"]
 
     related = _build_related(peptide_id, data)
-    stacks = _build_stacks(peptide_id, data)
-
-    skipped_related = skipped_stacks = 0
+    skipped_related = 0
 
     for rel in related:
         try:
@@ -243,23 +229,9 @@ async def _seed_relations(session: AsyncSession, path: Path) -> None:
                 f"{peptide_id} → {rel.related_peptide_id}: {exc}"
             )
 
-    for stack in stacks:
-        try:
-            await session.merge(stack)
-        except Exception as exc:
-            skipped_stacks += 1
-            print(
-                f"  [pass 2] WARN: skipped stack "
-                f"{peptide_id} ↔ {stack.partner_id}: {exc}"
-            )
-
     n = lambda key: len(data.get(key, []))
     ok_related = n("related") - skipped_related
-    ok_stacks = n("stacks") - skipped_stacks
-    print(
-        f"  [pass 2] {peptide_id:<20} "
-        f"related={ok_related}/{n('related')}  stacks={ok_stacks}/{n('stacks')}"
-    )
+    print(f"  [pass 2] {peptide_id:<20} related={ok_related}/{n('related')}")
 
 
 # ---------------------------------------------------------------------------

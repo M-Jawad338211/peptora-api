@@ -78,12 +78,12 @@ class PeptideRelatedOut(BaseModel):
     model_config = {"from_attributes": True}
 
 
-class PeptideStackOut(BaseModel):
-    partner_id: str
-    compatibility: str
-    rationale: Optional[str]
-    evidence_level: Optional[str]
-    citation_refs: list[int]
+class StackFeaturedIn(BaseModel):
+    stack_id: str
+    stack_name: str
+    stack_type: str
+    role: Optional[str]
+    ratio_parts: Optional[float]
 
     model_config = {"from_attributes": True}
 
@@ -148,7 +148,93 @@ class PeptideDetail(BaseModel):
     dose_ranges: list[PeptideDoseRangeOut]
     protocols: list[PeptideProtocolOut]
     related_peptides: list[PeptideRelatedOut]
-    stack_compatibility: list[PeptideStackOut]
+    featured_in_stacks: list[StackFeaturedIn]
+
+    model_config = {"from_attributes": True}
+
+
+# ── Peptide stacks / blends ─────────────────────────────────────────────────
+
+class StackCard(BaseModel):
+    id: str
+    name: str
+    aliases: list[str]
+    stack_type: str
+    category: Optional[str]
+    positioning: Optional[str]
+    evidence_level: str
+    data_completeness: str
+
+    model_config = {"from_attributes": True}
+
+
+class StackComponentDoseRangeOut(BaseModel):
+    context: str
+    low: Optional[float]
+    high: Optional[float]
+    unit: str
+    route: Optional[str]
+    frequency: Optional[str]
+    note: Optional[str]
+    citation_refs: list[int]
+
+    model_config = {"from_attributes": True}
+
+
+class StackComponentOut(BaseModel):
+    sort_order: int
+    peptide_id: str
+    peptide_name: str
+    peptide_category: str
+    peptide_evidence_level: str
+    ratio_parts: Optional[float]
+    typical_mg_share: Optional[float]
+    role: Optional[str]
+    dose_note: Optional[str]
+    reference_dose_ranges: list[StackComponentDoseRangeOut]
+
+    model_config = {"from_attributes": True}
+
+
+class StackReferenceOut(BaseModel):
+    ref_id: int
+    type: str
+    title: str
+    first_author: Optional[str]
+    year: Optional[str]
+    source: Optional[str]
+    pmid: Optional[str]
+    doi: Optional[str]
+    url: Optional[str]
+
+    model_config = {"from_attributes": True}
+
+
+class StackDetail(BaseModel):
+    id: str
+    name: str
+    aliases: list[str]
+    stack_type: str
+    category: Optional[str]
+    positioning: Optional[str]
+    rationale: Optional[str]
+    evidence_level: str
+    is_recommendation: bool
+
+    ratio_source_type: Optional[str]
+    ratio_source_note: Optional[str]
+    ratio_source_urls: list[str]
+    common_total_mg_options: list[float]
+
+    caution_notes: list[str]
+    disclaimer: Optional[str]
+    last_reviewed: date
+    reviewed_by: Optional[str]
+    content_version: int
+    data_completeness: str
+
+    components: list[StackComponentOut]
+    stack_references: list[StackReferenceOut]
 
     model_config = {"from_attributes": True}
 

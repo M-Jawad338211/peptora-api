@@ -300,9 +300,8 @@ class Peptide(Base):
         "PeptideRelated", foreign_keys="PeptideRelated.peptide_id",
         back_populates="peptide", cascade="all, delete-orphan"
     )
-    stack_compatibility: Mapped[list["PeptideStack"]] = relationship(
-        "PeptideStack", foreign_keys="PeptideStack.peptide_id",
-        back_populates="peptide", cascade="all, delete-orphan"
+    stack_memberships: Mapped[list["StackComponent"]] = relationship(
+        "StackComponent", back_populates="peptide", cascade="all, delete-orphan"
     )
 
     __table_args__ = (
@@ -312,6 +311,19 @@ class Peptide(Base):
         Index("ix_peptides_tags", "tags", postgresql_using="gin"),
         Index("ix_peptides_aliases", "aliases", postgresql_using="gin"),
     )
+
+    @property
+    def featured_in_stacks(self) -> list[dict]:
+        return [
+            {
+                "stack_id": m.stack_id,
+                "stack_name": m.stack.name,
+                "stack_type": m.stack.stack_type,
+                "role": m.role,
+                "ratio_parts": m.ratio_parts,
+            }
+            for m in self.stack_memberships
+        ]
 
 
 class PeptideReference(Base):
@@ -419,31 +431,153 @@ class PeptideRelated(Base):
 class PeptideStack(Base):
     __tablename__ = "peptide_stacks"
 
-    peptide_id: Mapped[str] = mapped_column(
-        String, ForeignKey("peptides.id", ondelete="CASCADE"), primary_key=True
-    )
-    partner_id: Mapped[str] = mapped_column(
-        String, ForeignKey("peptides.id", ondelete="CASCADE"), primary_key=True
-    )
-    compatibility: Mapped[str] = mapped_column(
-        SAEnum("commonly-combined", "caution", "not-recommended", "no-data",
-               name="peptide_compatibility_enum"),
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    name: Mapped[str] = mapped_column(String, nullable=False)
+    aliases: Mapped[list[str]] = mapped_column(ARRAY(Text), nullable=False, server_default="{}")
+    stack_type: Mapped[str] = mapped_column(
+        SAEnum("research_pairing", "commercial_blend", name="stack_type_enum"),
         nullable=False,
     )
-    rationale: Mapped[str | None] = mapped_column(Text, nullable=True)
-    evidence_level: Mapped[str | None] = mapped_column(
-        SAEnum("preclinical", "early-human", "established", "anecdotal", "unknown",
-               name="peptide_evidence_level_enum", create_type=False),
+    category: Mapped[str | None] = mapped_column(
+        SAEnum("healing", "growth-hormone", "metabolic", "cognitive", "cosmetic",
+               "longevity", "immune", "sexual-health", "other",
+               name="peptide_category_enum", create_type=False),
         nullable=True,
     )
-    citation_refs: Mapped[list[int]] = mapped_column(ARRAY(Integer), nullable=False, server_default="{}")
+    positioning: Mapped[str | None] = mapped_column(Text, nullable=True)
+    rationale: Mapped[str | None] = mapped_column(Text, nullable=True)
+    evidence_level: Mapped[str] = mapped_column(
+        SAEnum("preclinical", "early-human", "established", "anecdotal", "unknown",
+               name="peptide_evidence_level_enum", create_type=False),
+        nullable=False, server_default="anecdotal",
+    )
+    is_recommendation: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False, server_default="false")
 
-    peptide: Mapped["Peptide"] = relationship(
-        "Peptide", foreign_keys=[peptide_id], back_populates="stack_compatibility"
+    # Layer C fields — only populated for commercial_blend (enforced by CHECK constraints below).
+    ratio_source_type: Mapped[str | None] = mapped_column(
+        SAEnum("vendor-listing", "manufacturer-label", "community-convention",
+               name="ratio_source_type_enum"),
+        nullable=True,
+    )
+    ratio_source_note: Mapped[str | None] = mapped_column(Text, nullable=True)
+    ratio_source_urls: Mapped[list[str]] = mapped_column(ARRAY(Text), nullable=False, server_default="{}")
+    common_total_mg_options: Mapped[list[float]] = mapped_column(ARRAY(Numeric), nullable=False, server_default="{}")
+
+    caution_notes: Mapped[list[str]] = mapped_column(ARRAY(Text), nullable=False, server_default="{}")
+    disclaimer: Mapped[str | None] = mapped_column(Text, nullable=True)
+    last_reviewed: Mapped[date] = mapped_column(Date, nullable=False, default=date.today)
+    reviewed_by: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    content_version: Mapped[int] = mapped_column(Integer, nullable=False, default=1, server_default="1")
+    data_completeness: Mapped[str] = mapped_column(String, nullable=False, server_default="stub")
+
+    # maintained by DB trigger; never set by application code
+    search_tsv: Mapped[Any] = mapped_column(TSVECTOR, nullable=True)
+
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=utcnow, onupdate=utcnow)
+
+    components: Mapped[list["StackComponent"]] = relationship(
+        "StackComponent", back_populates="stack", cascade="all, delete-orphan",
+        order_by="StackComponent.sort_order",
+    )
+    stack_references: Mapped[list["StackReference"]] = relationship(
+        "StackReference", back_populates="stack", cascade="all, delete-orphan",
+        order_by="StackReference.ref_id",
     )
 
     __table_args__ = (
-        CheckConstraint("peptide_id <> partner_id", name="ck_peptide_stacks_no_self"),
+        Index("ix_stacks_type", "stack_type"),
+        Index("ix_stacks_category", "category"),
+        CheckConstraint("is_recommendation = false", name="peptide_stacks_never_recommendation"),
+        CheckConstraint(
+            "stack_type <> 'commercial_blend' OR ratio_source_type IS NOT NULL",
+            name="peptide_stacks_blend_needs_source",
+        ),
+        CheckConstraint(
+            "stack_type <> 'research_pairing' OR ("
+            "ratio_source_type IS NULL AND ratio_source_note IS NULL AND common_total_mg_options = '{}'"
+            ")",
+            name="peptide_stacks_pairing_no_ratio_source",
+        ),
+    )
+
+
+class StackComponent(Base):
+    __tablename__ = "stack_components"
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    stack_id: Mapped[str] = mapped_column(
+        String, ForeignKey("peptide_stacks.id", ondelete="CASCADE"), nullable=False
+    )
+    peptide_id: Mapped[str] = mapped_column(
+        String, ForeignKey("peptides.id", ondelete="CASCADE"), nullable=False
+    )
+    sort_order: Mapped[int] = mapped_column(Integer, nullable=False, default=0, server_default="0")
+
+    # NULL for research_pairing (no vial => no ratio to state).
+    ratio_parts: Mapped[float | None] = mapped_column(Numeric, nullable=True)
+    # Purely informational (Layer C) — never the source of truth for the calculator.
+    typical_mg_share: Mapped[float | None] = mapped_column(Numeric, nullable=True)
+
+    role: Mapped[str | None] = mapped_column(Text, nullable=True)
+    dose_note: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    stack: Mapped["PeptideStack"] = relationship("PeptideStack", back_populates="components")
+    peptide: Mapped["Peptide"] = relationship("Peptide", back_populates="stack_memberships")
+
+    __table_args__ = (
+        UniqueConstraint("stack_id", "peptide_id"),
+        Index("ix_stack_components_stack", "stack_id"),
+        Index("ix_stack_components_peptide", "peptide_id"),
+        CheckConstraint("ratio_parts IS NULL OR ratio_parts > 0", name="ck_stack_components_ratio_positive"),
+        CheckConstraint(
+            "typical_mg_share IS NULL OR typical_mg_share > 0", name="ck_stack_components_mg_share_positive"
+        ),
+    )
+
+    @property
+    def peptide_name(self) -> str:
+        return self.peptide.name
+
+    @property
+    def peptide_category(self) -> str:
+        return self.peptide.category
+
+    @property
+    def peptide_evidence_level(self) -> str:
+        return self.peptide.evidence_level
+
+    @property
+    def reference_dose_ranges(self) -> list["PeptideDoseRange"]:
+        return self.peptide.dose_ranges
+
+
+class StackReference(Base):
+    __tablename__ = "stack_references"
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    stack_id: Mapped[str] = mapped_column(
+        String, ForeignKey("peptide_stacks.id", ondelete="CASCADE"), nullable=False
+    )
+    ref_id: Mapped[int] = mapped_column(Integer, nullable=False)
+    type: Mapped[str] = mapped_column(
+        SAEnum("journal-article", "review", "clinical-trial", "regulatory-document",
+               "book", "database", "other", name="peptide_ref_type_enum", create_type=False),
+        nullable=False,
+    )
+    title: Mapped[str] = mapped_column(Text, nullable=False)
+    first_author: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    year: Mapped[str | None] = mapped_column(String(10), nullable=True)
+    source: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    pmid: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    doi: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    url: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    stack: Mapped["PeptideStack"] = relationship("PeptideStack", back_populates="stack_references")
+
+    __table_args__ = (
+        UniqueConstraint("stack_id", "ref_id"),
+        Index("ix_stack_references_stack", "stack_id"),
     )
 
 
