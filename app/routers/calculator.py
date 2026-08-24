@@ -1,18 +1,26 @@
 from datetime import datetime, timedelta, timezone
+
 from fastapi import APIRouter, Depends, HTTPException, Request
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func
+
 from app.database import get_db
-from app.models import User, TrialCounter, CalculatorUsage, Session as DBSession, AuditLog
-from app.schemas import (
-    TrialCheckRequest, TrialCheckResponse,
-    RecordUseRequest, RecordUseResponse,
-    CalculatorHistoryItem,
-)
 from app.middleware.auth import (
-    get_current_user_optional, get_current_subscriber, get_current_admin, has_access,
+    get_current_admin,
+    get_current_subscriber,
+    get_current_user_optional,
+    has_access,
 )
 from app.middleware.rate_limit import limiter
+from app.models import AuditLog, CalculatorUsage, TrialCounter, User
+from app.models import Session as DBSession
+from app.schemas import (
+    CalculatorHistoryItem,
+    RecordUseRequest,
+    RecordUseResponse,
+    TrialCheckRequest,
+    TrialCheckResponse,
+)
 from app.utils.security import hash_ip
 
 router = APIRouter(prefix="/calculator", tags=["calculator"])

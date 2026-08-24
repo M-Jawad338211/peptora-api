@@ -1,9 +1,10 @@
 import uuid
 from datetime import datetime, timezone
-from typing import Optional
+
 from fastapi import Depends, HTTPException, Request, status
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.database import get_db
 from app.models import User
 from app.utils.security import decode_token
@@ -12,7 +13,7 @@ from app.utils.security import decode_token
 async def get_current_user_optional(
     request: Request,
     db: AsyncSession = Depends(get_db),
-) -> Optional[User]:
+) -> User | None:
     auth_header = request.headers.get("Authorization", "")
     token = (
         auth_header.removeprefix("Bearer ").strip()
@@ -32,7 +33,7 @@ async def get_current_user_optional(
 
 
 async def get_current_user(
-    user: Optional[User] = Depends(get_current_user_optional),
+    user: User | None = Depends(get_current_user_optional),
 ) -> User:
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
@@ -45,7 +46,7 @@ async def get_current_verified_user(user: User = Depends(get_current_user)) -> U
     return user
 
 
-def has_access(user: Optional[User]) -> bool:
+def has_access(user: User | None) -> bool:
     """Whether this user may use the paid tools right now.
 
     Two independent windows grant access, and either is enough: a live trial
