@@ -14,7 +14,7 @@ from app.schemas import (
     DoseLogCreate,
     DoseLogItem,
 )
-from app.middleware.auth import get_current_verified_user
+from app.middleware.auth import get_current_subscriber
 from app.middleware.rate_limit import limiter
 from fastapi import Request
 
@@ -27,7 +27,7 @@ logger = logging.getLogger("peptora.protocols")
 async def protocol_stats(
     request: Request,
     db: AsyncSession = Depends(get_db),
-    user=Depends(get_current_verified_user),
+    user=Depends(get_current_subscriber),
 ):
     now = datetime.now(timezone.utc)
     week_ago = now - timedelta(days=7)
@@ -62,7 +62,7 @@ async def create_protocol(
     request: Request,
     body: UserProtocolCreate,
     db: AsyncSession = Depends(get_db),
-    user=Depends(get_current_verified_user),
+    user=Depends(get_current_subscriber),
 ):
     protocol = UserProtocol(
         user_id=user.id,
@@ -94,7 +94,7 @@ async def create_protocol(
 async def list_protocols(
     request: Request,
     db: AsyncSession = Depends(get_db),
-    user=Depends(get_current_verified_user),
+    user=Depends(get_current_subscriber),
 ):
     result = await db.execute(
         select(UserProtocol)
@@ -111,7 +111,7 @@ async def get_protocol(
     request: Request,
     protocol_id: str,
     db: AsyncSession = Depends(get_db),
-    user=Depends(get_current_verified_user),
+    user=Depends(get_current_subscriber),
 ):
     result = await db.execute(
         select(UserProtocol)
@@ -131,7 +131,7 @@ async def update_protocol(
     protocol_id: str,
     body: UserProtocolUpdate,
     db: AsyncSession = Depends(get_db),
-    user=Depends(get_current_verified_user),
+    user=Depends(get_current_subscriber),
 ):
     result = await db.execute(
         select(UserProtocol).where(
@@ -156,7 +156,7 @@ async def delete_protocol(
     request: Request,
     protocol_id: str,
     db: AsyncSession = Depends(get_db),
-    user=Depends(get_current_verified_user),
+    user=Depends(get_current_subscriber),
 ):
     result = await db.execute(
         select(UserProtocol).where(
@@ -180,7 +180,7 @@ async def add_protocol_log(
     protocol_id: str,
     body: DoseLogCreate,
     db: AsyncSession = Depends(get_db),
-    user=Depends(get_current_verified_user),
+    user=Depends(get_current_subscriber),
 ):
     p_result = await db.execute(
         select(UserProtocol).where(
@@ -210,7 +210,7 @@ async def list_protocol_logs(
     request: Request,
     protocol_id: str,
     db: AsyncSession = Depends(get_db),
-    user=Depends(get_current_verified_user),
+    user=Depends(get_current_subscriber),
 ):
     p_result = await db.execute(
         select(UserProtocol).where(
@@ -236,7 +236,7 @@ async def delete_protocol_log(
     protocol_id: str,
     log_id: str,
     db: AsyncSession = Depends(get_db),
-    user=Depends(get_current_verified_user),
+    user=Depends(get_current_subscriber),
 ):
     result = await db.execute(
         select(CycleLog).where(

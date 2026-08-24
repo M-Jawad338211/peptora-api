@@ -9,7 +9,7 @@ from app.database import get_db
 from app.models import User, TrialCounter, AuditLog, EmailVerificationOTP
 from app.schemas import (
     RegisterRequest, LoginRequest, ForgotPasswordRequest,
-    ResetPasswordRequest, UserResponse, TrialCountInfo, SubscriptionInfo,
+    ResetPasswordRequest, UserResponse, TrialCountInfo, AccessInfo,
     VerifyEmailRequest, ResendVerificationOTPRequest, PushTokenUpdate,
 )
 from app.utils.security import (
@@ -209,6 +209,13 @@ async def verify_email(
     otp_record.used_at = now
     user.email_verified = True
     user.last_login = now
+
+    # Start the 14-day trial here rather than at registration: an unverified
+    # account can never log in, so a trial granted at signup would spend most
+    # of itself before the user ever reached the app. Guarded so that
+    # re-verifying can never mint a second trial.
+    if user.trial_ends_at is None:
+        user.trial_ends_at = now + timedelta(days=_settings.TRIAL_DAYS)
     db.add(AuditLog(
         user_id=user.id,
         action="email_verified",
@@ -286,7 +293,7 @@ async def me(
     from sqlalchemy.orm import selectinload
     result = await db.execute(
         select(User)
-        .options(selectinload(User.trial_counter), selectinload(User.subscriptions))
+        .options(selectinload(User.trial_counter))
         .where(User.id == user.id)
     )
     u = result.scalar_one()
@@ -299,20 +306,18 @@ async def me(
             signup_bonus_granted=u.trial_counter.signup_bonus_granted,
         )
 
-    sub_info = None
-    active_sub = next((s for s in u.subscriptions if s.status == "active"), None)
-    if active_sub:
-        sub_info = SubscriptionInfo(
-            status=active_sub.status,
-            current_period_end=active_sub.current_period_end,
-            cancel_at_period_end=active_sub.cancel_at_period_end,
-        )
+    from app.routers.subscriptions import access_info
+    access = access_info(u)
 
     return UserResponse(
         id=u.id, email=u.email, full_name=u.full_name,
-        plan=u.plan, is_admin=u.is_admin, email_verified=u.email_verified,
+        # Derived, not read from the column: `plan` is refreshed by a nightly
+        # sweep and would otherwise show "pro" to a user whose window lapsed
+        # this morning, or "free" to one who paid a minute ago.
+        plan="pro" if access.has_access else "free",
+        is_admin=u.is_admin, email_verified=u.email_verified,
         consent_accepted=u.consent_accepted,
-        trial_count=trial_info, subscription=sub_info,
+        trial_count=trial_info, access=access,
     )
 
 
