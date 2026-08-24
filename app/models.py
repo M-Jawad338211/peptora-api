@@ -147,7 +147,12 @@ class CryptoPayment(Base):
     # only appears once the user picks a coin and a payment is generated, and
     # a single invoice can spawn several payments if the first expires.
     np_invoice_id: Mapped[str | None] = mapped_column(String(255), nullable=True, index=True)
-    np_payment_id: Mapped[str | None] = mapped_column(String(255), nullable=True, unique=True)
+    # Indexed, deliberately NOT unique. Uniqueness here bought nothing —
+    # rows are found by order_id and double-crediting is prevented by
+    # credited_at — while any collision raised IntegrityError inside the IPN
+    # handler, which is a 500, which makes NOWPayments retry that callback
+    # forever. Caught by tests/test_ipn_integration.py.
+    np_payment_id: Mapped[str | None] = mapped_column(String(255), nullable=True, index=True)
 
     price_amount: Mapped[float] = mapped_column(Numeric(12, 2), nullable=False)
     price_currency: Mapped[str] = mapped_column(String(20), nullable=False, default="usd")
