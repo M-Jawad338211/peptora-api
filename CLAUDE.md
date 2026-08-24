@@ -5,7 +5,9 @@ Python FastAPI backend for Peptora — peptide research intelligence platform.
 ## Stack
 - Python 3.11, FastAPI, SQLAlchemy async, PostgreSQL (asyncpg)
 - JWT auth (httpOnly cookies), NOWPayments crypto billing, Anthropic Claude AI
-- Deployed on Railway → https://api.peptora.app
+- Deployed on Railway → https://api.peptora.io
+  (also https://peptora-api-production.up.railway.app; `api.peptora.app`
+  is NOT this service — that host returns a Vercel 404)
 
 ## Local dev
 ```bash

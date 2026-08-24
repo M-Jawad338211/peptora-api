@@ -38,7 +38,7 @@ class Settings(BaseSettings):
     # It must NOT be WEB_URL: the web app proxies /api/* through Vercel, and
     # the IPN signature is computed over raw bytes, so an extra hop is a free
     # way to break verification. Callbacks go straight to the API host.
-    API_PUBLIC_URL: str = "https://api.peptora.app"
+    API_PUBLIC_URL: str = "https://api.peptora.io"
 
     # Access windows, in days. A payment pushes `users.paid_until` forward by
     # PLAN_DAYS[plan]; the trial is granted once, at email verification.
