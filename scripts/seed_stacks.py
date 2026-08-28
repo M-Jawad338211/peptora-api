@@ -24,11 +24,11 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from sqlalchemy import delete
+from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import AsyncSessionLocal
-from app.models import PeptideStack, StackComponent, StackReference
+from app.models import Peptide, PeptideStack, StackComponent, StackReference
 
 
 def _parse_date(val) -> date | None:
@@ -97,9 +97,28 @@ def _build_references(stack_id: str, data: dict) -> list[StackReference]:
     ]
 
 
-async def _seed_one(session: AsyncSession, path: Path) -> None:
+async def _seed_one(session: AsyncSession, path: Path, known_peptides: set[str]) -> bool:
+    """Seed one stack file. Returns False when it was skipped.
+
+    Components are checked against `known_peptides` up front: session.add()
+    only stages the row, so a missing-FK error surfaces later at autoflush and
+    takes the whole transaction with it. A stack is skipped whole rather than
+    partially — a two-peptide blend seeded with one component is not a smaller
+    blend, it is a wrong one.
+    """
     data = json.loads(path.read_text())
     stack_id = data["stack"]["id"]
+
+    missing = sorted(
+        {
+            c["peptide_id"]
+            for c in data.get("components", [])
+            if c.get("peptide_id") not in known_peptides
+        }
+    )
+    if missing:
+        print(f"  SKIP {stack_id:<30} missing peptide(s): {', '.join(missing)}")
+        return False
 
     await session.merge(_build_stack(data))
 
@@ -115,6 +134,7 @@ async def _seed_one(session: AsyncSession, path: Path) -> None:
 
     n = lambda key: len(data.get(key, []))
     print(f"  {stack_id:<30} components={n('components')}  references={n('references')}")
+    return True
 
 
 async def main(paths: list[Path]) -> None:
@@ -124,11 +144,15 @@ async def main(paths: list[Path]) -> None:
 
     print(f"\nSeeding {len(paths)} stack file(s)...\n")
     async with AsyncSessionLocal() as session:
+        known_peptides = set((await session.scalars(select(Peptide.id))).all())
+        seeded = 0
         for path in paths:
-            await _seed_one(session, path)
+            if await _seed_one(session, path, known_peptides):
+                seeded += 1
         await session.commit()
 
-    print(f"\nDone. {len(paths)} stack(s) seeded successfully.")
+    skipped = len(paths) - seeded
+    print(f"\nDone. {seeded} stack(s) seeded successfully." + (f" {skipped} skipped." if skipped else ""))
 
 
 if __name__ == "__main__":

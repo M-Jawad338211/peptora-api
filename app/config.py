@@ -28,10 +28,23 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 15
     REFRESH_TOKEN_EXPIRE_DAYS: int = 30
 
-    STRIPE_SECRET_KEY: Optional[str] = None
-    STRIPE_WEBHOOK_SECRET: Optional[str] = None
-    STRIPE_MONTHLY_PRICE_ID: Optional[str] = None
-    STRIPE_ANNUAL_PRICE_ID: Optional[str] = None
+    # NOWPayments — crypto is the only payment rail. There is no card
+    # processor and no auto-charge: see app/utils/nowpayments.py.
+    NOWPAYMENTS_API_KEY: Optional[str] = None
+    NOWPAYMENTS_IPN_SECRET: Optional[str] = None
+    NOWPAYMENTS_API_URL: str = "https://api.nowpayments.io/v1"
+
+    # This API's own public origin — where NOWPayments sends IPN callbacks.
+    # It must NOT be WEB_URL: the web app proxies /api/* through Vercel, and
+    # the IPN signature is computed over raw bytes, so an extra hop is a free
+    # way to break verification. Callbacks go straight to the API host.
+    API_PUBLIC_URL: str = "https://api.peptora.io"
+
+    # Access windows, in days. A payment pushes `users.paid_until` forward by
+    # PLAN_DAYS[plan]; the trial is granted once, at email verification.
+    TRIAL_DAYS: int = 14
+    PRICE_MONTHLY_USD: float = 5.0
+    PRICE_ANNUAL_USD: float = 49.0
 
     ANTHROPIC_API_KEY: Optional[str] = None
     CRON_SECRET: Optional[str] = None
@@ -50,7 +63,7 @@ class Settings(BaseSettings):
     CORS_ORIGINS: str = "https://peptora.io,https://www.peptora.io,https://admin.peptora.io"
     ENVIRONMENT: str = "production"
 
-    @field_validator("WEB_URL", "ADMIN_URL", mode="before")
+    @field_validator("WEB_URL", "ADMIN_URL", "API_PUBLIC_URL", mode="before")
     @classmethod
     def normalize_origin(cls, v: str) -> str:
         url = v.strip().strip('"').strip("'").rstrip("/")
@@ -65,6 +78,15 @@ class Settings(BaseSettings):
             )
         # Keep origins bare (scheme://host[:port]) so they match browser Origin headers.
         return f"{parsed.scheme}://{parsed.netloc}"
+
+    @property
+    def payments_configured(self) -> bool:
+        """Checkout is only offered when both halves of the integration exist.
+
+        The API key alone is not enough — without the IPN secret every callback
+        would fail verification, so users could pay and never be credited.
+        """
+        return bool(self.NOWPAYMENTS_API_KEY and self.NOWPAYMENTS_IPN_SECRET)
 
     @property
     def is_development(self) -> bool:

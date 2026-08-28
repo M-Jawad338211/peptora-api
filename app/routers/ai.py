@@ -1,7 +1,7 @@
 import anthropic
 from fastapi import APIRouter, Depends, Request
 from app.schemas import AIAssistantRequest, AIAssistantResponse, StackCheckRequest, StackCheckResponse
-from app.middleware.auth import get_current_pro_user
+from app.middleware.auth import get_current_subscriber
 from app.middleware.rate_limit import limiter
 from app.models import User
 from app.config import settings
@@ -30,7 +30,7 @@ SS-31, Thymosin Alpha-1, Retatrutide, AOD-9604, and other research peptides."""
 async def ai_assistant(
     request: Request,
     body: AIAssistantRequest,
-    user: User = Depends(get_current_pro_user),
+    user: User = Depends(get_current_subscriber),
 ):
     messages = [
         {"role": m.role, "content": m.content}
@@ -52,7 +52,7 @@ async def ai_assistant(
 async def stack_check(
     request: Request,
     body: StackCheckRequest,
-    user: User = Depends(get_current_pro_user),
+    user: User = Depends(get_current_subscriber),
 ):
     if len(body.peptides) < 2 or len(body.peptides) > 5:
         from fastapi import HTTPException

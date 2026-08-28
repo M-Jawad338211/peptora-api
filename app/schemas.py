@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr, field_validator, model_validator
-from typing import Any, Optional
+from typing import Any, Literal, Optional
 from datetime import date, datetime
 import uuid
 
@@ -313,10 +313,18 @@ class TrialCountInfo(BaseModel):
     signup_bonus_granted: bool
 
 
-class SubscriptionInfo(BaseModel):
-    status: str
-    current_period_end: Optional[datetime]
-    cancel_at_period_end: bool
+class AccessInfo(BaseModel):
+    """The user's access window, flattened for the client.
+
+    `has_access` is computed server-side and is what the UI must gate on —
+    a client that recomputes it from the dates will disagree with the API
+    across clock skew and get stuck showing a paywall to a paying user.
+    """
+    has_access: bool
+    is_trial: bool
+    trial_ends_at: Optional[datetime] = None
+    paid_until: Optional[datetime] = None
+    days_remaining: Optional[int] = None
 
 
 class UserResponse(BaseModel):
@@ -328,7 +336,7 @@ class UserResponse(BaseModel):
     email_verified: bool
     consent_accepted: bool = False
     trial_count: Optional[TrialCountInfo] = None
-    subscription: Optional[SubscriptionInfo] = None
+    access: Optional[AccessInfo] = None
 
     model_config = {"from_attributes": True}
 
@@ -382,22 +390,31 @@ class CalculatorHistoryItem(BaseModel):
 # ── Subscriptions ───────────────────────────────────────────────────────────
 
 class CreateCheckoutRequest(BaseModel):
-    plan: str  # "monthly" | "annual"
+    # Defaults to annual: at $5 the monthly plan sits at or under the minimum
+    # payment amount on most chains. The native app posts this field
+    # explicitly, so both values stay accepted.
+    plan: Literal["monthly", "annual"] = "annual"
 
 
 class CheckoutResponse(BaseModel):
+    # Named checkout_url, not invoice_url, so peptora-android/app/paywall.js
+    # keeps working unchanged across the Stripe → NOWPayments switch.
     checkout_url: str
+    order_id: str
 
 
-class PortalResponse(BaseModel):
-    portal_url: str
+class PlanOption(BaseModel):
+    id: str
+    label: str
+    price_usd: float
+    days: int
 
 
 class SubscriptionStatusResponse(BaseModel):
     plan: str
-    status: Optional[str]
-    current_period_end: Optional[datetime]
-    cancel_at_period_end: bool
+    access: AccessInfo
+    plans: list[PlanOption]
+    payments_enabled: bool
 
 
 # ── AI ──────────────────────────────────────────────────────────────────────

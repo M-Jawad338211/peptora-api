@@ -21,9 +21,19 @@ class User(Base):
     email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False, index=True)
     password_hash: Mapped[str | None] = mapped_column(String(255), nullable=True)
     full_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    # Denormalised access flag, kept in sync with paid_until/trial_ends_at by
+    # the IPN handler and the nightly lapse sweep. The native app and
+    # admin.py both compare against the literal "pro", so the values stay
+    # "free" | "pro". `has_access()` in app/middleware/auth.py is the real
+    # authority — never gate on `plan` alone, it can lag by up to a day.
     plan: Mapped[str] = mapped_column(String(50), default="free", nullable=False)
-    stripe_customer_id: Mapped[str | None] = mapped_column(String(255), nullable=True)
-    stripe_subscription_id: Mapped[str | None] = mapped_column(String(255), nullable=True)
+
+    # Crypto cannot auto-charge, so access is a prepaid window rather than a
+    # subscription status: a payment pushes paid_until forward, and when it
+    # passes, access simply stops. Both are nullable — null means "never had
+    # one", which is not the same as an expired one.
+    trial_ends_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    paid_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True, index=True)
     is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
     email_verified: Mapped[bool] = mapped_column(Boolean, default=False)
     expo_push_token: Mapped[str | None] = mapped_column(String(255), nullable=True)
@@ -36,7 +46,7 @@ class User(Base):
     sessions: Mapped[list["Session"]] = relationship("Session", back_populates="user")
     trial_counter: Mapped["TrialCounter | None"] = relationship("TrialCounter", back_populates="user", uselist=False)
     calculator_usages: Mapped[list["CalculatorUsage"]] = relationship("CalculatorUsage", back_populates="user")
-    subscriptions: Mapped[list["Subscription"]] = relationship("Subscription", back_populates="user")
+    payments: Mapped[list["CryptoPayment"]] = relationship("CryptoPayment", back_populates="user")
     audit_logs: Mapped[list["AuditLog"]] = relationship("AuditLog", back_populates="user")
     verification_otps: Mapped[list["EmailVerificationOTP"]] = relationship("EmailVerificationOTP", back_populates="user")
     cycle_logs: Mapped[list["CycleLog"]] = relationship("CycleLog", back_populates="user")
@@ -113,25 +123,59 @@ class CalculatorUsage(Base):
     session: Mapped["Session | None"] = relationship("Session", back_populates="calculator_usages")
 
 
-class Subscription(Base):
-    __tablename__ = "subscriptions"
+class CryptoPayment(Base):
+    """One NOWPayments invoice and its lifecycle.
+
+    A row is created when we hand the user an invoice URL, then updated by IPN
+    callbacks as the payment moves through waiting → confirming → finished.
+    Rows are never deleted: they are the audit trail for why a given user has
+    the access window they have.
+    """
+
+    __tablename__ = "crypto_payments"
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
-    stripe_subscription_id: Mapped[str] = mapped_column(String(255), unique=True)
-    stripe_price_id: Mapped[str] = mapped_column(String(255))
-    plan_name: Mapped[str] = mapped_column(String(100))
-    status: Mapped[str] = mapped_column(String(50), default="active")
-    current_period_start: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
-    current_period_end: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
-    cancel_at_period_end: Mapped[bool] = mapped_column(Boolean, default=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+    # Our reference, echoed back on every callback: "<user_id>:<plan>:<nonce>".
+    # This is what ties an anonymous-looking IPN to an account — NOWPayments
+    # has no concept of our users.
+    order_id: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
+    plan: Mapped[str] = mapped_column(String(50), nullable=False)  # "monthly" | "annual"
+
+    # NOWPayments ids. The invoice exists as soon as we create it; payment_id
+    # only appears once the user picks a coin and a payment is generated, and
+    # a single invoice can spawn several payments if the first expires.
+    np_invoice_id: Mapped[str | None] = mapped_column(String(255), nullable=True, index=True)
+    # Indexed, deliberately NOT unique. Uniqueness here bought nothing —
+    # rows are found by order_id and double-crediting is prevented by
+    # credited_at — while any collision raised IntegrityError inside the IPN
+    # handler, which is a 500, which makes NOWPayments retry that callback
+    # forever. Caught by tests/test_ipn_integration.py.
+    np_payment_id: Mapped[str | None] = mapped_column(String(255), nullable=True, index=True)
+
+    price_amount: Mapped[float] = mapped_column(Numeric(12, 2), nullable=False)
+    price_currency: Mapped[str] = mapped_column(String(20), nullable=False, default="usd")
+    pay_currency: Mapped[str | None] = mapped_column(String(40), nullable=True)
+    pay_amount: Mapped[float | None] = mapped_column(Numeric(24, 8), nullable=True)
+    actually_paid: Mapped[float | None] = mapped_column(Numeric(24, 8), nullable=True)
+
+    status: Mapped[str] = mapped_column(String(40), nullable=False, default="waiting")
+
+    # Set exactly once, when this payment extends the user's access window.
+    # The idempotency guard: NOWPayments retries callbacks, and a duplicate
+    # "finished" must not buy a second month.
+    credited_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    raw_ipn: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
+
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, index=True)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
 
-    user: Mapped["User"] = relationship("User", back_populates="subscriptions")
+    user: Mapped["User"] = relationship("User", back_populates="payments")
 
     __table_args__ = (
-        Index("ix_sub_stripe_id", "stripe_subscription_id"),
+        Index("ix_crypto_payment_user_created", "user_id", "created_at"),
     )
 
 

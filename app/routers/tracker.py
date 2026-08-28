@@ -6,7 +6,7 @@ from sqlalchemy import select, delete
 from app.database import get_db
 from app.models import User, CycleLog
 from app.schemas import CycleLogCreate, CycleLogItem
-from app.middleware.auth import get_current_verified_user
+from app.middleware.auth import get_current_subscriber
 from app.middleware.rate_limit import limiter
 from fastapi import Request
 
@@ -20,7 +20,7 @@ async def create_log(
     request: Request,
     body: CycleLogCreate,
     db: AsyncSession = Depends(get_db),
-    user: User = Depends(get_current_verified_user),
+    user: User = Depends(get_current_subscriber),
 ):
     from datetime import datetime
     taken_at = body.taken_at or datetime.now(timezone.utc)
@@ -42,7 +42,7 @@ async def create_log(
 async def get_logs(
     request: Request,
     db: AsyncSession = Depends(get_db),
-    user: User = Depends(get_current_verified_user),
+    user: User = Depends(get_current_subscriber),
 ):
     result = await db.execute(
         select(CycleLog)
@@ -59,7 +59,7 @@ async def delete_log(
     request: Request,
     log_id: str,
     db: AsyncSession = Depends(get_db),
-    user: User = Depends(get_current_verified_user),
+    user: User = Depends(get_current_subscriber),
 ):
     result = await db.execute(
         select(CycleLog).where(CycleLog.id == log_id, CycleLog.user_id == user.id)

@@ -1,22 +1,38 @@
 from datetime import datetime, timedelta, timezone
-from fastapi import APIRouter, Depends, Request
+
+from fastapi import APIRouter, Depends, HTTPException, Request
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func
+
 from app.database import get_db
-from app.models import User, TrialCounter, CalculatorUsage, Session as DBSession, AuditLog
-from app.schemas import (
-    TrialCheckRequest, TrialCheckResponse,
-    RecordUseRequest, RecordUseResponse,
-    CalculatorHistoryItem,
+from app.middleware.auth import (
+    get_current_admin,
+    get_current_subscriber,
+    get_current_user_optional,
+    has_access,
 )
-from app.middleware.auth import get_current_user_optional, get_current_verified_user, get_current_admin
 from app.middleware.rate_limit import limiter
+from app.models import AuditLog, CalculatorUsage, TrialCounter, User
+from app.models import Session as DBSession
+from app.schemas import (
+    CalculatorHistoryItem,
+    RecordUseRequest,
+    RecordUseResponse,
+    TrialCheckRequest,
+    TrialCheckResponse,
+)
 from app.utils.security import hash_ip
 
 router = APIRouter(prefix="/calculator", tags=["calculator"])
 
+# Anonymous visitors keep a small allowance: the calculator is the top of the
+# funnel and the thing that convinces people the subscription is worth buying.
+# Signing up converts that into the full 14-day trial.
 ANON_LIMIT = 5
-FREE_LIMIT = 25
+
+# There is no longer a standing free tier. A signed-in user is either inside
+# an access window (trial or paid, both unlimited) or out of one, in which
+# case the answer is the paywall rather than a smaller allowance.
 
 
 async def _get_or_create_trial(db: AsyncSession, user: User | None, fp: str) -> TrialCounter:
@@ -45,21 +61,24 @@ async def check_trial(
     db: AsyncSession = Depends(get_db),
     user: User | None = Depends(get_current_user_optional),
 ):
-    if user and user.plan == "pro":
-        return TrialCheckResponse(allowed=True, reason="pro", remaining=None)
+    if has_access(user):
+        return TrialCheckResponse(allowed=True, reason="subscribed", remaining=None)
 
     tc = await _get_or_create_trial(db, user, body.device_fingerprint)
 
     if not user:
         if tc.calc_uses_anonymous >= ANON_LIMIT:
             return TrialCheckResponse(allowed=False, reason="anonymous_limit", uses_so_far=tc.calc_uses_anonymous)
-        remaining = ANON_LIMIT - tc.calc_uses_anonymous
-        return TrialCheckResponse(allowed=True, reason="ok", remaining=remaining)
+        return TrialCheckResponse(
+            allowed=True, reason="ok", remaining=ANON_LIMIT - tc.calc_uses_anonymous
+        )
 
-    total = tc.calc_uses_anonymous + tc.calc_uses_free
-    if total >= FREE_LIMIT:
-        return TrialCheckResponse(allowed=False, reason="free_limit", uses_so_far=total)
-    return TrialCheckResponse(allowed=True, reason="ok", remaining=FREE_LIMIT - total)
+    # Signed in, no live window: the trial has been used up.
+    return TrialCheckResponse(
+        allowed=False,
+        reason="subscription_required",
+        uses_so_far=tc.calc_uses_anonymous + tc.calc_uses_free,
+    )
 
 
 @router.post("/record-use", response_model=RecordUseResponse)
@@ -72,14 +91,19 @@ async def record_use(
 ):
     tc = await _get_or_create_trial(db, user, body.device_fingerprint)
 
+    # The write side has to enforce too. check-trial is advisory — a client
+    # that skips it, or an expired trial that lapsed between the two calls,
+    # would otherwise still land a row here.
+    if user and not has_access(user):
+        raise HTTPException(status_code=402, detail="Subscription required")
+    if not user and tc.calc_uses_anonymous >= ANON_LIMIT:
+        raise HTTPException(status_code=402, detail="Free preview used up. Create an account to continue.")
+
     if not user:
         tc.calc_uses_anonymous += 1
         new_count = tc.calc_uses_anonymous
-    elif user.plan == "free":
-        tc.calc_uses_free += 1
-        new_count = tc.calc_uses_anonymous + tc.calc_uses_free
     else:
-        new_count = 0  # Pro: no limit tracking
+        new_count = 0  # Inside an access window: nothing to meter.
 
     # Get or create session
     session_result = await db.execute(
@@ -123,7 +147,7 @@ async def record_use(
 
 @router.get("/history", response_model=list[CalculatorHistoryItem])
 async def get_history(
-    user: User = Depends(get_current_verified_user),
+    user: User = Depends(get_current_subscriber),
     db: AsyncSession = Depends(get_db),
 ):
     result = await db.execute(
