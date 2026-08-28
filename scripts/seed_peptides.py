@@ -27,7 +27,7 @@ from pathlib import Path
 # Allow `from app.xxx import yyy` when run from peptora-api/scripts/
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from sqlalchemy import delete
+from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import AsyncSessionLocal
@@ -211,8 +211,15 @@ async def _seed_core(session: AsyncSession, path: Path) -> str:
     return peptide_id
 
 
-async def _seed_relations(session: AsyncSession, path: Path) -> None:
-    """Pass 2: related (may reference other peptide ids)."""
+async def _seed_relations(session: AsyncSession, path: Path, known_ids: set[str]) -> None:
+    """Pass 2: related (may reference other peptide ids).
+
+    Targets are checked against `known_ids` up front rather than by catching a
+    failed merge: session.merge() only stages the row, so a missing-FK error
+    surfaces later at autoflush and kills the whole transaction well outside
+    any try block here. A checkout whose docs/ holds a subset of production —
+    every local one does — would otherwise be unable to seed at all.
+    """
     data = json.loads(path.read_text())
     peptide_id = data["peptide"]["id"]
 
@@ -220,14 +227,14 @@ async def _seed_relations(session: AsyncSession, path: Path) -> None:
     skipped_related = 0
 
     for rel in related:
-        try:
-            await session.merge(rel)
-        except Exception as exc:
+        if rel.related_peptide_id not in known_ids:
             skipped_related += 1
             print(
                 f"  [pass 2] WARN: skipped related "
-                f"{peptide_id} → {rel.related_peptide_id}: {exc}"
+                f"{peptide_id} → {rel.related_peptide_id}: no such peptide"
             )
+            continue
+        await session.merge(rel)
 
     n = lambda key: len(data.get(key, []))
     ok_related = n("related") - skipped_related
@@ -252,9 +259,12 @@ async def main(paths: list[Path]) -> None:
         await session.commit()
 
         print("\n=== Pass 2: cross-peptide relationships ===")
+        # Read back from the DB rather than from `paths`, so a single-file run
+        # can still link to peptides seeded by an earlier invocation.
+        known_ids = set((await session.scalars(select(Peptide.id))).all())
         for path in paths:
-            await _seed_relations(session, path)
-        await session.commit()  
+            await _seed_relations(session, path, known_ids)
+        await session.commit()
 
     print(f"\nDone. {len(paths)} peptide(s) seeded successfully.")
 

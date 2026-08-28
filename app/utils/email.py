@@ -9,6 +9,20 @@ logger = logging.getLogger("peptora.email")
 
 async def _send_email(payload: dict) -> dict:
     if not settings.RESEND_API_KEY:
+        # A local checkout has no Resend key, and registration refuses to
+        # complete when the verification mail cannot be sent — which left no
+        # way to create an account at all. In development the message is
+        # written to the log instead, so the OTP is readable in the server
+        # output. Anywhere else this stays a hard failure: silently dropping a
+        # password-reset or verification mail is worse than a 502.
+        if settings.is_development:
+            logger.warning(
+                "RESEND_API_KEY not set — email NOT sent. to=%s subject=%s\n%s",
+                payload.get("to"),
+                payload.get("subject"),
+                payload.get("html", ""),
+            )
+            return {"id": "dev-not-sent"}
         raise RuntimeError("RESEND_API_KEY is not configured")
     if not settings.FROM_EMAIL:
         raise RuntimeError("FROM_EMAIL is not configured")
