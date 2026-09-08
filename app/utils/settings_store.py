@@ -17,17 +17,36 @@ from app.models import AppSettings
 logger = logging.getLogger("peptora.settings")
 
 DEFAULT_INSTRUCTIONS_MD = """\
-### How to pay
+### Before you transfer
 
-1. Transfer the exact amount shown above to the account listed.
-2. Save the receipt or take a screenshot of the confirmation.
-3. Come back here, fill in the reference number and upload the receipt.
+- Send the **exact amount** shown above, in the currency listed. A short
+  amount is the single most common reason a payment cannot be matched.
+- Use the reference format shown in the bank details, if one is given —
+  it is what lets us find your transfer without asking you follow-up
+  questions.
+- Take a screenshot of the confirmation screen, or save the PDF receipt,
+  before you close your banking app.
 
-We check every payment by hand, so access is not instant. You will get an
-email the moment your licence is active.
+### After you transfer
 
-Prefer not to transfer directly? Email us and we will send you a payment
-link instead.
+1. Come back to this page.
+2. Fill in the transaction reference, the amount and date you sent, and
+   who the transfer was sent from (if it was not this account).
+3. Attach the screenshot or PDF. JPG, PNG, WebP or PDF, up to 8 MB.
+4. Submit. You will get an email confirming we received it.
+
+### What happens next
+
+A person — not a computer — checks every payment against your receipt, so
+activation is not instant. Once approved, your licence goes live
+immediately and you get an email; nothing else to enter, nothing to
+refresh. If anything about your submission needs fixing, we will tell you
+exactly what and let you send corrected details.
+
+### Cannot transfer directly?
+
+Email us instead of using the form below. We will send you a payment link
+you can use another way, and activate your licence once it clears.
 """
 
 DEFAULT_BANK_DETAILS_MD = """\
