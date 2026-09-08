@@ -17,13 +17,22 @@ from app.utils import nowpayments as np
 
 
 def _user(**kw):
-    return SimpleNamespace(**{"paid_until": None, "trial_ends_at": None, **kw})
+    return SimpleNamespace(**{
+        "paid_until": None,
+        "trial_ends_at": None,
+        "lifetime_access_at": None,
+        "access_revoked_at": None,
+        **kw,
+    })
 
 
 NOW = datetime.now(timezone.utc)
 
 
-# ── access windows ──────────────────────────────────────────────────────────
+# ── the gate ────────────────────────────────────────────────────────────────
+#
+# has_access() is the only thing standing between a stranger and the whole
+# product, so every branch of it is pinned here.
 
 def test_no_windows_means_no_access():
     assert has_access(_user()) is False
@@ -50,6 +59,47 @@ def test_live_payment_grants_access_even_with_dead_trial():
 
 def test_expired_payment_denies_access():
     assert has_access(_user(paid_until=NOW - timedelta(seconds=1))) is False
+
+
+# ── the one-time licence ────────────────────────────────────────────────────
+
+def test_lifetime_licence_grants_access():
+    assert has_access(_user(lifetime_access_at=NOW - timedelta(days=1))) is True
+
+
+def test_lifetime_licence_never_expires():
+    """The whole point of a one-time purchase: no window to run out."""
+    assert has_access(_user(
+        lifetime_access_at=NOW - timedelta(days=3650),
+        trial_ends_at=NOW - timedelta(days=3600),
+        paid_until=NOW - timedelta(days=3000),
+    )) is True
+
+
+# ── revocation ──────────────────────────────────────────────────────────────
+
+def test_revocation_beats_a_lifetime_licence():
+    assert has_access(_user(
+        lifetime_access_at=NOW - timedelta(days=10),
+        access_revoked_at=NOW - timedelta(days=1),
+    )) is False
+
+
+def test_revocation_beats_a_live_trial():
+    """The ordering bug this pins: a user refunded during week one is still
+    inside their 14-day trial. If revocation were checked after the windows,
+    revoking them would silently do nothing until the trial lapsed."""
+    assert has_access(_user(
+        trial_ends_at=NOW + timedelta(days=7),
+        access_revoked_at=NOW,
+    )) is False
+
+
+def test_revocation_beats_a_live_crypto_window():
+    assert has_access(_user(
+        paid_until=NOW + timedelta(days=20),
+        access_revoked_at=NOW,
+    )) is False
 
 
 # ── IPN signature ───────────────────────────────────────────────────────────

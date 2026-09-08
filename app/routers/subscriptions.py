@@ -28,6 +28,7 @@ from app.schemas import (
     SubscriptionStatusResponse,
 )
 from app.utils import nowpayments as np
+from app.utils.settings_store import get_settings
 
 router = APIRouter(prefix="/subscriptions", tags=["subscriptions"])
 logger = logging.getLogger("peptora.payments")
@@ -40,21 +41,41 @@ def _plan_options() -> list[PlanOption]:
     ]
 
 
-def access_info(user: User) -> AccessInfo:
-    """Flatten the two access windows into what the client renders."""
+def access_info(user: User, claim=None) -> AccessInfo:
+    """Flatten the access state into what the client renders.
+
+    `has_access` is delegated to has_access() rather than recomputed here, so
+    there is exactly one implementation of the gate. Everything else in this
+    object is presentation.
+    """
     now = datetime.now(timezone.utc)
-    paid_live = bool(user.paid_until and user.paid_until > now)
-    trial_live = bool(user.trial_ends_at and user.trial_ends_at > now)
-    ends = user.paid_until if paid_live else (user.trial_ends_at if trial_live else None)
+    revoked = bool(user.access_revoked_at)
+    lifetime = bool(user.lifetime_access_at) and not revoked
+    paid_live = bool(user.paid_until and user.paid_until > now) and not revoked
+    trial_live = bool(user.trial_ends_at and user.trial_ends_at > now) and not revoked
+
+    # A lifetime licence has no end date, so there is nothing to count down.
+    ends = None
+    if not lifetime:
+        ends = user.paid_until if paid_live else (user.trial_ends_at if trial_live else None)
+
+    claim_status = claim.status if claim is not None else None
     return AccessInfo(
-        has_access=paid_live or trial_live,
+        has_access=has_access(user),
         # Only call it a trial when the trial is the *only* thing granting
-        # access — a paid user still inside their trial window should not see
-        # a countdown banner telling them their trial is ending.
-        is_trial=trial_live and not paid_live,
+        # access — a licensed user still inside their trial window should not
+        # see a countdown banner telling them their trial is ending.
+        is_trial=trial_live and not paid_live and not lifetime,
+        is_lifetime=lifetime,
+        is_revoked=revoked,
         trial_ends_at=user.trial_ends_at,
         paid_until=user.paid_until,
         days_remaining=max(0, (ends - now).days) if ends else None,
+        claim_status=claim_status,
+        claim_id=claim.id if claim is not None else None,
+        # A pending claim means the form has already been submitted; offering
+        # it again invites a duplicate the reviewer then has to reconcile.
+        can_submit_claim=claim_status not in ("submitted", "under_review"),
     )
 
 
@@ -66,8 +87,13 @@ async def create_checkout(
     db: AsyncSession = Depends(get_db),
     user: User = Depends(get_current_verified_user),
 ):
-    if not settings.payments_configured:
-        raise HTTPException(status_code=503, detail="Payments are not available right now")
+    cfg = await get_settings(db)
+    # Two gates: the integration must be configured AND the rail must be
+    # switched on in admin settings. The rail is parked by default — Peptora
+    # is a one-time purchase verified by hand, and crypto is kept only so it
+    # can be turned back on without a rebuild.
+    if not settings.payments_configured or not cfg.crypto_payments_enabled:
+        raise HTTPException(status_code=503, detail="Card-free checkout is not available right now")
 
     order_id = np.build_order_id(user.id, body.plan)
 
@@ -206,10 +232,17 @@ async def nowpayments_ipn(request: Request, db: AsyncSession = Depends(get_db)):
 
 
 @router.get("/status", response_model=SubscriptionStatusResponse)
-async def subscription_status(user: User = Depends(get_current_verified_user)):
+async def subscription_status(
+    db: AsyncSession = Depends(get_db),
+    user: User = Depends(get_current_verified_user),
+):
+    from app.routers.billing import latest_claim_for
+
+    cfg = await get_settings(db)
+    claim = await latest_claim_for(db, user.id)
     return SubscriptionStatusResponse(
         plan="pro" if has_access(user) else "free",
-        access=access_info(user),
+        access=access_info(user, claim),
         plans=_plan_options(),
-        payments_enabled=settings.payments_configured,
+        payments_enabled=settings.payments_configured and cfg.crypto_payments_enabled,
     )

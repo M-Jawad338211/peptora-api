@@ -82,13 +82,16 @@ async def billing_sweep(
 
     sent = failed = 0
 
-    # Paid access ending in ~3 days. Nothing auto-renews, so this email is the
-    # only thing standing between a paying user and a silent lapse.
+    # Crypto access ending in ~3 days. Only reachable when that rail is
+    # switched back on; a lifetime licence never expires, so those users are
+    # excluded rather than warned about an end date they do not have.
     expiring = await db.execute(
         select(User).where(
             User.paid_until.is_not(None),
             User.paid_until > window_start,
             User.paid_until <= window_end,
+            User.lifetime_access_at.is_(None),
+            User.access_revoked_at.is_(None),
         )
     )
     for user in expiring.scalars().all():
@@ -99,13 +102,16 @@ async def billing_sweep(
             logger.exception("renewal reminder failed for %s", user.email)
             failed += 1
 
-    # Trials ending in ~3 days, for users who never paid.
+    # Trials ending in ~3 days, for users who never bought. This is now the
+    # main conversion trigger in the whole product — after it, the app locks.
     trials = await db.execute(
         select(User).where(
             User.trial_ends_at.is_not(None),
             User.trial_ends_at > window_start,
             User.trial_ends_at <= window_end,
             User.paid_until.is_(None),
+            User.lifetime_access_at.is_(None),
+            User.access_revoked_at.is_(None),
         )
     )
     for user in trials.scalars().all():
@@ -117,16 +123,57 @@ async def billing_sweep(
             failed += 1
 
     # Demote anyone whose windows have both closed. Set-based, so it stays one
-    # statement regardless of how many users lapse on a given day.
+    # statement regardless of how many users lapse on a given day. A lifetime
+    # licence is excluded — it has no window to close, and demoting one would
+    # show "Free" to someone who bought the product outright.
     demoted = await db.execute(
         update(User)
         .where(
             User.plan == "pro",
+            User.lifetime_access_at.is_(None),
             (User.paid_until.is_(None)) | (User.paid_until <= now),
             (User.trial_ends_at.is_(None)) | (User.trial_ends_at <= now),
         )
         .values(plan="free")
     )
 
-    logger.info("billing_sweep sent=%d failed=%d demoted=%d", sent, failed, demoted.rowcount or 0)
+    purged = await _purge_expired_receipts(db, now)
+
+    logger.info(
+        "billing_sweep sent=%d failed=%d demoted=%d receipts_purged=%d",
+        sent, failed, demoted.rowcount or 0, purged,
+    )
     return CronReminderResult(sent=sent, failed=failed, skipped=demoted.rowcount or 0)
+
+
+async def _purge_expired_receipts(db: AsyncSession, now: datetime) -> int:
+    """Delete receipt objects past the retention window.
+
+    Receipts are financial PII — names, account fragments, transaction
+    references — so they are not kept indefinitely. The claim metadata stays
+    as the record of why an account has access; only the image goes, and
+    `receipt_deleted_at` records that it once existed.
+    """
+    from app.models import PaymentClaim
+    from app.utils import storage
+
+    cutoff = now - timedelta(days=settings.RECEIPT_RETENTION_DAYS)
+    result = await db.execute(
+        select(PaymentClaim).where(
+            PaymentClaim.receipt_key.is_not(None),
+            PaymentClaim.receipt_deleted_at.is_(None),
+            PaymentClaim.reviewed_at.is_not(None),
+            PaymentClaim.reviewed_at <= cutoff,
+        ).limit(500)
+    )
+    purged = 0
+    for claim in result.scalars().all():
+        try:
+            storage.delete(claim.receipt_key)
+        except Exception:
+            logger.warning("receipt_purge_failed claim_id=%s", claim.id)
+            continue
+        claim.receipt_deleted_at = now
+        claim.receipt_key = None
+        purged += 1
+    return purged

@@ -9,7 +9,7 @@ from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from app.config import settings
 from app.middleware.rate_limit import limiter
-from app.routers import auth, calculator, subscriptions, ai, admin, tracker, cron, peptides, protocols, stacks
+from app.routers import auth, billing, calculator, subscriptions, ai, admin, tracker, cron, peptides, protocols, stacks
 
 logging.config.dictConfig({
     "version": 1,
@@ -67,10 +67,11 @@ app = FastAPI(
         "the cookie in subsequent requests.\n\n"
         "## Rate limits\n"
         "Public endpoints are rate-limited per IP. Exceeding the limit returns `429 Too Many Requests`.\n\n"
-        "## Calculator trial limits\n"
-        "- Anonymous: 5 calculations then signup wall\n"
-        "- Free tier: 25 calculations then paywall\n"
-        "- Pro: unlimited"
+        "## Access\n"
+        "Peptora is a one-time purchase behind a 14-day trial. There is no free\n"
+        "tier and no anonymous allowance: every product endpoint requires a live\n"
+        "access window and returns `402` without one. Payments are verified by\n"
+        "hand — see the `billing` and `admin` tags."
     ),
     contact={
         "name": "Peptora Support",
@@ -84,7 +85,8 @@ app = FastAPI(
         {"name": "auth", "description": "Registration, login, logout, OTP, and token refresh."},
         {"name": "calculator", "description": "Peptide property calculations (MW, GRAVY, charge, etc.)."},
         {"name": "ai", "description": "AI-powered peptide research assistant (Claude)."},
-        {"name": "subscriptions", "description": "Stripe billing — plans, checkout, portal, webhooks."},
+        {"name": "subscriptions", "description": "Dormant crypto rail (NOWPayments), off by default."},
+        {"name": "billing", "description": "Manual billing — payment instructions, claims, receipts."},
         {"name": "admin", "description": "Admin-only endpoints for user and system management."},
     ],
     docs_url="/docs",
@@ -158,6 +160,7 @@ async def request_logging_and_security(request: Request, call_next):
 app.include_router(auth.router)
 app.include_router(calculator.router)
 app.include_router(subscriptions.router)
+app.include_router(billing.router)
 app.include_router(ai.router)
 app.include_router(admin.router)
 app.include_router(tracker.router)
@@ -173,15 +176,29 @@ async def health():
 
 
 @app.get("/health/db")
-async def health_db():
-    if settings.ENVIRONMENT != "development":
-        from app.middleware.auth import get_current_admin
-        # In prod this endpoint requires admin — checked at route level
-        pass
-    from app.database import engine
+async def health_db(request: Request):
+    """Database reachability. Admin-only outside development.
+
+    Previously this had a `pass` where the production check was meant to sit,
+    under a comment claiming it was "checked at route level" — it was not, so
+    connection errors were readable by anyone. The detail is what makes it
+    sensitive: the exception text carries the host and database name.
+    """
+    from sqlalchemy import text
+
+    from app.database import engine, get_db
+    from app.middleware.auth import get_current_user_optional
+
+    if not settings.is_development:
+        async for db in get_db():
+            user = await get_current_user_optional(request, db)
+            break
+        if not user or not user.is_admin:
+            return Response(status_code=404)
+
     try:
         async with engine.connect() as conn:
-            await conn.execute(__import__("sqlalchemy").text("SELECT 1"))
+            await conn.execute(text("SELECT 1"))
         return {"status": "ok", "db": "connected"}
     except Exception as e:
         return {"status": "error", "db": str(e)}

@@ -40,11 +40,31 @@ class Settings(BaseSettings):
     # way to break verification. Callbacks go straight to the API host.
     API_PUBLIC_URL: str = "https://api.peptora.io"
 
-    # Access windows, in days. A payment pushes `users.paid_until` forward by
-    # PLAN_DAYS[plan]; the trial is granted once, at email verification.
+    # Access windows, in days. The trial is granted once, at email
+    # verification, and is bound to the signup device fingerprint.
+    # PLAN_DAYS[plan] still drives the dormant crypto rail.
     TRIAL_DAYS: int = 14
     PRICE_MONTHLY_USD: float = 5.0
     PRICE_ANNUAL_USD: float = 49.0
+
+    # Fallback for the one-time price, used only to seed app_settings on a
+    # fresh database. The live figure is the one in app_settings, editable
+    # from the admin panel — bank details and prices change, and neither
+    # should need a redeploy.
+    PRICE_ONETIME_USD: float = 99.0
+
+    # Railway Bucket holding payment receipts. Absent locally, where
+    # app/utils/storage.py falls back to a directory on disk.
+    RECEIPTS_BUCKET: Optional[str] = None
+    RECEIPTS_ENDPOINT: Optional[str] = None
+    RECEIPTS_REGION: Optional[str] = None
+    RECEIPTS_ACCESS_KEY_ID: Optional[str] = None
+    RECEIPTS_SECRET_ACCESS_KEY: Optional[str] = None
+
+    # Receipts are financial PII. Objects are deleted this long after the
+    # claim is resolved; the claim metadata itself is kept indefinitely as
+    # the record of why an account has access.
+    RECEIPT_RETENTION_DAYS: int = 365
 
     ANTHROPIC_API_KEY: Optional[str] = None
     CRON_SECRET: Optional[str] = None
@@ -78,6 +98,18 @@ class Settings(BaseSettings):
             )
         # Keep origins bare (scheme://host[:port]) so they match browser Origin headers.
         return f"{parsed.scheme}://{parsed.netloc}"
+
+    @property
+    def receipts_configured(self) -> bool:
+        """Whether the object store is usable. All five must be present —
+        a partial config would fail at the first upload, after the user has
+        already filled in the form."""
+        return all([
+            self.RECEIPTS_BUCKET,
+            self.RECEIPTS_ENDPOINT,
+            self.RECEIPTS_ACCESS_KEY_ID,
+            self.RECEIPTS_SECRET_ACCESS_KEY,
+        ])
 
     @property
     def payments_configured(self) -> bool:
