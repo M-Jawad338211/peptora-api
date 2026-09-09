@@ -5,12 +5,12 @@ from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update
+from sqlalchemy.exc import IntegrityError
 from app.database import get_db
-from app.models import User, TrialCounter, AuditLog, EmailVerificationOTP
+from app.models import User, TrialCounter, TrialGrant, AuditLog, EmailVerificationOTP
 from app.schemas import (
     RegisterRequest, LoginRequest, ForgotPasswordRequest,
-    ResetPasswordRequest, UserResponse, TrialCountInfo, AccessInfo,
-    VerifyEmailRequest, ResendVerificationOTPRequest, PushTokenUpdate,
+    ResetPasswordRequest, UserResponse, TrialCountInfo, VerifyEmailRequest, ResendVerificationOTPRequest, PushTokenUpdate,
 )
 from app.utils.security import (
     hash_password, verify_password,
@@ -81,19 +81,25 @@ async def register(
     if existing.scalar_one_or_none():
         raise HTTPException(status_code=409, detail="Email already registered")
 
+    # Fallback fingerprints are shared across many devices — never link them,
+    # always create a fresh counter and never bind a trial to them.
+    is_fallback_fp = body.device_fingerprint.startswith("fallback-fp-")
+
     user = User(
         email=body.email,
         password_hash=hash_password(body.password),
         full_name=body.full_name,
         plan="free",
         email_verified=False,
+        # Persisted because the trial is granted at /verify-email, where the
+        # fingerprint is not in scope. Fallback fingerprints are shared across
+        # devices and must never be bound against, so they are not stored.
+        signup_fingerprint=None if is_fallback_fp else body.device_fingerprint,
     )
     db.add(user)
     await db.flush()
 
     # Link or create trial counter.
-    # Fallback fingerprints are shared across many devices — never link them, always create a fresh counter.
-    is_fallback_fp = body.device_fingerprint.startswith("fallback-fp-")
     tc = None
     if not is_fallback_fp:
         tc_result = await db.execute(
@@ -214,8 +220,15 @@ async def verify_email(
     # account can never log in, so a trial granted at signup would spend most
     # of itself before the user ever reached the app. Guarded so that
     # re-verifying can never mint a second trial.
+    #
+    # Also bound to the signup device. Peptora is a one-time purchase, so an
+    # account-scoped trial is a permanent free tier for anyone who notices
+    # they can just sign up again with another address.
     if user.trial_ends_at is None:
-        user.trial_ends_at = now + timedelta(days=_settings.TRIAL_DAYS)
+        if await _may_grant_trial(db, user):
+            user.trial_ends_at = now + timedelta(days=_settings.TRIAL_DAYS)
+        else:
+            logger.info("trial_denied_device_reuse user_id=%s", user.id)
     db.add(AuditLog(
         user_id=user.id,
         action="email_verified",
@@ -269,6 +282,39 @@ async def refresh_token(request: Request, response: Response):
     return {"message": "Token refreshed"}
 
 
+async def _may_grant_trial(db: AsyncSession, user: User) -> bool:
+    """Claim the trial for this user's signup device, once.
+
+    The unique constraint on trial_grants.device_fingerprint is the arbiter
+    rather than a read-then-write, which races between two simultaneous
+    verifications on the same device.
+
+    Fails OPEN when there is no usable fingerprint. Refusing a trial to
+    everyone whose browser blocks the fingerprinting APIs would punish
+    privacy-conscious users and Safari far more than it would punish anyone
+    farming trials.
+
+    Note this cannot be answered from TrialCounter: its `user_id` is UNIQUE and
+    is reassigned when a second account registers on the same fingerprint, so
+    it can never testify that a device already had a trial.
+    """
+    fp = user.signup_fingerprint
+    if not fp:
+        return True
+
+    try:
+        # A SAVEPOINT, not the outer transaction. A plain rollback here would
+        # discard the whole verification — the OTP consumption, email_verified,
+        # last_login — and the user would be told their code was invalid.
+        async with db.begin_nested():
+            db.add(TrialGrant(device_fingerprint=fp, user_id=user.id))
+            await db.flush()
+        return True
+    except IntegrityError:
+        # This device has already had its trial.
+        return False
+
+
 @router.post("/logout")
 async def logout(
     request: Request,
@@ -306,8 +352,14 @@ async def me(
             signup_bonus_granted=u.trial_counter.signup_bonus_granted,
         )
 
+    from app.routers.billing import latest_claim_for
     from app.routers.subscriptions import access_info
-    access = access_info(u)
+
+    # The user's latest claim rides along so the paywall renders its real
+    # state on first paint — pending, rejected or clear — instead of flashing
+    # a submission form at someone who already paid an hour ago.
+    claim = await latest_claim_for(db, u.id)
+    access = access_info(u, claim)
 
     return UserResponse(
         id=u.id, email=u.email, full_name=u.full_name,

@@ -1,3 +1,11 @@
+"""The peptide stacks.
+
+Behind the licence gate as of the move to a one-time purchase: the whole app
+shell is paid, and leaving these two routers unauthenticated would have meant
+"the navigation is locked" while the data itself stayed public to anyone with
+curl.
+"""
+
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -5,6 +13,7 @@ from sqlalchemy.orm import selectinload
 
 from app.database import get_db
 from app.models import PeptideStack, StackComponent, Peptide
+from app.middleware.auth import get_current_subscriber
 from app.middleware.rate_limit import limiter
 from app.schemas import StackCard, StackDetail
 
@@ -13,7 +22,11 @@ router = APIRouter(prefix="/stacks", tags=["stacks"])
 
 @router.get("", response_model=list[StackCard])
 @limiter.limit("60/minute")
-async def list_stacks(request: Request, db: AsyncSession = Depends(get_db)):
+async def list_stacks(
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    user=Depends(get_current_subscriber),
+):
     result = await db.execute(
         select(PeptideStack).order_by(PeptideStack.name)
     )
@@ -22,7 +35,12 @@ async def list_stacks(request: Request, db: AsyncSession = Depends(get_db)):
 
 @router.get("/{stack_id}", response_model=StackDetail)
 @limiter.limit("60/minute")
-async def get_stack(stack_id: str, request: Request, db: AsyncSession = Depends(get_db)):
+async def get_stack(
+    stack_id: str,
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    user=Depends(get_current_subscriber),
+):
     result = await db.execute(
         select(PeptideStack)
         .where(PeptideStack.id == stack_id)

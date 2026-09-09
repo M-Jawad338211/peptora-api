@@ -3,7 +3,8 @@ from datetime import date, datetime, timezone
 from typing import Any
 from sqlalchemy import (
     String, Boolean, Integer, BigInteger, DateTime, Date, Text, JSON,
-    ForeignKey, Numeric, UniqueConstraint, Index, CheckConstraint, Enum as SAEnum
+    ForeignKey, Numeric, UniqueConstraint, Index, CheckConstraint, text,
+    Enum as SAEnum
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID, ARRAY, JSONB, TSVECTOR
@@ -34,6 +35,26 @@ class User(Base):
     # one", which is not the same as an expired one.
     trial_ends_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     paid_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True, index=True)
+
+    # The one-time purchase. Set once, when an admin approves a payment claim;
+    # non-null means permanent access and no expiry to track. A far-future
+    # `paid_until` would have worked and lied everywhere it was read — the
+    # sweep would count a lifetime user as expiring and `days_remaining` would
+    # report a five-figure number to the UI.
+    lifetime_access_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True, index=True)
+
+    # Refunds, chargebacks and abuse. Kept as a timestamp rather than clearing
+    # the grant so the record of what happened survives. `has_access()` checks
+    # this FIRST — a refunded user may still be inside their original trial
+    # window, and checking it last would make revocation silently do nothing.
+    access_revoked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    access_revoked_reason: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    # The device fingerprint seen at registration. Submitted at /auth/register
+    # but not at /auth/verify-email, where the trial is actually granted, so
+    # without persisting it here the grant has nothing to bind against.
+    signup_fingerprint: Mapped[str | None] = mapped_column(String(255), nullable=True, index=True)
+
     is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
     email_verified: Mapped[bool] = mapped_column(Boolean, default=False)
     expo_push_token: Mapped[str | None] = mapped_column(String(255), nullable=True)
@@ -47,6 +68,9 @@ class User(Base):
     trial_counter: Mapped["TrialCounter | None"] = relationship("TrialCounter", back_populates="user", uselist=False)
     calculator_usages: Mapped[list["CalculatorUsage"]] = relationship("CalculatorUsage", back_populates="user")
     payments: Mapped[list["CryptoPayment"]] = relationship("CryptoPayment", back_populates="user")
+    payment_claims: Mapped[list["PaymentClaim"]] = relationship(
+        "PaymentClaim", back_populates="user", foreign_keys="PaymentClaim.user_id"
+    )
     audit_logs: Mapped[list["AuditLog"]] = relationship("AuditLog", back_populates="user")
     verification_otps: Mapped[list["EmailVerificationOTP"]] = relationship("EmailVerificationOTP", back_populates="user")
     cycle_logs: Mapped[list["CycleLog"]] = relationship("CycleLog", back_populates="user")
@@ -177,6 +201,158 @@ class CryptoPayment(Base):
     __table_args__ = (
         Index("ix_crypto_payment_user_created", "user_id", "created_at"),
     )
+
+
+# ---------------------------------------------------------------------------
+# Manual billing
+# ---------------------------------------------------------------------------
+
+# Non-terminal statuses. A user may hold only one claim in these states at a
+# time — enforced by a partial unique index, so nobody floods the review queue
+# by resubmitting.
+OPEN_CLAIM_STATUSES = ("submitted", "under_review")
+
+CLAIM_REJECTION_REASONS = (
+    "amount_mismatch",
+    "receipt_unreadable",
+    "reference_not_found",
+    "duplicate_claim",
+    "not_received",
+    "other",
+)
+
+
+class PaymentClaim(Base):
+    """One attempt to pay, verified by a human.
+
+    This table is the answer to "why does this account have access?", and it
+    outlives revocation — rows are never deleted, exactly like crypto_payments.
+    A claim also exists for the payment-link flow, where the money moved
+    entirely outside the app and the admin creates the record after the fact;
+    without that, half of all grants would carry no evidence at all.
+    """
+
+    __tablename__ = "payment_claims"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+
+    # "bank_transfer" — the user transferred and uploaded a receipt.
+    # "payment_link" — we emailed them a link; the admin files the claim.
+    # "other" — anything else, explained in review_note.
+    method: Mapped[str] = mapped_column(String(30), nullable=False, default="bank_transfer")
+    status: Mapped[str] = mapped_column(String(20), nullable=False, default="submitted", index=True)
+
+    # What the user says they sent, checked by eye against the receipt.
+    amount_claimed: Mapped[float | None] = mapped_column(Numeric(12, 2), nullable=True)
+    currency: Mapped[str] = mapped_column(String(10), nullable=False, default="USD")
+
+    # Bank transaction id or transfer reference — the single most useful field
+    # when reconciling against a bank statement.
+    reference: Mapped[str | None] = mapped_column(String(255), nullable=True, index=True)
+
+    # Often differs from the account holder: a family member's account, a
+    # friend paying on someone's behalf. That mismatch is normal and is what
+    # user_note exists to explain.
+    payer_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    paid_at: Mapped[date | None] = mapped_column(Date, nullable=True)
+    user_note: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    # Object key in the bucket. Never a URL — the bucket is private and reads
+    # are short-lived presigned links generated per request.
+    receipt_key: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    receipt_mime: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    receipt_bytes: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    receipt_uploaded_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    # Set when the object is purged under the retention policy; the metadata
+    # above stays as the record that a receipt once existed.
+    receipt_deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    reviewed_by: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
+    reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    rejection_reason: Mapped[str | None] = mapped_column(String(40), nullable=True)
+    # Shown to the user.
+    review_note: Mapped[str | None] = mapped_column(Text, nullable=True)
+    # Internal only, never serialised to the customer-facing API.
+    internal_note: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, index=True)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
+
+    user: Mapped["User"] = relationship("User", back_populates="payment_claims", foreign_keys=[user_id])
+    reviewer: Mapped["User | None"] = relationship("User", foreign_keys=[reviewed_by])
+
+    __table_args__ = (
+        # The queue read: pending claims, oldest first. It runs constantly.
+        Index("ix_payment_claims_status_created", "status", "created_at"),
+        Index("ix_payment_claims_user_created", "user_id", "created_at"),
+        # One open claim per user. Partial, so a rejected claim never blocks a
+        # corrected resubmission.
+        Index(
+            "uq_payment_claims_one_open_per_user",
+            "user_id",
+            unique=True,
+            postgresql_where=text("status IN ('submitted', 'under_review')"),
+        ),
+        CheckConstraint(
+            "status IN ('submitted','under_review','approved','rejected','cancelled')",
+            name="ck_payment_claims_status",
+        ),
+    )
+
+
+class TrialGrant(Base):
+    """Insert-once record that a device has had its free trial.
+
+    Deliberately not folded into TrialCounter: that table's `user_id` is
+    UNIQUE and gets *reassigned* when a second account registers on the same
+    fingerprint (app/routers/auth.py), so it can never testify that a device
+    was already granted a trial. Here the unique constraint on the fingerprint
+    is the arbiter, which also makes the grant race-safe without a
+    read-then-write.
+    """
+
+    __tablename__ = "trial_grants"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    device_fingerprint: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
+    user_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
+    granted_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class AppSettings(Base):
+    """Runtime-editable billing configuration. Exactly one row, id = 1.
+
+    In the database rather than config.py on purpose: bank accounts get frozen
+    and numbers change, and neither a price change nor a new account number
+    should require `railway up` and a cold start.
+    """
+
+    __tablename__ = "app_settings"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, default=1)
+
+    one_time_price_usd: Mapped[float] = mapped_column(Numeric(12, 2), nullable=False, default=99.00)
+    currency: Mapped[str] = mapped_column(String(10), nullable=False, default="USD")
+
+    # Markdown, rendered on the paywall.
+    bank_details_md: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    payment_instructions_md: Mapped[str] = mapped_column(Text, nullable=False, default="")
+
+    support_email: Mapped[str] = mapped_column(String(255), nullable=False, default="support@peptora.io")
+    # Where new-claim notifications go. Here rather than in config so it can
+    # change without a deploy.
+    claims_notify_email: Mapped[str | None] = mapped_column(String(255), nullable=True)
+
+    # Drives both the copy on the form and the overdue highlight in the queue.
+    review_sla_hours: Mapped[int] = mapped_column(Integer, nullable=False, default=24)
+
+    manual_payments_enabled: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    # The flag that parks the NOWPayments rail without deleting it.
+    crypto_payments_enabled: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+
+    updated_by: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
 
 
 class CycleLog(Base):

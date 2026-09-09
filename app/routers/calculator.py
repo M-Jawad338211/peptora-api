@@ -25,14 +25,14 @@ from app.utils.security import hash_ip
 
 router = APIRouter(prefix="/calculator", tags=["calculator"])
 
-# Anonymous visitors keep a small allowance: the calculator is the top of the
-# funnel and the thing that convinces people the subscription is worth buying.
-# Signing up converts that into the full 14-day trial.
-ANON_LIMIT = 5
-
-# There is no longer a standing free tier. A signed-in user is either inside
-# an access window (trial or paid, both unlimited) or out of one, in which
-# case the answer is the paywall rather than a smaller allowance.
+# There is no free tier and no anonymous allowance. Peptora is a one-time
+# purchase behind a 14-day trial: a user is either inside an access window or
+# out of one, and the answer to being out of one is the paywall.
+#
+# The anonymous 5-calculation preview was removed with the move to a paid app
+# shell. It existed as top-of-funnel, but keeping it meant carving an
+# exception into a gate whose entire value is having none — and the funnel
+# belongs on the marketing site, where it also earns search traffic.
 
 
 async def _get_or_create_trial(db: AsyncSession, user: User | None, fp: str) -> TrialCounter:
@@ -62,21 +62,17 @@ async def check_trial(
     user: User | None = Depends(get_current_user_optional),
 ):
     if has_access(user):
-        return TrialCheckResponse(allowed=True, reason="subscribed", remaining=None)
+        return TrialCheckResponse(allowed=True, reason="licensed", remaining=None)
+
+    if not user:
+        return TrialCheckResponse(allowed=False, reason="signup_required")
 
     tc = await _get_or_create_trial(db, user, body.device_fingerprint)
 
-    if not user:
-        if tc.calc_uses_anonymous >= ANON_LIMIT:
-            return TrialCheckResponse(allowed=False, reason="anonymous_limit", uses_so_far=tc.calc_uses_anonymous)
-        return TrialCheckResponse(
-            allowed=True, reason="ok", remaining=ANON_LIMIT - tc.calc_uses_anonymous
-        )
-
-    # Signed in, no live window: the trial has been used up.
+    # Signed in, no live window: the trial has run out or was never granted.
     return TrialCheckResponse(
         allowed=False,
-        reason="subscription_required",
+        reason="licence_required",
         uses_so_far=tc.calc_uses_anonymous + tc.calc_uses_free,
     )
 
@@ -89,21 +85,18 @@ async def record_use(
     db: AsyncSession = Depends(get_db),
     user: User | None = Depends(get_current_user_optional),
 ):
-    tc = await _get_or_create_trial(db, user, body.device_fingerprint)
-
     # The write side has to enforce too. check-trial is advisory — a client
-    # that skips it, or an expired trial that lapsed between the two calls,
-    # would otherwise still land a row here.
-    if user and not has_access(user):
-        raise HTTPException(status_code=402, detail="Subscription required")
-    if not user and tc.calc_uses_anonymous >= ANON_LIMIT:
-        raise HTTPException(status_code=402, detail="Free preview used up. Create an account to continue.")
-
+    # that skips it, or a trial that lapsed between the two calls, would
+    # otherwise still land a row here.
     if not user:
-        tc.calc_uses_anonymous += 1
-        new_count = tc.calc_uses_anonymous
-    else:
-        new_count = 0  # Inside an access window: nothing to meter.
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    if not has_access(user):
+        raise HTTPException(status_code=402, detail="A Peptora licence is required")
+
+    # Still ensures the counter row exists — /auth/me reports it — but there
+    # is nothing to meter for a user inside an access window.
+    await _get_or_create_trial(db, user, body.device_fingerprint)
+    new_count = 0
 
     # Get or create session
     session_result = await db.execute(

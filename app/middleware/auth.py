@@ -47,16 +47,29 @@ async def get_current_verified_user(user: User = Depends(get_current_user)) -> U
 
 
 def has_access(user: User | None) -> bool:
-    """Whether this user may use the paid tools right now.
+    """Whether this user may use the app right now. The only correct gate.
 
-    Two independent windows grant access, and either is enough: a live trial
-    or a live paid period. This — not `user.plan` — is the authority. `plan`
-    is a denormalised copy that the nightly sweep only refreshes once a day,
-    so gating on it would keep a lapsed user in for up to 24 hours and, worse,
-    lock out a user for that long after they paid.
+    This — not `user.plan` — is the authority. `plan` is a denormalised copy
+    that the nightly sweep only refreshes once a day, so gating on it would
+    keep a lapsed user in for up to 24 hours and, worse, lock out a user for
+    that long after they paid.
+
+    Order matters. Revocation is checked FIRST because a refunded user may
+    still be inside their original trial window: checked last, refunding
+    someone in week one would silently do nothing and they would keep full
+    access until the trial lapsed. The kill switch has to outrank every grant.
+
+    Three things grant access, in descending permanence:
+      lifetime_access_at  the one-time purchase, approved by an admin
+      paid_until          the dormant crypto rail, kept behind a flag
+      trial_ends_at       the 14-day trial, granted once per device
     """
     if not user:
         return False
+    if user.access_revoked_at:
+        return False
+    if user.lifetime_access_at:
+        return True
     now = datetime.now(timezone.utc)
     if user.paid_until and user.paid_until > now:
         return True
@@ -66,16 +79,17 @@ def has_access(user: User | None) -> bool:
 
 
 async def get_current_subscriber(user: User = Depends(get_current_verified_user)) -> User:
-    """Gate for the paid tools: calculator history, protocols, tracker, AI.
+    """Gate for the whole product: encyclopedia, stacks, calculator history,
+    protocols, tracker, AI. Everything except auth, consent and billing.
 
     402 rather than 403 so the web client can tell "you need to pay" apart
-    from "you are not allowed", and route to the pricing page instead of the
+    from "you are not allowed", and route to the billing page instead of the
     login page. See lib/api/client.js and components/auth/PlanGate.js.
     """
     if not has_access(user):
         raise HTTPException(
             status_code=status.HTTP_402_PAYMENT_REQUIRED,
-            detail="Subscription required",
+            detail="A Peptora licence is required",
         )
     return user
 

@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, field_validator, model_validator
+from pydantic import BaseModel, EmailStr, Field, field_validator, model_validator
 from typing import Any, Literal, Optional
 from datetime import date, datetime
 import uuid
@@ -314,7 +314,7 @@ class TrialCountInfo(BaseModel):
 
 
 class AccessInfo(BaseModel):
-    """The user's access window, flattened for the client.
+    """The user's access state, flattened for the client.
 
     `has_access` is computed server-side and is what the UI must gate on —
     a client that recomputes it from the dates will disagree with the API
@@ -325,6 +325,18 @@ class AccessInfo(BaseModel):
     trial_ends_at: Optional[datetime] = None
     paid_until: Optional[datetime] = None
     days_remaining: Optional[int] = None
+
+    # Purchased outright. Suppresses every countdown and renewal nudge —
+    # there is nothing left to expire.
+    is_lifetime: bool = False
+    is_revoked: bool = False
+
+    # The user's open or most recently resolved claim, so the paywall can
+    # render the right state without a second request on first paint.
+    claim_status: Optional[str] = None
+    claim_id: Optional[uuid.UUID] = None
+    # False while a claim is pending, so the form cannot be submitted twice.
+    can_submit_claim: bool = True
 
 
 class UserResponse(BaseModel):
@@ -487,14 +499,28 @@ class CronReminderResult(BaseModel):
 # ── Admin ───────────────────────────────────────────────────────────────────
 
 class AdminStatsResponse(BaseModel):
+    # Leads with the numbers that represent someone currently waiting.
+    pending_claims: int
+    oldest_pending_hours: Optional[float] = None
+    overdue_claims: int
+
     total_users: int
-    free_users: int
-    pro_users: int
+    lifetime_users: int
+    trialing_users: int
+    lapsed_users: int
+    trials_ending_this_week: int
+
     calcs_today: int
     calcs_this_week: int
     calcs_this_month: int
-    revenue_today: float
     new_signups_today: int
+
+    approved_last_7d: int
+    rejected_last_7d: int
+    # Real, from approved claims — the old field was hardcoded to 0.0 with a
+    # comment pointing at a Stripe dashboard that never existed.
+    revenue_last_30d: float
+    revenue_all_time: float
 
 
 class AdminUserItem(BaseModel):
@@ -508,7 +534,212 @@ class AdminUserItem(BaseModel):
     calc_uses_anonymous: int
     calc_uses_free: int
 
+    # Derived server-side from has_access(), never recomputed in the UI.
+    has_access: bool = False
+    access_state: str = "none"  # lifetime | trial | crypto | lapsed | revoked | none
+    lifetime_access_at: Optional[datetime] = None
+    trial_ends_at: Optional[datetime] = None
+    access_revoked_at: Optional[datetime] = None
+    open_claim_id: Optional[uuid.UUID] = None
+
     model_config = {"from_attributes": True}
+
+
+class AdminUserDetail(AdminUserItem):
+    """One account, with everything needed to decide what to do about it."""
+    email_verified: bool = False
+    consent_accepted: bool = False
+    paid_until: Optional[datetime] = None
+    access_revoked_reason: Optional[str] = None
+    signup_fingerprint: Optional[str] = None
+    claims: list["AdminClaimItem"] = []
+
+
+class AdminUserListResponse(BaseModel):
+    """Paginated. The old endpoint returned a bare list with no total, so a UI
+    could not render honest pagination."""
+    items: list[AdminUserItem]
+    total: int
+    limit: int
+    offset: int
+
+
+# ── Manual billing ──────────────────────────────────────────────────────────
+
+class PaymentInstructions(BaseModel):
+    """Everything the paywall needs to render, in one call."""
+    price: float
+    currency: str
+    bank_details_md: str
+    payment_instructions_md: str
+    support_email: str
+    review_sla_hours: int
+    manual_payments_enabled: bool
+    crypto_payments_enabled: bool
+    receipts_enabled: bool
+
+
+class CreateClaimRequest(BaseModel):
+    amount_claimed: Optional[float] = Field(default=None, ge=0, le=1_000_000)
+    currency: str = Field(default="USD", max_length=10)
+    reference: Optional[str] = Field(default=None, max_length=255)
+    payer_name: Optional[str] = Field(default=None, max_length=255)
+    paid_at: Optional[date] = None
+    user_note: Optional[str] = Field(default=None, max_length=2000)
+    method: str = Field(default="bank_transfer")
+
+    @field_validator("method")
+    @classmethod
+    def known_method(cls, v: str) -> str:
+        if v not in ("bank_transfer", "payment_link", "other"):
+            raise ValueError("Unknown payment method")
+        return v
+
+
+class PaymentClaimResponse(BaseModel):
+    """The customer-facing view of a claim. Deliberately omits
+    `internal_note` — that field is for admins only."""
+    id: uuid.UUID
+    status: str
+    method: str
+    amount_claimed: Optional[float] = None
+    currency: str
+    reference: Optional[str] = None
+    payer_name: Optional[str] = None
+    paid_at: Optional[date] = None
+    user_note: Optional[str] = None
+    has_receipt: bool = False
+    rejection_reason: Optional[str] = None
+    review_note: Optional[str] = None
+    reviewed_at: Optional[datetime] = None
+    created_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
+class AdminClaimItem(BaseModel):
+    id: uuid.UUID
+    status: str
+    method: str
+    user_id: uuid.UUID
+    user_email: str
+    user_full_name: Optional[str] = None
+    amount_claimed: Optional[float] = None
+    currency: str
+    reference: Optional[str] = None
+    payer_name: Optional[str] = None
+    paid_at: Optional[date] = None
+    has_receipt: bool = False
+    created_at: datetime
+    age_hours: float
+    is_overdue: bool = False
+
+    model_config = {"from_attributes": True}
+
+
+class AdminClaimListResponse(BaseModel):
+    items: list[AdminClaimItem]
+    total: int
+    limit: int
+    offset: int
+
+
+class AdminClaimDetail(AdminClaimItem):
+    """Claim plus the account context needed to verify identity without
+    navigating away from the receipt."""
+    user_note: Optional[str] = None
+    internal_note: Optional[str] = None
+    review_note: Optional[str] = None
+    rejection_reason: Optional[str] = None
+    reviewed_at: Optional[datetime] = None
+    reviewer_email: Optional[str] = None
+    receipt_mime: Optional[str] = None
+    receipt_bytes: Optional[int] = None
+    receipt_deleted_at: Optional[datetime] = None
+
+    user_created_at: datetime
+    user_has_access: bool
+    user_access_state: str
+    user_trial_ends_at: Optional[datetime] = None
+    user_lifetime_access_at: Optional[datetime] = None
+    # Prior claims by this user — a second rejected claim is a very different
+    # situation from a first submission.
+    prior_claims: int = 0
+    prior_rejections: int = 0
+    # Cheap identity signal, computed server-side so the admin does not have
+    # to eyeball two strings in different parts of the page.
+    payer_name_matches: Optional[bool] = None
+
+
+class ApproveClaimRequest(BaseModel):
+    internal_note: Optional[str] = Field(default=None, max_length=2000)
+
+
+class RejectClaimRequest(BaseModel):
+    reason: str
+    review_note: Optional[str] = Field(default=None, max_length=2000)
+    internal_note: Optional[str] = Field(default=None, max_length=2000)
+
+    @field_validator("reason")
+    @classmethod
+    def known_reason(cls, v: str) -> str:
+        allowed = (
+            "amount_mismatch", "receipt_unreadable", "reference_not_found",
+            "duplicate_claim", "not_received", "other",
+        )
+        if v not in allowed:
+            raise ValueError(f"reason must be one of {', '.join(allowed)}")
+        return v
+
+
+class GrantAccessRequest(BaseModel):
+    """The payment-link path: the money moved entirely outside the app, so
+    the admin files the record after the fact."""
+    amount: Optional[float] = Field(default=None, ge=0, le=1_000_000)
+    currency: str = Field(default="USD", max_length=10)
+    reference: Optional[str] = Field(default=None, max_length=255)
+    note: Optional[str] = Field(default=None, max_length=2000)
+
+
+class RevokeAccessRequest(BaseModel):
+    reason: str = Field(min_length=3, max_length=500)
+
+
+class AdminSettingsResponse(BaseModel):
+    one_time_price_usd: float
+    currency: str
+    bank_details_md: str
+    payment_instructions_md: str
+    support_email: str
+    claims_notify_email: Optional[str] = None
+    review_sla_hours: int
+    manual_payments_enabled: bool
+    crypto_payments_enabled: bool
+    updated_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
+class AdminSettingsUpdate(BaseModel):
+    one_time_price_usd: Optional[float] = Field(default=None, ge=0, le=1_000_000)
+    currency: Optional[str] = Field(default=None, max_length=10)
+    bank_details_md: Optional[str] = Field(default=None, max_length=20000)
+    payment_instructions_md: Optional[str] = Field(default=None, max_length=20000)
+    support_email: Optional[EmailStr] = None
+    claims_notify_email: Optional[EmailStr] = None
+    review_sla_hours: Optional[int] = Field(default=None, ge=1, le=720)
+    manual_payments_enabled: Optional[bool] = None
+    crypto_payments_enabled: Optional[bool] = None
+
+
+class AdminAuditItem(BaseModel):
+    id: uuid.UUID
+    action: str
+    user_id: Optional[uuid.UUID] = None
+    user_email: Optional[str] = None
+    extra_data: Optional[dict] = None
+    platform: Optional[str] = None
+    created_at: datetime
 
 
 class VendorUpdate(BaseModel):
