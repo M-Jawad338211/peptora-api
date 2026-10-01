@@ -253,6 +253,10 @@ class RegisterRequest(BaseModel):
     def password_min_length(cls, v: str) -> str:
         if len(v) < 8:
             raise ValueError("Password must be at least 8 characters")
+        # bcrypt's hard limit. Past it the hash cannot be computed at all, and
+        # the request would fail with a 500 instead of a message.
+        if len(v.encode("utf-8")) > 72:
+            raise ValueError("Password must be 72 characters or fewer")
         return v
 
     @field_validator("full_name")
@@ -304,7 +308,26 @@ class ResetPasswordRequest(BaseModel):
     def password_min_length(cls, v: str) -> str:
         if len(v) < 8:
             raise ValueError("Password must be at least 8 characters")
+        if len(v.encode("utf-8")) > 72:
+            raise ValueError("Password must be 72 characters or fewer")
         return v
+
+
+class DeleteAccountRequest(BaseModel):
+    """Confirmation for permanent account deletion.
+
+    The password is asked for again so that an unlocked phone or a stolen
+    session cannot erase someone's account and history on its own.
+    """
+    password: str = Field(min_length=1, max_length=1024)
+
+
+class DeleteAccountResponse(BaseModel):
+    message: str
+    # True when an App Store subscription was still running. Deleting the
+    # account cannot cancel it (only the customer can, in their Apple ID
+    # settings), so the clients use this to say so.
+    app_store_subscription_active: bool = False
 
 
 class TrialCountInfo(BaseModel):
@@ -337,6 +360,19 @@ class AccessInfo(BaseModel):
     claim_id: Optional[uuid.UUID] = None
     # False while a claim is pending, so the form cannot be submitted twice.
     can_submit_claim: bool = True
+
+    # An active App Store subscription (Peptora Pro bought in the iOS app).
+    # `is_trial` above is the account's own 14-day trial; a subscriber is
+    # never reported as trialling, so no countdown banner is shown to someone
+    # who is paying. Apple's free introductory week is reported separately in
+    # `subscription_is_trial`.
+    is_subscription: bool = False
+    subscription_store: Optional[str] = None  # "app_store"
+    subscription_product: Optional[str] = None
+    subscription_expires_at: Optional[datetime] = None
+    # None until Apple's first server notification says either way.
+    subscription_auto_renew: Optional[bool] = None
+    subscription_is_trial: bool = False
 
 
 class UserResponse(BaseModel):
@@ -429,6 +465,42 @@ class SubscriptionStatusResponse(BaseModel):
     payments_enabled: bool
 
 
+# ── App Store purchases ─────────────────────────────────────────────────────
+
+class AppleVerifyRequest(BaseModel):
+    """Signed StoreKit 2 transactions (JWS strings) from the iOS app.
+
+    A list, because restoring purchases and the launch-time sync can each
+    produce more than one. The bound keeps a single request from turning into
+    an unbounded amount of signature verification.
+    """
+    transactions: list[str] = Field(min_length=1, max_length=10)
+
+    @field_validator("transactions")
+    @classmethod
+    def bounded_strings(cls, v: list[str]) -> list[str]:
+        for item in v:
+            if not item or len(item) > 20_000:
+                raise ValueError("Each transaction must be a signed transaction string")
+        return v
+
+
+class AppleVerifyResult(BaseModel):
+    # "active"   verified, and granting access now
+    # "expired"  verified, but the paid period has ended
+    # "revoked"  verified, but refunded or revoked by Apple
+    # "invalid"  not a genuine Peptora Pro transaction; nothing was applied
+    status: Literal["active", "expired", "revoked", "invalid"]
+    product_id: Optional[str] = None
+    expires_at: Optional[datetime] = None
+    transaction_id: Optional[str] = None
+
+
+class AppleVerifyResponse(BaseModel):
+    access: AccessInfo
+    results: list[AppleVerifyResult]
+
+
 # ── AI ──────────────────────────────────────────────────────────────────────
 
 class ConversationMessage(BaseModel):
@@ -506,6 +578,8 @@ class AdminStatsResponse(BaseModel):
 
     total_users: int
     lifetime_users: int
+    # Active App Store subscribers (the iOS app).
+    subscribed_users: int = 0
     trialing_users: int
     lapsed_users: int
     trials_ending_this_week: int
@@ -536,8 +610,10 @@ class AdminUserItem(BaseModel):
 
     # Derived server-side from has_access(), never recomputed in the UI.
     has_access: bool = False
-    access_state: str = "none"  # lifetime | trial | crypto | lapsed | revoked | none
+    # lifetime | subscription | trial | crypto | lapsed | revoked | none
+    access_state: str = "none"
     lifetime_access_at: Optional[datetime] = None
+    apple_sub_until: Optional[datetime] = None
     trial_ends_at: Optional[datetime] = None
     access_revoked_at: Optional[datetime] = None
     open_claim_id: Optional[uuid.UUID] = None

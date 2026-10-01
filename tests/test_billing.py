@@ -21,6 +21,7 @@ def _user(**kw):
         "paid_until": None,
         "trial_ends_at": None,
         "lifetime_access_at": None,
+        "apple_sub_until": None,
         "access_revoked_at": None,
         **kw,
     })

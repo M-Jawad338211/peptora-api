@@ -9,7 +9,7 @@ from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from app.config import settings
 from app.middleware.rate_limit import limiter
-from app.routers import auth, billing, calculator, subscriptions, ai, admin, tracker, cron, peptides, protocols, stacks
+from app.routers import auth, billing, calculator, subscriptions, admin, tracker, cron, peptides, protocols, stacks, iap
 
 logging.config.dictConfig({
     "version": 1,
@@ -37,7 +37,13 @@ logging.config.dictConfig({
 })
 logger = logging.getLogger("peptora")
 
-_SENSITIVE_FIELDS = {"password", "confirm_password", "new_password", "otp", "token", "secret", "api_key"}
+_SENSITIVE_FIELDS = {
+    "password", "confirm_password", "new_password", "otp", "token", "secret", "api_key",
+    "refresh_token", "access_token",
+    # Signed App Store payloads: several kilobytes each, and they carry
+    # purchase details that have no business in the request log.
+    "transactions", "signedPayload",
+}
 
 
 async def _log_request_body(request: Request) -> str:
@@ -68,10 +74,12 @@ app = FastAPI(
         "## Rate limits\n"
         "Public endpoints are rate-limited per IP. Exceeding the limit returns `429 Too Many Requests`.\n\n"
         "## Access\n"
-        "Peptora is a one-time purchase behind a 14-day trial. There is no free\n"
-        "tier and no anonymous allowance: every product endpoint requires a live\n"
-        "access window and returns `402` without one. Payments are verified by\n"
-        "hand — see the `billing` and `admin` tags."
+        "The peptide library (`/peptides`, `/stacks`) is public reference\n"
+        "content. Everything a user saves (protocols, the log, calculation\n"
+        "history) needs Peptora Pro and returns `402` without it. Pro comes\n"
+        "from a 14-day trial, an App Store subscription bought in the iOS app\n"
+        "(see the `iap` tag), or the one-time purchase on the web, which is\n"
+        "verified by hand (see the `billing` and `admin` tags)."
     ),
     contact={
         "name": "Peptora Support",
@@ -84,9 +92,9 @@ app = FastAPI(
     openapi_tags=[
         {"name": "auth", "description": "Registration, login, logout, OTP, and token refresh."},
         {"name": "calculator", "description": "Peptide property calculations (MW, GRAVY, charge, etc.)."},
-        {"name": "ai", "description": "AI-powered peptide research assistant (Claude)."},
         {"name": "subscriptions", "description": "Dormant crypto rail (NOWPayments), off by default."},
         {"name": "billing", "description": "Manual billing — payment instructions, claims, receipts."},
+        {"name": "iap", "description": "App Store subscriptions: transaction verification and server notifications."},
         {"name": "admin", "description": "Admin-only endpoints for user and system management."},
     ],
     docs_url="/docs",
@@ -161,13 +169,18 @@ app.include_router(auth.router)
 app.include_router(calculator.router)
 app.include_router(subscriptions.router)
 app.include_router(billing.router)
-app.include_router(ai.router)
+# Off by default: see AI_ENABLED in app/config.py. Imported here rather than
+# at the top so a deployment without it never builds the AI client at all.
+if settings.AI_ENABLED:
+    from app.routers import ai
+    app.include_router(ai.router)
 app.include_router(admin.router)
 app.include_router(tracker.router)
 app.include_router(cron.router)
 app.include_router(peptides.router)
 app.include_router(protocols.router)
 app.include_router(stacks.router)
+app.include_router(iap.router)
 
 
 @app.get("/health")

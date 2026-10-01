@@ -44,6 +44,12 @@ class Settings(BaseSettings):
     # verification, and is bound to the signup device fingerprint.
     # PLAN_DAYS[plan] still drives the dormant crypto rail.
     TRIAL_DAYS: int = 14
+    # Whether an account created in the iOS app gets that account trial. Off:
+    # on the App Store the free trial is the subscription's own introductory
+    # offer, which Apple runs and bills. A second, separate trial handed out by
+    # this API would be Pro unlocked outside In-App Purchase, which guideline
+    # 3.1.1 does not allow. Accounts created on the web are unaffected.
+    TRIAL_FOR_IOS_SIGNUPS: bool = False
     PRICE_MONTHLY_USD: float = 5.0
     PRICE_ANNUAL_USD: float = 49.0
 
@@ -66,6 +72,33 @@ class Settings(BaseSettings):
     # the record of why an account has access.
     RECEIPT_RETENTION_DAYS: int = 365
 
+    # Apple In-App Purchase: the iOS app's Peptora Pro subscriptions.
+    #
+    # There is no shared secret to configure. The App Store signs every
+    # transaction and notification, and app/utils/apple_iap.py checks that
+    # signature against Apple's root certificate (bundled in app/certs). These
+    # settings only say which app and which products this API will accept.
+    APPLE_BUNDLE_ID: str = "app.peptora"
+    # The app's numeric Apple ID (App Store Connect -> App Information).
+    # Apple includes it in Production notifications and the verifier checks it.
+    APPLE_APP_ID: Optional[int] = 6772127291
+    APPLE_IAP_PRODUCT_IDS: str = "app.peptora.pro.monthly,app.peptora.pro.yearly"
+    # Leave this on in production. App Review, TestFlight and sandbox testers
+    # all buy in Apple's Sandbox environment from the production build, and
+    # they all talk to this API. Turning it off makes every one of those
+    # purchases fail verification, which App Review reads as a broken paywall.
+    APPLE_IAP_ALLOW_SANDBOX: bool = True
+    # Online revocation checks (OCSP) call Apple during verification. Off by
+    # default: the signature and certificate chain are still fully verified
+    # offline, and a slow or unreachable OCSP responder would otherwise turn
+    # into failed purchases.
+    APPLE_IAP_ONLINE_CHECKS: bool = False
+
+    # The AI endpoints (app/routers/ai.py) are switched off. No Peptora client
+    # has an AI feature, and the privacy policy says that nothing a user
+    # enters is sent to an AI provider, so the routes are not even registered
+    # unless this is turned on. Turning it on means updating that policy too.
+    AI_ENABLED: bool = False
     ANTHROPIC_API_KEY: Optional[str] = None
     CRON_SECRET: Optional[str] = None
     RESEND_API_KEY: Optional[str] = None
@@ -119,6 +152,13 @@ class Settings(BaseSettings):
         would fail verification, so users could pay and never be credited.
         """
         return bool(self.NOWPAYMENTS_API_KEY and self.NOWPAYMENTS_IPN_SECRET)
+
+    @property
+    def apple_product_ids(self) -> frozenset:
+        """Product identifiers this API accepts from the App Store."""
+        return frozenset(
+            p.strip() for p in self.APPLE_IAP_PRODUCT_IDS.split(",") if p.strip()
+        )
 
     @property
     def is_development(self) -> bool:

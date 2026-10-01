@@ -43,6 +43,12 @@ class User(Base):
     # report a five-figure number to the UI.
     lifetime_access_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True, index=True)
 
+    # The App Store subscription bought in the iOS app. A denormalised copy of
+    # the latest unrevoked expiry across this user's `apple_subscriptions`
+    # rows, kept here so has_access() stays a pure function of the user row
+    # with no extra query. Only app/routers/iap.py writes it.
+    apple_sub_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True, index=True)
+
     # Refunds, chargebacks and abuse. Kept as a timestamp rather than clearing
     # the grant so the record of what happened survives. `has_access()` checks
     # this FIRST — a refunded user may still be inside their original trial
@@ -299,6 +305,72 @@ class PaymentClaim(Base):
             name="ck_payment_claims_status",
         ),
     )
+
+
+class AppleSubscription(Base):
+    """One App Store subscription, as Apple reports it.
+
+    Keyed by Apple's `originalTransactionId`, which stays the same across
+    renewals and across monthly/yearly plan changes inside the subscription
+    group. A row is written when the app posts a signed transaction to
+    /iap/apple/verify, and kept current by App Store Server Notifications.
+
+    Nothing in this table is trusted from the client: every field comes out of
+    a payload whose signature was verified against Apple's root certificate.
+    """
+
+    __tablename__ = "apple_subscriptions"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+
+    # Nullable: a notification can arrive for a purchase the app never managed
+    # to post (the network dropped after payment). The row waits, and the next
+    # verify call from that Apple ID links it to an account.
+    user_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("users.id"), nullable=True, index=True
+    )
+
+    original_transaction_id: Mapped[str] = mapped_column(String(64), nullable=False, unique=True)
+    latest_transaction_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    product_id: Mapped[str] = mapped_column(String(255), nullable=False)
+    # "Production" | "Sandbox". App Review and TestFlight purchases are Sandbox.
+    environment: Mapped[str] = mapped_column(String(20), nullable=False, default="Production")
+
+    purchased_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True, index=True)
+    # Only set when Billing Grace Period is switched on in App Store Connect
+    # and a renewal payment failed: access continues until this passes.
+    grace_expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    # Refund or revocation. Outranks expires_at.
+    revoked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    # Whether the current period is the free introductory trial.
+    is_trial_period: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False, server_default="false")
+    # From the renewal info Apple sends with notifications. Null until the
+    # first notification arrives.
+    auto_renew: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
+
+    # The account the purchase was started from (the app passes the user id as
+    # StoreKit's appAccountToken). Used to link a notification to an account
+    # when the app never posted the transaction itself.
+    app_account_token: Mapped[str | None] = mapped_column(String(64), nullable=True)
+
+    last_notification_type: Mapped[str | None] = mapped_column(String(60), nullable=True)
+    last_notification_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    # The last verified transaction payload, for support and debugging.
+    raw: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
+
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
+
+    @property
+    def effective_expires_at(self) -> datetime | None:
+        """When access from this subscription ends: the paid period, or the
+        billing grace period if Apple granted one and it runs later."""
+        if self.grace_expires_at and (self.expires_at is None or self.grace_expires_at > self.expires_at):
+            return self.grace_expires_at
+        return self.expires_at
 
 
 class TrialGrant(Base):
@@ -829,7 +901,11 @@ class UserProtocol(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
 
-    dose_logs: Mapped[list["CycleLog"]] = relationship("CycleLog", back_populates="protocol", cascade="all, delete-orphan")
+    # Newest first: the protocol screen lists these as they come.
+    dose_logs: Mapped[list["CycleLog"]] = relationship(
+        "CycleLog", back_populates="protocol", cascade="all, delete-orphan",
+        order_by="CycleLog.taken_at.desc()",
+    )
 
     __table_args__ = (
         Index("ix_user_protocols_user_id", "user_id"),
