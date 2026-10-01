@@ -12,7 +12,13 @@ def hash_password(password: str) -> str:
 
 
 def verify_password(plain: str, hashed: str) -> bool:
-    return bcrypt.checkpw(plain.encode("utf-8"), hashed.encode("utf-8"))
+    # bcrypt 5 raises ValueError for input over 72 bytes instead of silently
+    # truncating it. A password that long cannot have been stored (see the
+    # length check in app/schemas.py), so it is simply wrong, not a 500.
+    try:
+        return bcrypt.checkpw(plain.encode("utf-8"), hashed.encode("utf-8"))
+    except ValueError:
+        return False
 
 
 def create_access_token(subject: str) -> str:

@@ -48,9 +48,9 @@ async def send_weekly_reminders(
     for user in users:
         ok = await send_expo_push(
             token=user.expo_push_token,
-            title="Time to log your cycle 💉",
-            body="It's been 7 days since your last Peptora entry. Log today's dose.",
-            data={"screen": "tracker"},
+            title="Weekly check-in",
+            body="It has been 7 days since your last Peptora log entry.",
+            data={"screen": "protocols"},
         )
         if ok:
             sent += 1
@@ -104,6 +104,8 @@ async def billing_sweep(
 
     # Trials ending in ~3 days, for users who never bought. This is now the
     # main conversion trigger in the whole product — after it, the app locks.
+    # App Store subscribers are left out: they are already paying, and Apple
+    # sends its own renewal and billing mail.
     trials = await db.execute(
         select(User).where(
             User.trial_ends_at.is_not(None),
@@ -112,6 +114,7 @@ async def billing_sweep(
             User.paid_until.is_(None),
             User.lifetime_access_at.is_(None),
             User.access_revoked_at.is_(None),
+            (User.apple_sub_until.is_(None)) | (User.apple_sub_until <= now),
         )
     )
     for user in trials.scalars().all():
@@ -122,10 +125,11 @@ async def billing_sweep(
             logger.exception("trial reminder failed for %s", user.email)
             failed += 1
 
-    # Demote anyone whose windows have both closed. Set-based, so it stays one
+    # Demote anyone whose windows have all closed. Set-based, so it stays one
     # statement regardless of how many users lapse on a given day. A lifetime
     # licence is excluded — it has no window to close, and demoting one would
-    # show "Free" to someone who bought the product outright.
+    # show "Free" to someone who bought the product outright. A live App Store
+    # subscription is excluded for the same reason.
     demoted = await db.execute(
         update(User)
         .where(
@@ -133,6 +137,7 @@ async def billing_sweep(
             User.lifetime_access_at.is_(None),
             (User.paid_until.is_(None)) | (User.paid_until <= now),
             (User.trial_ends_at.is_(None)) | (User.trial_ends_at <= now),
+            (User.apple_sub_until.is_(None)) | (User.apple_sub_until <= now),
         )
         .values(plan="free")
     )

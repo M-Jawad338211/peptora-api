@@ -2,7 +2,7 @@ import logging
 from datetime import timezone
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, delete
+from sqlalchemy import select
 from app.database import get_db
 from app.models import User, CycleLog
 from app.schemas import CycleLogCreate, CycleLogItem

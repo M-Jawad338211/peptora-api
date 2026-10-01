@@ -91,7 +91,7 @@ async def record_use(
     if not user:
         raise HTTPException(status_code=401, detail="Not authenticated")
     if not has_access(user):
-        raise HTTPException(status_code=402, detail="A Peptora licence is required")
+        raise HTTPException(status_code=402, detail="Peptora Pro is required")
 
     # Still ensures the counter row exists — /auth/me reports it — but there
     # is nothing to meter for a user inside an access window.

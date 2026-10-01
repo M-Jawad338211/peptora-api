@@ -58,18 +58,20 @@ def _access_state(user: User) -> str:
     """A single word for what is granting (or denying) this user access.
 
     Ordered to match has_access(): revocation outranks everything, then the
-    permanent licence, then the two windows.
+    permanent licence, then the App Store subscription, then the two windows.
     """
     if user.access_revoked_at:
         return "revoked"
     if user.lifetime_access_at:
         return "lifetime"
     now = datetime.now(timezone.utc)
+    if user.apple_sub_until and user.apple_sub_until > now:
+        return "subscription"
     if user.paid_until and user.paid_until > now:
         return "crypto"
     if user.trial_ends_at and user.trial_ends_at > now:
         return "trial"
-    if user.trial_ends_at or user.paid_until:
+    if user.trial_ends_at or user.paid_until or user.apple_sub_until:
         return "lapsed"
     return "none"
 
@@ -119,10 +121,20 @@ async def admin_stats(
             User.lifetime_access_at.is_not(None), User.access_revoked_at.is_(None)
         )
     )
+    no_live_subscription = or_(User.apple_sub_until.is_(None), User.apple_sub_until <= now)
+    subscribed_users = await count(
+        select(func.count()).select_from(User).where(
+            User.lifetime_access_at.is_(None),
+            User.access_revoked_at.is_(None),
+            User.apple_sub_until.is_not(None),
+            User.apple_sub_until > now,
+        )
+    )
     trialing = await count(
         select(func.count()).select_from(User).where(
             User.lifetime_access_at.is_(None),
             User.access_revoked_at.is_(None),
+            no_live_subscription,
             User.trial_ends_at.is_not(None),
             User.trial_ends_at > now,
         )
@@ -131,6 +143,7 @@ async def admin_stats(
         select(func.count()).select_from(User).where(
             User.lifetime_access_at.is_(None),
             User.access_revoked_at.is_(None),
+            no_live_subscription,
             User.trial_ends_at.is_not(None),
             User.trial_ends_at <= now,
             or_(User.paid_until.is_(None), User.paid_until <= now),
@@ -195,6 +208,7 @@ async def admin_stats(
         overdue_claims=overdue,
         total_users=total_users,
         lifetime_users=lifetime_users,
+        subscribed_users=subscribed_users,
         trialing_users=trialing,
         lapsed_users=lapsed,
         trials_ending_this_week=trials_ending,
@@ -218,7 +232,7 @@ async def list_users(
     db: AsyncSession = Depends(get_db),
     admin: User = Depends(get_current_admin),
     search: str = Query(default=""),
-    access: str = Query(default="", description="lifetime|trial|lapsed|revoked|none"),
+    access: str = Query(default="", description="lifetime|subscription|trial|lapsed|revoked|none"),
     limit: int = Query(default=50, le=200),
     offset: int = Query(default=0, ge=0),
 ):
@@ -233,22 +247,35 @@ async def list_users(
         count_q = count_q.where(cond)
 
     # Filters mirror _access_state so the list and the badge never disagree.
+    no_live_subscription = or_(User.apple_sub_until.is_(None), User.apple_sub_until <= now)
     filters = {
         "lifetime": (User.lifetime_access_at.is_not(None), User.access_revoked_at.is_(None)),
         "revoked": (User.access_revoked_at.is_not(None),),
+        "subscription": (
+            User.lifetime_access_at.is_(None),
+            User.access_revoked_at.is_(None),
+            User.apple_sub_until.is_not(None),
+            User.apple_sub_until > now,
+        ),
         "trial": (
             User.lifetime_access_at.is_(None),
             User.access_revoked_at.is_(None),
+            no_live_subscription,
             User.trial_ends_at.is_not(None),
             User.trial_ends_at > now,
         ),
         "lapsed": (
             User.lifetime_access_at.is_(None),
             User.access_revoked_at.is_(None),
+            no_live_subscription,
             User.trial_ends_at.is_not(None),
             User.trial_ends_at <= now,
         ),
-        "none": (User.lifetime_access_at.is_(None), User.trial_ends_at.is_(None)),
+        "none": (
+            User.lifetime_access_at.is_(None),
+            User.trial_ends_at.is_(None),
+            User.apple_sub_until.is_(None),
+        ),
     }
     if access in filters:
         for cond in filters[access]:
@@ -286,6 +313,7 @@ async def list_users(
                 has_access=has_access(u),
                 access_state=_access_state(u),
                 lifetime_access_at=u.lifetime_access_at,
+                apple_sub_until=u.apple_sub_until,
                 trial_ends_at=u.trial_ends_at,
                 access_revoked_at=u.access_revoked_at,
                 open_claim_id=open_claims.get(u.id),
@@ -360,6 +388,7 @@ async def user_detail(
         has_access=has_access(u),
         access_state=_access_state(u),
         lifetime_access_at=u.lifetime_access_at,
+        apple_sub_until=u.apple_sub_until,
         trial_ends_at=u.trial_ends_at,
         access_revoked_at=u.access_revoked_at,
         open_claim_id=open_claim.id if open_claim else None,
@@ -479,7 +508,7 @@ async def restore_access(
     user = await _get_user(db, user_id)
     user.access_revoked_at = None
     user.access_revoked_reason = None
-    if user.lifetime_access_at:
+    if has_access(user):
         user.plan = "pro"
     db.add(AuditLog(
         user_id=admin.id,

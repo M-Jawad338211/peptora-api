@@ -1,9 +1,15 @@
-"""The peptide encyclopedia.
+"""The peptide library.
 
-Behind the licence gate as of the move to a one-time purchase: the whole app
-shell is paid, and leaving these two routers unauthenticated would have meant
-"the navigation is locked" while the data itself stayed public to anyone with
-curl.
+Public reference content: readable without an account or a subscription.
+
+It was briefly put behind the paid gate along with the rest of the app. That
+made the iOS app demand a login before showing anything at all, which App
+Review rejected under guideline 5.1.1(v): content that is not tied to an
+account must be reachable without one. The library is reference material with
+citations, the same for every reader, so there is nothing account-based about
+it. What stays behind the gate is what a user saves: protocols, logs, history.
+
+Still rate-limited per IP, like every other route.
 """
 
 from fastapi import APIRouter, Depends, HTTPException, Request
@@ -13,8 +19,8 @@ from sqlalchemy.orm import selectinload
 
 from app.database import get_db
 from app.models import Peptide, StackComponent
-from app.middleware.auth import get_current_subscriber
 from app.middleware.rate_limit import limiter
+from app.utils.text import clean_content
 from app.schemas import PeptideCard, PeptideDetail
 
 router = APIRouter(prefix="/peptides", tags=["peptides"])
@@ -25,12 +31,14 @@ router = APIRouter(prefix="/peptides", tags=["peptides"])
 async def list_peptides(
     request: Request,
     db: AsyncSession = Depends(get_db),
-    user=Depends(get_current_subscriber),
 ):
     result = await db.execute(
         select(Peptide).order_by(Peptide.name)
     )
-    return result.scalars().all()
+    return [
+        clean_content(PeptideCard.model_validate(row).model_dump(mode="json"))
+        for row in result.scalars().all()
+    ]
 
 
 @router.get("/{peptide_id}", response_model=PeptideDetail)
@@ -39,7 +47,6 @@ async def get_peptide(
     peptide_id: str,
     request: Request,
     db: AsyncSession = Depends(get_db),
-    user=Depends(get_current_subscriber),
 ):
     result = await db.execute(
         select(Peptide)
@@ -55,4 +62,4 @@ async def get_peptide(
     peptide = result.scalar_one_or_none()
     if not peptide:
         raise HTTPException(status_code=404, detail="Peptide not found")
-    return peptide
+    return clean_content(PeptideDetail.model_validate(peptide).model_dump(mode="json"))

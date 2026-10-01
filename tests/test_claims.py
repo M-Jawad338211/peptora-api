@@ -21,6 +21,7 @@ def _user(**kw):
         "paid_until": None,
         "trial_ends_at": None,
         "lifetime_access_at": None,
+        "apple_sub_until": None,
         "access_revoked_at": None,
         "access_revoked_reason": None,
         **kw,
@@ -128,6 +129,11 @@ def test_no_claim_allows_submission():
 def test_access_state_matches_the_gate_ordering():
     assert _access_state(_user(access_revoked_at=NOW, lifetime_access_at=NOW)) == "revoked"
     assert _access_state(_user(lifetime_access_at=NOW)) == "lifetime"
+    assert _access_state(_user(apple_sub_until=NOW + timedelta(days=2))) == "subscription"
+    assert _access_state(_user(apple_sub_until=NOW - timedelta(days=2))) == "lapsed"
+    assert _access_state(_user(
+        apple_sub_until=NOW + timedelta(days=2), trial_ends_at=NOW + timedelta(days=2),
+    )) == "subscription"
     assert _access_state(_user(paid_until=NOW + timedelta(days=2))) == "crypto"
     assert _access_state(_user(trial_ends_at=NOW + timedelta(days=2))) == "trial"
     assert _access_state(_user(trial_ends_at=NOW - timedelta(days=2))) == "lapsed"

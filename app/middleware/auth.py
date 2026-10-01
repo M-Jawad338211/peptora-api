@@ -59,8 +59,9 @@ def has_access(user: User | None) -> bool:
     someone in week one would silently do nothing and they would keep full
     access until the trial lapsed. The kill switch has to outrank every grant.
 
-    Three things grant access, in descending permanence:
+    Four things grant access, in descending permanence:
       lifetime_access_at  the one-time purchase, approved by an admin
+      apple_sub_until     the App Store subscription bought in the iOS app
       paid_until          the dormant crypto rail, kept behind a flag
       trial_ends_at       the 14-day trial, granted once per device
     """
@@ -71,6 +72,8 @@ def has_access(user: User | None) -> bool:
     if user.lifetime_access_at:
         return True
     now = datetime.now(timezone.utc)
+    if user.apple_sub_until and user.apple_sub_until > now:
+        return True
     if user.paid_until and user.paid_until > now:
         return True
     if user.trial_ends_at and user.trial_ends_at > now:
@@ -79,17 +82,22 @@ def has_access(user: User | None) -> bool:
 
 
 async def get_current_subscriber(user: User = Depends(get_current_verified_user)) -> User:
-    """Gate for the whole product: encyclopedia, stacks, calculator history,
-    protocols, tracker, AI. Everything except auth, consent and billing.
+    """Gate for the account features: protocols, the log, saved history.
 
-    402 rather than 403 so the web client can tell "you need to pay" apart
-    from "you are not allowed", and route to the billing page instead of the
-    login page. See lib/api/client.js and components/auth/PlanGate.js.
+    The peptide library and stacks are public reference content and are not
+    behind this gate (see app/routers/peptides.py). Auth, consent, billing and
+    the App Store purchase endpoints are reachable without access too, since a
+    user who cannot pay cannot be asked to pay first.
+
+    402 rather than 403 so the clients can tell "you need Peptora Pro" apart
+    from "you are not allowed", and route to the paywall instead of the login
+    page. See lib/api/client.js and components/auth/PlanGate.js on the web,
+    and src/components/ProGate.js in the native app.
     """
     if not has_access(user):
         raise HTTPException(
             status_code=status.HTTP_402_PAYMENT_REQUIRED,
-            detail="A Peptora licence is required",
+            detail="Peptora Pro is required",
         )
     return user
 

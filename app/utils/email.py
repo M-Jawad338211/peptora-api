@@ -41,21 +41,35 @@ async def _send_email(payload: dict) -> dict:
     return response
 
 
-async def send_welcome_email(to_email: str, full_name: str | None) -> None:
+async def send_welcome_email(
+    to_email: str, full_name: str | None, trial_days: int | None = None,
+) -> None:
+    """Welcome a newly verified account.
+
+    `trial_days` is set only when this account was actually given the account
+    trial. It is not always: a device gets one trial, and accounts created in
+    the iOS app get none. The mail must not announce a trial that is not there.
+    """
     name = full_name or "Researcher"
+    if trial_days:
+        trial = f"""
+        <p>Your {trial_days}-day free trial of Peptora Pro has started. No
+        payment details are needed for it.</p>"""
+        closing = """
+        <p>When the trial ends, the library and the calculator stay free and
+        you can choose whether to keep Pro.</p>"""
+    else:
+        trial = ""
+        closing = ""
     await _send_email({
         "from": settings.FROM_EMAIL,
         "to": to_email,
         "subject": "Welcome to Peptora",
         "html": f"""
-        <h2>Welcome to Peptora, {name}!</h2>
-        <p>Your 14-day free trial has started — every tool is unlocked, with no
-        payment details required.</p>
-        <p>That covers the peptide encyclopedia, the dose calculator, protocols
-        and the cycle tracker.</p>
-        <p>After 14 days, Peptora is a one-time purchase. Buy it once and it is
-        yours — no subscription, nothing to cancel.</p>
-        <p><a href="{settings.WEB_URL}/app/home">Open Peptora →</a></p>
+        <h2>Welcome to Peptora, {name}!</h2>{trial}
+        <p>The peptide library and the reconstitution calculator are free to
+        use. Pro adds saved protocols, your log and your history.</p>{closing}
+        <p><a href="{settings.WEB_URL}/app/home">Open Peptora</a></p>
         <hr/>
         <small>For research and educational purposes only. Not medical advice.</small>
         """,
@@ -88,12 +102,12 @@ async def send_subscription_active_email(to_email: str, full_name: str | None, p
         "to": to_email,
         "subject": "Your Peptora subscription is active",
         "html": f"""
-        <h2>Payment received — thanks, {name}.</h2>
+        <h2>Payment received. Thanks, {name}.</h2>
         <p>Every Peptora tool is unlocked until <strong>{until}</strong>.</p>
         <p>Because payment is in crypto there is nothing stored to charge again,
         so nothing renews automatically. We'll email you a few days before
         {until} with a link if you want to continue.</p>
-        <p><a href="{settings.WEB_URL}/app/home">Open Peptora →</a></p>
+        <p><a href="{settings.WEB_URL}/app/home">Open Peptora</a></p>
         <hr/>
         <small>For research and educational purposes only. Not medical advice.</small>
         """,
@@ -115,10 +129,10 @@ async def send_renewal_reminder_email(to_email: str, full_name: str | None, days
         "html": f"""
         <h2>Hi {name},</h2>
         <p>Your Peptora access ends <strong>{when}</strong>. Nothing renews on its
-        own — crypto payments can't be charged automatically — so you'll need to
-        renew manually if you'd like to keep going.</p>
-        <p>Your protocols and dose history stay exactly where they are either way.</p>
-        <p><a href="{settings.WEB_URL}/app/billing">Renew →</a></p>
+        own, because crypto payments cannot be charged automatically, so you
+        will need to renew manually if you would like to keep going.</p>
+        <p>Your protocols and log history stay exactly where they are either way.</p>
+        <p><a href="{settings.WEB_URL}/app/billing">Renew</a></p>
         <hr/>
         <small>For research and educational purposes only. Not medical advice.</small>
         """,
@@ -134,12 +148,12 @@ async def send_trial_ending_email(to_email: str, full_name: str | None, days_lef
         "subject": f"Your Peptora trial ends {when}",
         "html": f"""
         <h2>Hi {name},</h2>
-        <p>Your 14-day trial ends <strong>{when}</strong>. After that the
-        encyclopedia, calculator, protocols and tracker are locked.</p>
-        <p>Peptora is a <strong>one-time purchase</strong> — buy it once and it
-        is yours. There is no subscription and nothing to cancel.</p>
+        <p>Your 14-day trial of Peptora Pro ends <strong>{when}</strong>. After
+        that, protocols, the log and your history are locked. The peptide
+        library and the reconstitution calculator stay free.</p>
+        <p>You can keep Pro from the Profile screen in the app, or on the web.</p>
         <p>Everything you have saved stays exactly where it is either way.</p>
-        <p><a href="{settings.WEB_URL}/app/billing">Unlock Peptora →</a></p>
+        <p><a href="{settings.WEB_URL}/app/billing">Keep Peptora Pro</a></p>
         <hr/>
         <small>For research and educational purposes only. Not medical advice.</small>
         """,
@@ -154,7 +168,7 @@ REJECTION_COPY = {
     "receipt_unreadable": "We could not read the receipt you uploaded. A clearer screenshot showing the amount, date and reference should do it.",
     "reference_not_found": "We could not find that reference on our side. Please double-check the transaction ID and submit it again.",
     "duplicate_claim": "This looks like a duplicate of a payment we have already handled.",
-    "not_received": "We have not seen this payment arrive yet. Bank transfers can take a few days — please resubmit once it has cleared.",
+    "not_received": "We have not seen this payment arrive yet. Bank transfers can take a few days. Please resubmit once it has cleared.",
     "other": "We could not verify this payment from the details provided.",
 }
 
@@ -167,12 +181,12 @@ async def send_claim_received_email(to_email: str, full_name: str | None, sla_ho
         "to": to_email,
         "subject": "We have your payment details",
         "html": f"""
-        <h2>Thanks, {name} — we are checking your payment.</h2>
+        <h2>Thanks, {name}. We are checking your payment.</h2>
         <p>Every payment is verified by a person, so this is not instant. We
         usually get through them within <strong>{window}</strong>.</p>
         <p>You do not need to do anything else. We will email you the moment
         your licence is active, and you can check the status any time.</p>
-        <p><a href="{settings.WEB_URL}/app/billing">Check status →</a></p>
+        <p><a href="{settings.WEB_URL}/app/billing">Check status</a></p>
         <hr/>
         <small>For research and educational purposes only. Not medical advice.</small>
         """,
@@ -189,8 +203,8 @@ async def send_licence_active_email(to_email: str, full_name: str | None) -> Non
         <h2>You are in, {name}.</h2>
         <p>Your payment checked out and every Peptora tool is unlocked.</p>
         <p>This is a <strong>one-time purchase</strong>. There is no expiry
-        date, no renewal and nothing to cancel — it does not lapse.</p>
-        <p><a href="{settings.WEB_URL}/app/home">Open Peptora →</a></p>
+        date, no renewal and nothing to cancel. It does not lapse.</p>
+        <p><a href="{settings.WEB_URL}/app/home">Open Peptora</a></p>
         <hr/>
         <small>For research and educational purposes only. Not medical advice.</small>
         """,
@@ -212,9 +226,9 @@ async def send_claim_rejected_email(
         <p>We were not able to confirm your payment yet.</p>
         <p><strong>{explanation}</strong></p>
         {extra}
-        <p>Nothing is lost — you can correct the details and submit again, and
+        <p>Nothing is lost. You can correct the details and submit again, and
         we will take another look.</p>
-        <p><a href="{settings.WEB_URL}/app/billing">Submit corrected details →</a></p>
+        <p><a href="{settings.WEB_URL}/app/billing">Submit corrected details</a></p>
         <hr/>
         <small>For research and educational purposes only. Not medical advice.</small>
         """,
@@ -233,7 +247,7 @@ async def send_new_claim_admin_email(
     await _send_email({
         "from": settings.FROM_EMAIL,
         "to": to_email,
-        "subject": f"New Peptora payment to review — {user_email}",
+        "subject": f"New Peptora payment to review: {user_email}",
         "html": f"""
         <h2>A payment is waiting for review.</h2>
         <ul>
@@ -241,7 +255,7 @@ async def send_new_claim_admin_email(
           <li><strong>Amount claimed:</strong> {amount_str}</li>
           <li><strong>Reference:</strong> {reference or "not given"}</li>
         </ul>
-        <p><a href="{settings.ADMIN_URL}/claims">Open the review queue →</a></p>
+        <p><a href="{settings.ADMIN_URL}/claims">Open the review queue</a></p>
         """,
     })
 
@@ -255,7 +269,7 @@ async def send_password_reset_email(to_email: str, reset_token: str) -> None:
         "html": f"""
         <h2>Password Reset</h2>
         <p>Click the link below to reset your password. This link expires in 1 hour.</p>
-        <p><a href="{reset_url}">Reset password →</a></p>
+        <p><a href="{reset_url}">Reset password</a></p>
         <p>If you did not request this, you can safely ignore this email.</p>
         """,
     })

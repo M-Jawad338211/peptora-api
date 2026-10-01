@@ -41,31 +41,42 @@ def _plan_options() -> list[PlanOption]:
     ]
 
 
-def access_info(user: User, claim=None) -> AccessInfo:
+def access_info(user: User, claim=None, subscription=None) -> AccessInfo:
     """Flatten the access state into what the client renders.
 
     `has_access` is delegated to has_access() rather than recomputed here, so
     there is exactly one implementation of the gate. Everything else in this
     object is presentation.
+
+    `subscription` is the user's current AppleSubscription row, when the
+    caller has loaded it. It only adds detail (which plan, whether it renews);
+    whether a subscription is live at all is read from the user row, so a
+    caller that passes nothing still reports the right access state.
     """
     now = datetime.now(timezone.utc)
     revoked = bool(user.access_revoked_at)
     lifetime = bool(user.lifetime_access_at) and not revoked
+    sub_live = bool(user.apple_sub_until and user.apple_sub_until > now) and not revoked
     paid_live = bool(user.paid_until and user.paid_until > now) and not revoked
     trial_live = bool(user.trial_ends_at and user.trial_ends_at > now) and not revoked
 
     # A lifetime licence has no end date, so there is nothing to count down.
     ends = None
     if not lifetime:
-        ends = user.paid_until if paid_live else (user.trial_ends_at if trial_live else None)
+        if sub_live:
+            ends = user.apple_sub_until
+        elif paid_live:
+            ends = user.paid_until
+        elif trial_live:
+            ends = user.trial_ends_at
 
     claim_status = claim.status if claim is not None else None
     return AccessInfo(
         has_access=has_access(user),
         # Only call it a trial when the trial is the *only* thing granting
-        # access — a licensed user still inside their trial window should not
-        # see a countdown banner telling them their trial is ending.
-        is_trial=trial_live and not paid_live and not lifetime,
+        # access. A licensed or subscribed user still inside their trial
+        # window should not see a countdown banner telling them it is ending.
+        is_trial=trial_live and not paid_live and not lifetime and not sub_live,
         is_lifetime=lifetime,
         is_revoked=revoked,
         trial_ends_at=user.trial_ends_at,
@@ -76,6 +87,12 @@ def access_info(user: User, claim=None) -> AccessInfo:
         # A pending claim means the form has already been submitted; offering
         # it again invites a duplicate the reviewer then has to reconcile.
         can_submit_claim=claim_status not in ("submitted", "under_review"),
+        is_subscription=sub_live,
+        subscription_store="app_store" if sub_live else None,
+        subscription_product=subscription.product_id if (sub_live and subscription is not None) else None,
+        subscription_expires_at=user.apple_sub_until if sub_live else None,
+        subscription_auto_renew=subscription.auto_renew if (sub_live and subscription is not None) else None,
+        subscription_is_trial=bool(sub_live and subscription is not None and subscription.is_trial_period),
     )
 
 
@@ -237,12 +254,14 @@ async def subscription_status(
     user: User = Depends(get_current_verified_user),
 ):
     from app.routers.billing import latest_claim_for
+    from app.routers.iap import current_subscription_for
 
     cfg = await get_settings(db)
     claim = await latest_claim_for(db, user.id)
+    subscription = await current_subscription_for(db, user.id)
     return SubscriptionStatusResponse(
         plan="pro" if has_access(user) else "free",
-        access=access_info(user, claim),
+        access=access_info(user, claim, subscription),
         plans=_plan_options(),
         payments_enabled=settings.payments_configured and cfg.crypto_payments_enabled,
     )
